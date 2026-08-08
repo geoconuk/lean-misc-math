@@ -37,12 +37,18 @@ jobs:
       - name: Self-test the axiom audit
         run: ./scripts/self-test-audit.sh
 
-      # `build-page: false` is load-bearing. The action detects a Jekyll homepage with
-      # a literal `[ -d docs ]` and its default `homepage` input is `docs` — which is
-      # our template/examples directory, not a Jekyll site. Left at the default it
-      # detects one, runs ruby/setup-ruby with `bundler-cache: true` against `docs/`,
-      # and bundler exits 10 ("could not locate Gemfile"). We only want the API docs.
-      # If a real landing page is ever added, put it elsewhere and set `homepage`.
+      # `homepage` is load-bearing. The action decides whether to build a Jekyll
+      # landing page with a literal `[ -d <homepage> ]`, and the input defaults to
+      # `docs` — which here is the template/examples directory, not a Jekyll site.
+      # Left at the default it detects one, runs ruby/setup-ruby with
+      # `bundler-cache: true` against `docs/`, and bundler exits 10 ("could not locate
+      # Gemfile"). Pointing it at a folder that does not exist skips the Jekyll steps;
+      # uploading and deploying the API docs is gated separately and still happens.
+      #
+      # Note the pinned `@v1` accepts only api_docs, blueprint, homepage, build_args
+      # and lake_package_directory. The action's `main` branch has a larger set
+      # (including `build-page` and `deploy`) that v1 will silently ignore with only a
+      # warning — check the inputs against the ref actually pinned before editing.
       - uses: leanprover-community/docgen-action@v1
         with:
-          build-page: false
+          homepage: .no-jekyll-homepage
