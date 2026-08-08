@@ -37,4 +37,12 @@ jobs:
       - name: Self-test the axiom audit
         run: ./scripts/self-test-audit.sh
 
+      # `build-page: false` is load-bearing. The action detects a Jekyll homepage with
+      # a literal `[ -d docs ]` and its default `homepage` input is `docs` — which is
+      # our template/examples directory, not a Jekyll site. Left at the default it
+      # detects one, runs ruby/setup-ruby with `bundler-cache: true` against `docs/`,
+      # and bundler exits 10 ("could not locate Gemfile"). We only want the API docs.
+      # If a real landing page is ever added, put it elsewhere and set `homepage`.
       - uses: leanprover-community/docgen-action@v1
+        with:
+          build-page: false
