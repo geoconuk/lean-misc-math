@@ -18,7 +18,7 @@ Miscellaneous classical and other mathematical results, formalised in Lean 4 on 
 This repository is the product of two very different kinds of work, and it is worth
 being precise about which is which.
 
-**George Constantinides's contribution — selection, specification, and a best-effort
+**George A. Constantinides's contribution — selection, specification, and a best-effort
 read of the statements.** Which results are worth formalising at all; which are missing
 from Mathlib or awkward to use there; what each theorem should say and in what
 generality; which hypotheses belong in the statement; whether a generated result is
@@ -85,7 +85,7 @@ that contribution visible.
 
 ```bibtex
 @software{constantinides_leanmiscmath,
-  author  = {Constantinides, George},
+  author  = {Constantinides, George A.},
   title   = {{lean-misc-math}: miscellaneous mathematical results formalised in {Lean 4}},
   year    = {2026},
   version = {0.1.0},
