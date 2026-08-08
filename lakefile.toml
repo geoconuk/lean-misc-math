@@ -1,0 +1,31 @@
+name = "MiscMath"
+version = "0.1.0"
+keywords = ["math", "mathlib"]
+defaultTargets = ["MiscMath"]
+
+[leanOptions]
+pp.unicode.fun = true # pretty-prints `fun a ↦ b`
+# `autoImplicit` turns an unbound identifier into a fresh implicit universally
+# quantified variable. A single typo in a theorem statement then produces a
+# different — often vacuous — theorem that still compiles. Since nothing here is
+# reviewed by a human, this must stay off; `scripts/check-conventions.sh` rejects
+# any file that re-enables it locally.
+autoImplicit = false
+relaxedAutoImplicit = false
+weak.linter.mathlibStandardSet = true
+maxSynthPendingDepth = 3
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.32.2"
+
+[[lean_lib]]
+name = "MiscMath"
+# `MiscMath.*` is `MiscMath` itself and every module beneath it (note that Lake's
+# `.+` means submodules *excluding* the root), so a result file is compiled whether
+# or not anything imports it. Being compiled is not enough to be *audited*, though —
+# the axiom audit only sees what `MiscMath/Audit.lean` transitively imports — which is
+# why `scripts/check-imports.sh` separately requires every result module to appear in
+# `MiscMath.lean`.
+globs = ["MiscMath.*"]

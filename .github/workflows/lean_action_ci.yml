@@ -1,0 +1,40 @@
+name: Lean Action CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read # Read access to repository contents
+  pages: write # Write access to GitHub Pages
+  id-token: write # Write access to ID tokens
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      # Cheap textual guards first: they need no toolchain, so a convention slip
+      # fails in seconds rather than after a full Mathlib build.
+      - name: Check every result module is imported by the root
+        run: ./scripts/check-imports.sh
+
+      - name: Check file conventions
+        run: ./scripts/check-conventions.sh
+
+      # `lake build` compiles the library *and* runs the axiom audit, because
+      # `MiscMath/Audit.lean` invokes `#audit_axioms` at elaboration time and is part
+      # of the default target. There is deliberately no separate audit step to forget.
+      - uses: leanprover/lean-action@v1
+
+      # Confirm the audit is still capable of failing. Cheap here — Mathlib is already
+      # built by this point — and it is the only thing standing between us and an audit
+      # that silently reports success for zero declarations.
+      - name: Self-test the axiom audit
+        run: ./scripts/self-test-audit.sh
+
+      - uses: leanprover-community/docgen-action@v1
