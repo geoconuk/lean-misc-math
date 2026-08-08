@@ -47,6 +47,18 @@ Concretely, when generating a result, spend the care on:
 lake build && ./scripts/check-imports.sh && ./scripts/check-conventions.sh && ./scripts/self-test-audit.sh
 ```
 
+Run that before declaring a result finished. While iterating, don't: a full `lake
+build` re-elaborates `MiscMath/Audit.lean`, which imports the whole library and takes
+a minute or two on its own. Check the single file you are editing instead:
+
+```bash
+lake build MiscMath.Area.Result
+```
+
+That is seconds once Mathlib is warm, and it catches everything except the
+library-wide audit, which the file's own declarations cannot fail on their own anyway
+unless you used a forbidden tactic.
+
 `lake build` runs the axiom audit itself: `MiscMath/Audit.lean` invokes `#audit_axioms`
 at elaboration time and is part of the default target, so a build that succeeds has
 been audited. A successful audit prints, e.g.:
@@ -82,4 +94,15 @@ contraposed from.
 
 Search Mathlib before proving anything. If it is already there, say so under
 `## Relation to Mathlib` rather than duplicating it, and reconsider whether the file
-earns its place.
+earns its place. Useful for this, in rough order of directness:
+
+- `exact?` and `apply?` on the goal — settles it immediately when the lemma exists.
+- `grep -rn "theorem <name_fragment>" .lake/packages/mathlib/Mathlib/` — Mathlib is
+  checked out locally, and its naming convention makes this more effective than it
+  sounds.
+- `#loogle` / `#leansearch` (via the LeanSearchClient dependency) for search by shape
+  or by natural language. These need network access.
+
+Mathlib's naming convention is itself a search tool: a lemma about `a * b ≤ c` is
+called something like `mul_le_of_…`. If you cannot guess a plausible name, that is
+weak evidence it is not there.
