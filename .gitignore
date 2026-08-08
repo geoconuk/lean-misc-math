@@ -1,2 +1,7 @@
 /.lake
 .DS_Store
+
+# Worked examples kept as models for our own use. The published repository should
+# contain only results worth publishing on their own merits, not illustrations.
+# See docs/examples/README.md.
+/docs/examples/

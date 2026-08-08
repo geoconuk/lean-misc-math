@@ -31,9 +31,10 @@ terms, so it cannot be evaded by comments, macros, or clever formatting.
 ## What this does not check
 
 The audit says nothing about whether a theorem *statement* says what its docstring
-claims. That is the one thing no automated check can do, and it is why every result
-file in this repository carries an informal statement, a citation, and concrete
-sanity checks. See `README.md`.
+claims. That is the one thing no automated check can do, and it is why statements get
+a best-effort read from the author and why every result file carries an informal
+statement, a citation, and concrete sanity checks. None of that is a review; see
+`README.md` for exactly what is and is not guaranteed.
 -/
 
 open Lean Elab Command
