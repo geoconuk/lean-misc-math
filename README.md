@@ -60,12 +60,19 @@ Add to your `lakefile.toml`:
 [[require]]
 name = "MiscMath"
 git = "https://github.com/geoconuk/lean-misc-math"
-rev = "v0.1.0"
+rev = "main"
 ```
 
 Then `import MiscMath` for everything, or import individual modules
-(`import MiscMath.NumberTheory.Foo`) to keep your build light. Pin to a tag: `main`
-tracks whatever Mathlib version the repo currently builds against.
+(`import MiscMath.NumberTheory.Foo`) to keep your build light.
+
+There is no tagged release yet, so `main` is the only thing to point at; it tracks
+whatever Mathlib version the repository currently builds against. Once a version is
+tagged, pin to the tag instead — statements here may be strengthened, corrected or
+withdrawn, and you want a fixed target.
+
+API documentation: **<https://geoconuk.github.io/lean-misc-math/docs/>** (rebuilt on
+every push; sparse until the library has results in it).
 
 ## Citing
 
@@ -90,7 +97,8 @@ that contribution visible.
 ```
 
 Please cite the version or tag you actually used — statements may be strengthened,
-corrected, or withdrawn between releases.
+corrected, or withdrawn between releases. Until the first release is tagged, cite the
+commit hash you built against instead of the version number.
 
 ## What this repository guarantees
 
