@@ -5,3 +5,7 @@
 # contain only results worth publishing on their own merits, not illustrations.
 # See docs/examples/README.md.
 /docs/examples/
+
+# Private maintainer notes: release admin and personal preference, not something a
+# user of the library needs. See MAINTAINING.local.md.
+*.local.md
