@@ -1,9 +1,16 @@
 /-
 Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
+Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
 -- Skeleton for a new result. Copy to `MiscMath/<Area>/<Result>.lean`, fill in, and add
 -- the corresponding `import` line to `MiscMath.lean` (alphabetical order).
+--
+-- Keep the `Authors:` line above as it is: Mathlib's header linter (active here via
+-- `weak.linter.mathlibStandardSet` in `lakefile.toml`) requires one on every module that
+-- `MiscMath.lean` imports, and the split records the division of work the README
+-- describes. The linter rejects ` and `, double spaces, and a trailing period, so
+-- separate contributions with commas.
 --
 -- This file lives under `docs/` and is not compiled; it is not part of the lean_lib.
 import Mathlib.Tactic
@@ -48,8 +55,11 @@ theorem foo : True := trivial
 /-! ## Sanity checks
 
 Guards against the ways a correct proof can still accompany a useless statement. These
-are `example`s: elaborated by the build and covered by the axiom audit, but exporting
-no names.
+are `example`s: elaborated by the build, so one that stops holding breaks it, and
+exporting no names. They are *not* reached by the axiom audit, which walks the named
+declarations a module contributes to the environment, and an `example` contributes
+none. What covers them instead is the textual escape-hatch scan in
+`scripts/check-conventions.sh`, which reads the file rather than the environment.
 -/
 
 section Sanity

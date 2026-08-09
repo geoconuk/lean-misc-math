@@ -2,6 +2,7 @@
 Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
+import MiscMath.Geometry.SphereCoveringExponent
 
 /-!
 # lean-misc-math
@@ -21,5 +22,4 @@ docstring, so they go between the copyright comment above and this docstring:
     import MiscMath.Area.Second
     /-! # lean-misc-math … -/
 
-There are none yet. Adding the first one here is part of adding the first result.
 -/

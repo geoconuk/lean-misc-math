@@ -9,3 +9,7 @@
 # Private maintainer notes: release admin and personal preference, not something a
 # user of the library needs. See MAINTAINING.local.md.
 *.local.md
+
+# Source papers kept locally for reference while formalising. Copyright is not ours
+# to redistribute, so these must never reach the published repository.
+/papers/
