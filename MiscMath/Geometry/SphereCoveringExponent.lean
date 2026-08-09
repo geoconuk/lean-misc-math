@@ -97,8 +97,8 @@ and axiom-audited. A best-effort read is not a review — satisfy yourself that 
 statement says what you need before relying on it. See the repository README.
 
 An earlier formalisation of this result, by George A. Constantinides and Codex as part of a
-coauthored paper with Bardia Zadeh, is in `PaperProofs/Wyner.lean` at
-<https://github.com/bardia01/Direction-Preserving-Number-Representations>.
+paper coauthored with Bardia Zadeh, is at
+<https://github.com/bardia01/Direction-Preserving-Number-Representations/blob/main/PaperProofs/PaperProofs/Wyner.lean>.
 This file is a refactoring of that development: restructured into a single self-contained
 module, restated in terms of `Metric.coveringNumber` rather than a bespoke covering number,
 and reproved against a current Mathlib.
