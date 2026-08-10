@@ -180,7 +180,7 @@ private theorem ballVol_pos (n : ℕ) : 0 < ballVol n := by
 
 private theorem ballVol_eq (n : ℕ) (hn : 0 < n) :
     ballVol n = Real.sqrt π ^ n / Real.Gamma ((n : ℝ) / 2 + 1) := by
-  haveI : Nonempty (Fin n) := Fin.pos_iff_nonempty.mp hn
+  have : Nonempty (Fin n) := Fin.pos_iff_nonempty.mp hn
   have hg : 0 < Real.Gamma ((n : ℝ) / 2 + 1) := by
     apply Real.Gamma_pos_of_pos; positivity
   rw [ballVol, EuclideanSpace.volume_ball, Fintype.card_fin]
@@ -338,8 +338,8 @@ private theorem sphereArea_pos (m : ℕ) : 0 < sphereArea m := by
     change ((volume : Measure (EuclideanSpace ℝ (Fin (m + 1)))).toSphere) ≠ 0
     exact Measure.toSphere_ne_zero
       (μ := (volume : Measure (EuclideanSpace ℝ (Fin (m + 1)))))
-  letI : NeZero (sphereSurfaceMeasure (m + 1)) := ⟨hne⟩
-  letI : IsFiniteMeasure (sphereSurfaceMeasure (m + 1)) := by
+  let : NeZero (sphereSurfaceMeasure (m + 1)) := ⟨hne⟩
+  let : IsFiniteMeasure (sphereSurfaceMeasure (m + 1)) := by
     dsimp [sphereSurfaceMeasure]
     infer_instance
   rw [sphereArea]
@@ -770,7 +770,7 @@ private theorem volume_fiber_eq_piecewise_ball (n : ℕ) (hn : 0 < n) {a u : ℝ
         else
           (volume : Measure (EuclideanSpace ℝ (Fin n))) (Metric.ball 0 (Real.sqrt (1 - u ^ 2)))
       else 0 := by
-  haveI : Nonempty (Fin n) := Fin.pos_iff_nonempty.mp hn
+  have : Nonempty (Fin n) := Fin.pos_iff_nonempty.mp hn
   by_cases hu : 0 < u
   · by_cases hu_lt : u < Real.cos a
     · rw [if_pos hu, if_pos hu_lt]
@@ -847,7 +847,7 @@ private theorem volume_fiber_eq_piecewise_pow (n : ℕ) (hn : 0 < n) {a u : ℝ}
           ENNReal.ofReal ((Real.sqrt (1 - u ^ 2)) ^ n) *
             (volume : Measure (EuclideanSpace ℝ (Fin n))) (Metric.ball 0 1)
       else 0 := by
-  haveI : Nonempty (Fin n) := Fin.pos_iff_nonempty.mp hn
+  have : Nonempty (Fin n) := Fin.pos_iff_nonempty.mp hn
   rw [volume_fiber_eq_piecewise_ball n hn ha0 hapi]
   by_cases hu : 0 < u
   · by_cases hu_lt : u < Real.cos a
@@ -1233,7 +1233,7 @@ private theorem image_capSet_eq_capAround {n : ℕ} (hn : 0 < n) (v : SpherePoin
                 simpa using
                   ((capCenterReflection v).symm.toLinearIsometry.angle_map x'.1 v.1)
           _ ≤ a := hx'
-      simpa [capSet, Set.mem_setOf_eq, capCenterReflection_symm_apply_v hn v] using hangle
+      simpa [capSet, Set.mem_ofPred_eq, capCenterReflection_symm_apply_v hn v] using hangle
 
 private theorem preimage_capAroundCone_eq_capCone
     {n : ℕ} (hn : 0 < n) (v : SpherePoint n) (a : ℝ) :
@@ -1363,7 +1363,7 @@ private theorem sphereSurfaceMeasure_capAround_eq_capSet
 
 private theorem sphereSurfaceMeasure_ne_zero {n : ℕ} (hn : 0 < n) :
     sphereSurfaceMeasure n ≠ 0 := by
-  letI : Nontrivial (EuclideanSpace ℝ (Fin n)) := by
+  let : Nontrivial (EuclideanSpace ℝ (Fin n)) := by
     have : Nonempty (Fin n) := Fin.pos_iff_nonempty.mp hn
     infer_instance
   change ((volume : Measure (EuclideanSpace ℝ (Fin n))).toSphere) ≠ 0
@@ -1384,8 +1384,8 @@ private theorem sphereProbabilityMeasure_real_apply
     {n : ℕ} (hn : 0 < n) (s : Set (SpherePoint n)) :
     ((sphereProbabilityMeasure n hn : Measure (SpherePoint n)).real s) =
       (sphereSurfaceMeasure n).real s / sphereArea (n - 1) := by
-  letI : NeZero (sphereSurfaceMeasure n) := ⟨sphereSurfaceMeasure_ne_zero hn⟩
-  letI : IsFiniteMeasure (sphereSurfaceMeasure n) := by
+  let : NeZero (sphereSurfaceMeasure n) := ⟨sphereSurfaceMeasure_ne_zero hn⟩
+  let : IsFiniteMeasure (sphereSurfaceMeasure n) := by
     dsimp [sphereSurfaceMeasure]
     infer_instance
   have hsub : n - 1 + 1 = n := Nat.sub_add_cancel (Nat.succ_le_of_lt hn)
@@ -2143,7 +2143,7 @@ private theorem coveringNumber_ne_top (hθ0 : 0 < θ) (hθpi : θ ≤ π) :
   obtain ⟨N, hNcover, -⟩ :=
     exists_finset_card_le_and_angle_cover n (ε := min θ 1)
       (lt_min hθ0 one_pos) (min_le_right _ _)
-  refine ne_top_of_le_ne_top (ENat.coe_ne_top N.card) ?_
+  refine ne_top_of_le_ne_top (ENat.natCast_ne_top N.card) ?_
   refine coveringNumber_le_of_angle_cover hθ0.le hθpi ?_
   intro u
   obtain ⟨v, hv, huv⟩ := hNcover u
