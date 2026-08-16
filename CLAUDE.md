@@ -41,6 +41,22 @@ Concretely, when generating a result, spend the care on:
 4. Add the `import` line to `MiscMath.lean`, alphabetically.
 5. Run the checks (below). All three must pass.
 
+A result that outgrows one file — several theorems from one paper, say, over a shared model
+— becomes a directory. Keep `MiscMath/<Area>/<Result>.lean` as the **roof**: it holds the
+docstring, the sanity checks and the statements a reader should meet first, and it is the
+only module `MiscMath.lean` names. The supporting modules go in
+`MiscMath/<Area>/<Result>/`, and the roof imports them.
+
+The two checks know the difference. `check-imports.sh` asks only that every module be
+*reachable* from `MiscMath.lean`, so the audit still sees everything. `check-conventions.sh`
+applies the four docstring sections and the `example` requirement to result modules — the
+ones `MiscMath.lean` names — and to every module, result or support, the escape-hatch and
+elaboration-option guards. A support module still needs a module docstring saying what it is
+for and which roof it belongs to; it has no informal statement or source of its own to give.
+
+Split when the file stops being navigable or its rebuild stops being quick, not by line
+count. Do not split a single theorem away from the definitions its statement reads.
+
 ## Checks
 
 ```bash
