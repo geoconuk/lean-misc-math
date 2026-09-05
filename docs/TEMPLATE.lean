@@ -71,9 +71,19 @@ section Sanity
 -- place for an unsatisfiable assumption to hide.
 example : ∃ n : ℕ, 0 < n := ⟨1, by norm_num⟩
 
--- REQUIRED: confirm the conclusion at a concrete value, computed by `decide` /
--- `norm_num` / `native_decide`-free evaluation, i.e. independently of the proof above.
--- If the statement has drifted from its intent, this is usually where it shows.
+-- REQUIRED where the conclusion has a concrete instance: confirm it at one, computed by
+-- `decide` or `norm_num`, i.e. independently of the proof above. If the statement has
+-- drifted from its intent, this is usually where it shows.
+--
+-- Some conclusions have no concrete instance to confirm. A limit, an asymptotic rate,
+-- an existence claim with no computable witness: there is no value to evaluate, and no
+-- amount of care makes one appear. Then this is not waived but REPLACED, and the
+-- replacement is equally required — pin down every ingredient of the conclusion that
+-- does have a concrete value. For a limit that means the value approached, the object
+-- whose behaviour is described, and each translation between the informal notion and
+-- the Lean one, since a translation is where drift actually happens. Say in a comment
+-- which ingredient each example pins, so a reader can see the conclusion was covered
+-- piecewise rather than skipped.
 example : True := trivial
 
 -- RECOMMENDED where applicable: show that a bound is sharp, that a hypothesis cannot be
