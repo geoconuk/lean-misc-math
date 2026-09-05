@@ -46,11 +46,46 @@ below are designed to make cheap for you to catch.
 
 ## Why this repository exists
 
-Results here are too small, too scattered, or too far outside Mathlib's mission to
-justify asking Mathlib's reviewers to spend their scarce attention on them. Mathlib is
-the right home for material that many people will build on; this is a place for the
-rest. Anything here that turns out to be broadly wanted should be proposed upstream,
-where it will get the human review this repository deliberately does not provide.
+Mathlib's bottleneck is reviewer attention, and an unreviewed contribution costs it rather
+than helps it. Results here are too small, too scattered, or too far outside Mathlib's
+mission to justify spending that attention on them. Mathlib is the right home for material
+many people will build on; this is a place for the rest. Anything here that turns out to
+be broadly wanted should be proposed upstream, where it will get the human review this
+repository deliberately does not provide.
+
+Several other homes now exist for formalisation that Mathlib will not review, and they
+differ from each other — and from this repository — in what stands behind a result:
+
+- **[Tau Ceti](https://github.com/TauCetiProject/TauCeti)** — an integrated library
+  written entirely by AI contributors, directed by human-written roadmaps and gated by
+  adversarial AI review against a fixed public rubric. Built for scale and reuse.
+- **[Lean Pool](https://github.com/Vilin97/lean-pool)** — an archive of independent,
+  completed formalisation projects, human- or AI-written, admitted on deterministic
+  linters plus an LLM review of fit and significance.
+- **[merely-true](https://github.com/merely-true/merely-true)** — AI-generated Lean under
+  deliberately permissive rules, merged automatically once it compiles, from identified
+  accounts.
+
+All three build on Mathlib, are permissively licensed, and aim at a volume this repository
+does not. If what you want is a large body of formal mathematics to build on, look there
+before here.
+
+What distinguishes this repository is not its review — it has none — but who is answerable
+for the selection, and how exactly the gap is described. A named person chose each result,
+specified what it should say, read the statement against its informal claim, and has
+written down precisely which of those steps is a guarantee and which is not (see
+[Who did what](#who-did-what) and
+[What this repository guarantees](#what-this-repository-guarantees)). That does not scale,
+which is the point: it is why the library is small and expected to stay small, and why
+"it compiled" has never been enough for a result to land.
+
+The one thing this repository cannot check for itself is whether a statement says what it
+claims to. Where that can get a second, independent read, it should.
+[Palomar](https://palomar-registry.org) registers individual results, replaying their
+proofs through two independent kernels and checking each formal statement against its
+informal claim. It is explicitly not peer review and not an endorsement, but it is another
+pair of eyes on exactly the risk that matters here. A result that carries a registration
+says so under `## Provenance`.
 
 ## Using it
 

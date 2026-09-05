@@ -69,10 +69,63 @@ If you use these results, please cite the repository — see
 [Citing](README.md#citing) and [`CITATION.cff`](CITATION.cff). The selection and
 curation of results is the contribution being credited.
 
-## Upstreaming
+## Where a result belongs
 
-If a result here would benefit a wide audience, the right destination is Mathlib, not this
-repository. The licence (Apache 2.0) matches Mathlib's so that this is purely a question
-of review effort. Note that Mathlib has its own policy on AI-assisted contributions and
-expects a contributor who can stand behind the work under review; "it compiled" is not
-sufficient there, by design.
+This is not the only home for formalisation that Mathlib will not review, and it is often
+not the best one. Before adding a result, decide which of these fits; see
+[Why this repository exists](README.md#why-this-repository-exists) for how they differ.
+
+**Mathlib**, if the result would benefit a wide audience. The licence (Apache 2.0) matches
+Mathlib's so that this is purely a question of review effort. Note that Mathlib has its own
+policy on AI-assisted contributions and expects a contributor who can stand behind the work
+under review; "it compiled" is not sufficient there, by design.
+
+**[Tau Ceti](https://github.com/TauCetiProject/TauCeti)**, if the result is foundational
+material that a larger development would want in general form. Tau Ceti is written by AI
+contributors against human-written roadmaps, so the contribution to make is a roadmap in
+[TauCetiRoadmap](https://github.com/TauCetiProject/TauCetiRoadmap), which is human-reviewed.
+That is the right destination for general-purpose infrastructure, which does not belong here
+however cleanly it is stated.
+
+**[Lean Pool](https://github.com/Vilin97/lean-pool)**, if you have a complete, standalone
+formalisation project rather than a single result. It asks for a permissive licence, a
+warning-free build against current Mathlib that clears Mathlib's linters, and no `sorry` and
+no axioms beyond the three this repository already audits for.
+
+**Here**, if the result is small, scattered, or outside Mathlib's mission, and what it needs
+is a statement in Mathlib's vocabulary with its provenance recorded.
+
+If you are starting something substantial, say so at
+[leanprover-community/project-intentions](https://github.com/leanprover-community/project-intentions)
+so others do not quietly duplicate it. It is a courtesy, not a claim on the material.
+
+## Palomar registration
+
+[Palomar](https://palomar-registry.org) supplies the one check this repository cannot run on
+itself: an independent reading of the formal statement against the informal claim, alongside
+a replay of the proof through two kernels. It is worth doing, but it does not follow
+automatically from a result being published here.
+
+Its editorial floor is higher than this repository's, and in a specific direction. A
+submission must be affirmatively established both as plausibly warranting a research paper
+and as having a credible, identifiable research audience; "borderline, not established" is a
+rejection, as is a result that is merely correct, merely well presented, or merely hard to
+prove. Novelty is *not* required, so a faithful formalisation of a published theorem clears
+the floor by construction — which is why the named results from the literature this
+repository is built around are the ones to register.
+
+The two bars are not the same test. A result can honestly belong here for being too small to
+justify Mathlib's reviewers and still be too routine for Palomar to index. Admission here is
+not a reason to submit.
+
+One consequence for how results are written. A Palomar Challenge — the statement file a
+reader is expected to audit — may import only Lean core, Mathlib, Tau Ceti and CSLib.
+Nothing from this repository may appear in its transitive imports, so a result whose
+statement cannot be restated in Mathlib's vocabulary alone cannot be registered, whatever
+its proof depends on. The Solution, which carries the proof, may depend on this repository
+freely.
+
+The binding rules live in
+[PalomarPolicy](https://github.com/PalomarRegistry/PalomarPolicy), not on the registry
+website. A registered result records its entry ID and version under `## Provenance`; see
+[`MiscMath/Geometry/SphereCoveringExponent.lean`](MiscMath/Geometry/SphereCoveringExponent.lean).

@@ -17,7 +17,10 @@ Concretely, when generating a result, spend the care on:
 
 - Stating it in **Mathlib's vocabulary**. A proof about a bespoke local definition is
   worth very little. If a new definition is unavoidable, ship a characterisation lemma
-  tying it back to Mathlib's and say why under `## Relation to Mathlib`.
+  tying it back to Mathlib's and say why under `## Relation to Mathlib`. This is not only
+  style: a Palomar Challenge may import nothing but Lean core, Mathlib, Tau Ceti and
+  CSLib, so a statement that cannot be expressed in Mathlib's vocabulary alone cannot be
+  registered at all (step 6 below).
 - **Truncated `Nat` subtraction and junk values** (`x / 0 = 0`, `Real.rpow` at bad
   arguments, degenerate empty cases). These make statements that are true and useless.
   Restate to avoid them where possible.
@@ -40,6 +43,16 @@ Concretely, when generating a result, spend the care on:
    statement; investigate before working around it.
 4. Add the `import` line to `MiscMath.lean`, alphabetically.
 5. Run the checks (below). All three must pass.
+6. Say whether the result is worth registering with
+   [Palomar](https://palomar-registry.org), which supplies the independent
+   statement-versus-informal-claim read this repository cannot give itself. Its floor is
+   not this repository's: the result must be affirmatively established as plausibly
+   paper-worthy *and* as having a credible, identifiable research audience. A named
+   theorem from the literature qualifies; a result admitted here only for being too small
+   for Mathlib may well not. Novelty is not required. See
+   [Palomar registration](CONTRIBUTING.md#palomar-registration). Make the recommendation
+   and stop there. If George agrees, prepare the submission repository and hand it over;
+   the entry ID and version go under `## Provenance` after he has registered it.
 
 A result that outgrows one file — several theorems from one paper, say, over a shared model
 — becomes a directory. Keep `MiscMath/<Area>/<Result>.lean` as the **roof**: it holds the
@@ -56,6 +69,10 @@ for and which roof it belongs to; it has no informal statement or source of its 
 
 Split when the file stops being navigable or its rebuild stops being quick, not by line
 count. Do not split a single theorem away from the definitions its statement reads.
+
+One further consequence: a Palomar Challenge may not import a support module either, so
+registering a result that has grown a directory means restating its theorems from Mathlib
+alone in the Challenge and letting the Solution depend on this repository.
 
 ## Checks
 
@@ -99,6 +116,12 @@ rather than proceeding.
   the check as its own change, with its own justification, separately from the result.
 - **Never commit illustrative or throwaway proofs.** The published repository contains
   only results worth publishing on their own merits.
+- **Never submit, publish, or post anything outside this repository.** That covers
+  Palomar submissions, pull requests to Mathlib or Tau Ceti, Lean Pool projects, entries
+  in the intentions registry, issues on other people's repositories, and social posts.
+  Recommend freely, and once George has agreed, prepare the submission in full — then
+  stop and hand it over. Preparing is the job; sending is his, and approval for one
+  submission is not approval for the next.
 
 ## House style
 
