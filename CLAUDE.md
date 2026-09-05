@@ -20,7 +20,7 @@ Concretely, when generating a result, spend the care on:
   tying it back to Mathlib's and say why under `## Relation to Mathlib`. This is not only
   style: a Palomar Challenge may import nothing but Lean core, Mathlib, Tau Ceti and
   CSLib, so a statement that cannot be expressed in Mathlib's vocabulary alone cannot be
-  registered at all (step 6 below).
+  registered at all (step 7 below).
 - **Truncated `Nat` subtraction and junk values** (`x / 0 = 0`, `Real.rpow` at bad
   arguments, degenerate empty cases). These make statements that are true and useless.
   Restate to avoid them where possible.
@@ -43,7 +43,23 @@ Concretely, when generating a result, spend the care on:
    statement; investigate before working around it.
 4. Add the `import` line to `MiscMath.lean`, alphabetically.
 5. Run the checks (below). All three must pass.
-6. Say whether the result is worth registering with
+6. Get a **read-back** of the statement before it goes for its best-effort read. Send the
+   Lean statement — and nothing else — to a subagent, and have it write out in English what
+   that statement literally asserts. Compare the result against the `## Informal statement`
+   and against the source. Where they diverge the statement has drifted; fix it and re-run
+   step 5.
+
+   The constraint is what makes this worth doing: the read-back agent must not see the
+   module docstring, the informal statement, the source, or the rest of the file. Given any
+   of them it paraphrases the intended meaning back and the exercise is worthless. Give it
+   the theorem and the definitions its statement reads, nothing else.
+
+   This is the only guard here that does not assume its reader already knows what the
+   statement was meant to say — which is exactly what makes an author's own read of a
+   statement they specified the weakest link in the chain. The technique is
+   [Prove2Me](https://prove2.me)'s: its mission captains may not self-audit, and a blind
+   rendering by a sub-agent is what their human compares against the source.
+7. Say whether the result is worth registering with
    [Palomar](https://palomar-registry.org), which supplies the independent
    statement-versus-informal-claim read this repository cannot give itself. Its floor is
    not this repository's: the result must be affirmatively established as plausibly
