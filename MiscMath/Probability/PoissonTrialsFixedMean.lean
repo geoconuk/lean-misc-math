@@ -117,10 +117,11 @@ Four definitions are therefore introduced here — `bernWt`, `bernExp`, `tailLe`
   of `g ∘ (number of successes)` against `Measure.pi` of Mathlib's `bernoulliMeasure` —
   that is, against an honest product of independent, individually parameterised Bernoulli
   measures. This is the statement that says `bernWt` means what its docstring says.
-* Independently of all three, the `## Sanity checks` section restates Theorems 3 and 4 with
-  all four definitions unfolded by hand, into raw `Finset` sums and products, and discharges
-  those restatements by the proved theorems. So the headline statements can be read and
-  checked without trusting any definition in this file.
+* Independently of all three, the `## The statements` section restates all three results —
+  Theorems 3 and 4 and Corollary 2.1 — with every definition unfolded by hand, into raw
+  `Finset` sums, products and filters, and discharges those restatements by the proved
+  theorems. So the headline statements can be read and checked without trusting any
+  definition in this file.
 
 ## Provenance
 
@@ -138,6 +139,110 @@ the same author.
 namespace MiscMath.Probability
 
 open Finset
+
+/-! ## The statements
+
+The three results the informal statement above advertises, restated here **with every
+definition local to this library unfolded by hand** — no `bernExp`, no `bernWt`, no
+`tailLe`, no `binTail`, no `InBox` — so that each can be read and checked against the
+informal claim without trusting a definition, and so that a reader who starts at this
+module, as every supporting module's docstring says to, meets the statements here rather
+than having to go looking for them.
+
+Each is proved by its natural-form counterpart, which is where the mathematics is:
+`hoeffding_thm3` and `hoeffding_thm3_eq_iff` in `ConvexExtremum`, `hoeffding_cor21` and
+`hoeffding_cor21_min` in `ExtremalShapes`, `hoeffding_thm4` in `TailBounds`. Those state
+the same results in the vocabulary the proofs use, and `Bridge` ties that vocabulary to
+Mathlib's `ProbabilityTheory.binomial` and `ProbabilityTheory.bernoulliMeasure`. If any of
+the definitions ever stopped meaning what its docstring says, the two forms would part
+company and this section would fail to elaborate.
+
+Together with `bernExp_eq_integral_pi_bernoulliMeasure` and `binTail_eq_binomial_real_Iic`
+this means the headline statements can be checked twice over: once here against raw
+`Finset` sums and products, and once against Mathlib's own probability vocabulary. -/
+
+section Statements
+
+variable {ι : Type*} [DecidableEq ι]
+
+/-- **Hoeffding (1956), Theorem 3**, definition-free: the binomial maximises `E[g S]` at a
+fixed mean, for `g` convex on the integer grid. Natural form: `hoeffding_thm3`. -/
+theorem hoeffding_thm3_unfolded (s : Finset ι) (p : ι → ℝ) (g : ℕ → ℝ)
+    (h0 : ∀ i ∈ s, 0 ≤ p i) (h1 : ∀ i ∈ s, p i ≤ 1)
+    (hg : ∀ k, k + 2 ≤ s.card → 0 ≤ g (k + 2) - 2 * g (k + 1) + g k) :
+    ∑ A ∈ s.powerset, ((∏ i ∈ A, p i) * ∏ i ∈ s \ A, (1 - p i)) * g A.card
+      ≤ ∑ k ∈ range (s.card + 1), g k * (s.card.choose k : ℝ)
+          * ((∑ i ∈ s, p i) / (s.card : ℝ)) ^ k
+          * (1 - (∑ i ∈ s, p i) / (s.card : ℝ)) ^ (s.card - k) :=
+  hoeffding_thm3 p g h0 h1 hg
+
+/-- **The equality clause of Theorem 3**, definition-free: under *strict* grid convexity,
+equality holds exactly at the constant vector. Natural form: `hoeffding_thm3_eq_iff`. -/
+theorem hoeffding_thm3_eq_iff_unfolded (s : Finset ι) (p : ι → ℝ) (g : ℕ → ℝ)
+    (h0 : ∀ i ∈ s, 0 ≤ p i) (h1 : ∀ i ∈ s, p i ≤ 1)
+    (hg : ∀ k, k + 2 ≤ s.card → 0 < g (k + 2) - 2 * g (k + 1) + g k) :
+    (∑ A ∈ s.powerset, ((∏ i ∈ A, p i) * ∏ i ∈ s \ A, (1 - p i)) * g A.card
+        = ∑ k ∈ range (s.card + 1), g k * (s.card.choose k : ℝ)
+            * ((∑ i ∈ s, p i) / (s.card : ℝ)) ^ k
+            * (1 - (∑ i ∈ s, p i) / (s.card : ℝ)) ^ (s.card - k))
+      ↔ ∀ i ∈ s, p i = (∑ i ∈ s, p i) / (s.card : ℝ) :=
+  hoeffding_thm3_eq_iff p g h0 h1 hg
+
+/-- **Hoeffding (1956), Corollary 2.1**, definition-free: the maximum of `E[g S]` over the
+fixed-mean box is attained at a point whose coordinates strictly inside `(0,1)` are all
+equal — at most three distinct values in all, at most one of them interior. `g` is
+arbitrary. Natural form: `hoeffding_cor21`. -/
+theorem hoeffding_cor21_unfolded (s : Finset ι) (lam : ℝ) (g : ℕ → ℝ) {p : ι → ℝ}
+    (h0 : ∀ i ∈ s, 0 ≤ p i) (h1 : ∀ i ∈ s, p i ≤ 1) (hmean : ∑ i ∈ s, p i = lam) :
+    ∃ q : ι → ℝ,
+      ((∀ i ∈ s, 0 ≤ q i) ∧ (∀ i ∈ s, q i ≤ 1) ∧ ∑ i ∈ s, q i = lam)
+        ∧ (∀ i ∈ s.filter (fun i => 0 < q i ∧ q i < 1),
+            ∀ j ∈ s.filter (fun i => 0 < q i ∧ q i < 1), q i = q j)
+        ∧ ∀ r : ι → ℝ,
+            ((∀ i ∈ s, 0 ≤ r i) ∧ (∀ i ∈ s, r i ≤ 1) ∧ ∑ i ∈ s, r i = lam) →
+              ∑ A ∈ s.powerset, ((∏ i ∈ A, r i) * ∏ i ∈ s \ A, (1 - r i)) * g A.card
+                ≤ ∑ A ∈ s.powerset, ((∏ i ∈ A, q i) * ∏ i ∈ s \ A, (1 - q i)) * g A.card :=
+  hoeffding_cor21 g ⟨h0, h1, hmean⟩
+
+/-- **Corollary 2.1 in the minimising direction**, definition-free.
+Natural form: `hoeffding_cor21_min`. -/
+theorem hoeffding_cor21_min_unfolded (s : Finset ι) (lam : ℝ) (g : ℕ → ℝ) {p : ι → ℝ}
+    (h0 : ∀ i ∈ s, 0 ≤ p i) (h1 : ∀ i ∈ s, p i ≤ 1) (hmean : ∑ i ∈ s, p i = lam) :
+    ∃ q : ι → ℝ,
+      ((∀ i ∈ s, 0 ≤ q i) ∧ (∀ i ∈ s, q i ≤ 1) ∧ ∑ i ∈ s, q i = lam)
+        ∧ (∀ i ∈ s.filter (fun i => 0 < q i ∧ q i < 1),
+            ∀ j ∈ s.filter (fun i => 0 < q i ∧ q i < 1), q i = q j)
+        ∧ ∀ r : ι → ℝ,
+            ((∀ i ∈ s, 0 ≤ r i) ∧ (∀ i ∈ s, r i ≤ 1) ∧ ∑ i ∈ s, r i = lam) →
+              ∑ A ∈ s.powerset, ((∏ i ∈ A, q i) * ∏ i ∈ s \ A, (1 - q i)) * g A.card
+                ≤ ∑ A ∈ s.powerset, ((∏ i ∈ A, r i) * ∏ i ∈ s \ A, (1 - r i)) * g A.card :=
+  hoeffding_cor21_min g ⟨h0, h1, hmean⟩
+
+/-- **Hoeffding (1956), Theorem 4**, definition-free, in its two extreme regimes: above the
+mean the binomial has the lighter lower tail, below it the heavier, and the trivial bounds
+`0 ≤ P[S ≤ k] ≤ 1` accompany them. The middle regime `lam - 1 < k < lam` is not claimed;
+`thm4_gap_subsingleton` bounds what that leaves out. Natural form: `hoeffding_thm4`. -/
+theorem hoeffding_thm4_unfolded (s : Finset ι) (p : ι → ℝ)
+    (h0 : ∀ i ∈ s, 0 ≤ p i) (h1 : ∀ i ∈ s, p i ≤ 1) (k : ℕ) :
+    ((∑ i ∈ s, p i) ≤ (k : ℝ) →
+        (∑ j ∈ range (k + 1), (s.card.choose j : ℝ) * ((∑ i ∈ s, p i) / (s.card : ℝ)) ^ j
+              * (1 - (∑ i ∈ s, p i) / (s.card : ℝ)) ^ (s.card - j)
+            ≤ ∑ A ∈ s.powerset,
+                ((∏ i ∈ A, p i) * ∏ i ∈ s \ A, (1 - p i)) * (if A.card ≤ k then (1 : ℝ) else 0))
+          ∧ ∑ A ∈ s.powerset,
+              ((∏ i ∈ A, p i) * ∏ i ∈ s \ A, (1 - p i)) * (if A.card ≤ k then (1 : ℝ) else 0)
+                ≤ 1)
+      ∧ ((k : ℝ) ≤ (∑ i ∈ s, p i) - 1 →
+        (0 ≤ ∑ A ∈ s.powerset,
+              ((∏ i ∈ A, p i) * ∏ i ∈ s \ A, (1 - p i)) * (if A.card ≤ k then (1 : ℝ) else 0))
+          ∧ ∑ A ∈ s.powerset,
+              ((∏ i ∈ A, p i) * ∏ i ∈ s \ A, (1 - p i)) * (if A.card ≤ k then (1 : ℝ) else 0)
+                ≤ ∑ j ∈ range (k + 1), (s.card.choose j : ℝ)
+                    * ((∑ i ∈ s, p i) / (s.card : ℝ)) ^ j
+                    * (1 - (∑ i ∈ s, p i) / (s.card : ℝ)) ^ (s.card - j)) :=
+  hoeffding_thm4 p h0 h1 k
+
+end Statements
 
 private lemma range_three : (range 3 : Finset ℕ) = {0, 1, 2} := by decide +kernel
 
@@ -254,43 +359,6 @@ private theorem hoeffding_thm4_worked_instance :
 /-- The instance is not an equality in disguise: the inequality is **strict** there, so the
 comparison has content. -/
 example : (20 : ℝ) / 27 < 49 / 64 := by norm_num
-
-/-! ### The definitional drift guard
-
-Theorems 3 and 4 restated with **every definition of this file unfolded by hand** — no
-`tailLe`, no `bernExp`, no `bernWt`, no `binTail` — and discharged by the proved theorems
-alone. If any of those four definitions ever stopped meaning what its docstring says, the two
-would part company and this would fail to elaborate. Together with
-`bernExp_eq_integral_pi_bernoulliMeasure` and `binTail_eq_binomial_real_Iic` this means the
-headline statements can be checked twice over: once against raw `Finset` sums, and once
-against Mathlib's own probability vocabulary. -/
-
-example {ι : Type*} [DecidableEq ι] (s : Finset ι) (p : ι → ℝ)
-    (h0 : ∀ i ∈ s, 0 ≤ p i) (h1 : ∀ i ∈ s, p i ≤ 1) (k : ℕ)
-    (hk : (∑ i ∈ s, p i) ≤ (k : ℝ)) :
-    ∑ j ∈ range (k + 1), (s.card.choose j : ℝ) * ((∑ i ∈ s, p i) / (s.card : ℝ)) ^ j
-          * (1 - (∑ i ∈ s, p i) / (s.card : ℝ)) ^ (s.card - j)
-      ≤ ∑ A ∈ s.powerset,
-          ((∏ i ∈ A, p i) * ∏ i ∈ s \ A, (1 - p i)) * (if A.card ≤ k then (1 : ℝ) else 0) :=
-  binTail_le_tailLe h0 h1 k hk
-
-example {ι : Type*} [DecidableEq ι] (s : Finset ι) (p : ι → ℝ)
-    (h0 : ∀ i ∈ s, 0 ≤ p i) (h1 : ∀ i ∈ s, p i ≤ 1) (k : ℕ)
-    (hk : (k : ℝ) ≤ (∑ i ∈ s, p i) - 1) :
-    ∑ A ∈ s.powerset,
-          ((∏ i ∈ A, p i) * ∏ i ∈ s \ A, (1 - p i)) * (if A.card ≤ k then (1 : ℝ) else 0)
-      ≤ ∑ j ∈ range (k + 1), (s.card.choose j : ℝ) * ((∑ i ∈ s, p i) / (s.card : ℝ)) ^ j
-          * (1 - (∑ i ∈ s, p i) / (s.card : ℝ)) ^ (s.card - j) :=
-  tailLe_le_binTail h0 h1 k hk
-
-example {ι : Type*} [DecidableEq ι] (s : Finset ι) (p : ι → ℝ) (g : ℕ → ℝ)
-    (h0 : ∀ i ∈ s, 0 ≤ p i) (h1 : ∀ i ∈ s, p i ≤ 1)
-    (hg : ∀ k, k + 2 ≤ s.card → 0 ≤ g (k + 2) - 2 * g (k + 1) + g k) :
-    ∑ A ∈ s.powerset, ((∏ i ∈ A, p i) * ∏ i ∈ s \ A, (1 - p i)) * g A.card
-      ≤ ∑ k ∈ range (s.card + 1), g k * (s.card.choose k : ℝ)
-          * ((∑ i ∈ s, p i) / (s.card : ℝ)) ^ k
-          * (1 - (∑ i ∈ s, p i) / (s.card : ℝ)) ^ (s.card - k) :=
-  hoeffding_thm3 p g h0 h1 hg
 
 /-! ### The model rests on `Finset.prod_add`, invoked by name
 
