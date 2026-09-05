@@ -333,7 +333,7 @@ theorem hoeffding_thm3_eq_iff {s : Finset ι} (p : ι → 𝕜) (g : ℕ → �
         = ∑ k ∈ range (s.card + 1), g k * (s.card.choose k : 𝕜)
             * ((∑ i ∈ s, p i) / s.card) ^ k
             * (1 - (∑ i ∈ s, p i) / s.card) ^ (s.card - k))
-      ↔ ∀ i ∈ s, p i = (∑ i ∈ s, p i) / s.card := by
+      ↔ ∀ i ∈ s, p i = (∑ j ∈ s, p j) / s.card := by
   set μ : 𝕜 := (∑ i ∈ s, p i) / s.card with hμ
   have hmean : ∑ i ∈ s, p i = s.card * μ := by
     rw [hμ]
