@@ -1,12 +1,23 @@
 name: Create Release
 
+# Disabled 2026-09-06. This action tags a release derived from the Lean toolchain
+# version, which is not the library's own version: it produced the v4.33.0 release
+# object, and that held GitHub's "Latest" badge until v0.1.0 was cut by hand. Two
+# release series competing for one badge makes the repository front page say the wrong
+# thing about what a user should pin to. The library's semantic releases are cut by hand
+# per the checklist in MAINTAINING.local.md; the toolchain is recorded in lean-toolchain
+# and in each release's notes, which is where it belongs.
+#
+# Restore by uncommenting the push trigger below. Kept dispatchable meanwhile, since a
+# workflow with no trigger at all is rejected as invalid.
 on:
-  push:
-    branches:
-      - 'main'
-      - 'master'
-    paths:
-      - 'lean-toolchain'
+  # push:
+  #   branches:
+  #     - 'main'
+  #     - 'master'
+  #   paths:
+  #     - 'lean-toolchain'
+  workflow_dispatch:
 
 jobs:
   lean-release-tag:
