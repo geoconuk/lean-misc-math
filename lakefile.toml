@@ -29,3 +29,25 @@ name = "MiscMath"
 # why `scripts/check-imports.sh` separately requires every result module to appear in
 # `MiscMath.lean`.
 globs = ["MiscMath.*"]
+
+# The Palomar submission's Challenge module: the statement surface of
+# `MiscMath/Geometry/SphereCoveringExponent.lean`, restated without proofs so that the
+# Palomar registry's Comparator can check the shipped theorems against it. It is
+# deliberately *not* in `defaultTargets`: a Challenge states its theorems with `sorry`,
+# which is exactly what a statement surface is for and exactly what this library forbids
+# everywhere else. Keeping it out of the default build keeps it out of `lake build`, out
+# of `MiscMath/Audit.lean`'s import closure, and out of the three checks in `scripts/`,
+# all of which are scoped to `MiscMath/`. Build it explicitly with
+# `lake build PalomarWynerChallenge`. See `Palomar/README.md`.
+[[lean_lib]]
+name = "PalomarWynerChallenge"
+roots = ["Palomar.Wyner.Challenge"]
+
+# Guards `Palomar/Wyner/Challenge.lean` against drifting from the library it advertises,
+# by ascribing each Challenge statement to the theorem `MiscMath` actually ships. Contains
+# no `sorry` — it asserts the real theorems — but stays out of `defaultTargets` so that
+# `lake build` keeps meaning exactly what `CLAUDE.md` says it means. Build it with
+# `lake build PalomarWynerTypeCheck`.
+[[lean_lib]]
+name = "PalomarWynerTypeCheck"
+roots = ["Palomar.Wyner.TypeCheck"]

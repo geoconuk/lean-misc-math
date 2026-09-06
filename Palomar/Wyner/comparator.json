@@ -1,0 +1,13 @@
+{
+  "challenge_module": "Palomar.Wyner.Challenge",
+  "solution_module": "MiscMath.Geometry.SphereCoveringExponent",
+  "theorem_names": [
+    "MiscMath.Geometry.tendsto_log_coveringNumber_sphere_div_atTop",
+    "MiscMath.Geometry.coveringNumber_sphere_ne_top",
+    "MiscMath.Geometry.coveringNumber_sphere_pos",
+    "MiscMath.Geometry.angle_le_iff_dist_le",
+    "MiscMath.Geometry.dist_eq_two_mul_sin_angle_div_two"
+  ],
+  "definition_names": [],
+  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"]
+}
