@@ -1,0 +1,13 @@
+{
+  "challenge_module": "Palomar.Hoeffding.Challenge",
+  "solution_module": "MiscMath.Probability.PoissonTrialsFixedMean",
+  "theorem_names": [
+    "MiscMath.Probability.hoeffding_thm3_unfolded",
+    "MiscMath.Probability.hoeffding_thm3_eq_iff_unfolded",
+    "MiscMath.Probability.hoeffding_cor21_unfolded",
+    "MiscMath.Probability.hoeffding_cor21_min_unfolded",
+    "MiscMath.Probability.hoeffding_thm4_unfolded"
+  ],
+  "definition_names": [],
+  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"]
+}

@@ -61,18 +61,21 @@ It is kept honest structurally rather than by promise:
 ## Building and checking
 
 ```bash
-lake build PalomarWynerChallenge && lake build PalomarWynerTypeCheck
+lake build PalomarWynerChallenge     && lake build PalomarWynerTypeCheck
+lake build PalomarHoeffdingChallenge && lake build PalomarHoeffdingTypeCheck
 ```
 
-The first elaborates the statement surface and reports one `declaration uses 'sorry'`
-warning per compared theorem — five, for Wyner. Any other warning or error is a problem.
-The second reports nothing if the Challenge still matches the library.
+Each Challenge elaborates the statement surface and reports one `declaration uses 'sorry'`
+warning per compared theorem — five for Wyner, five for Hoeffding. Any other warning or
+error is a problem. Each TypeCheck reports nothing if the Challenge still matches the
+library.
 
 ## Submissions
 
 | Result | Challenge | Solution module | Status |
 | --- | --- | --- | --- |
-| [Wyner's spherical covering exponent](Wyner/Challenge.lean) | `Palomar.Wyner.Challenge` | `MiscMath.Geometry.SphereCoveringExponent` | prepared, not submitted |
+| [Wyner's spherical covering exponent](Wyner/Challenge.lean) | `Palomar.Wyner.Challenge` | `MiscMath.Geometry.SphereCoveringExponent` | registered, `PALOMAR-2026-08-23-000001` |
+| [Hoeffding's extrema at a fixed mean](Hoeffding/Challenge.lean) | `Palomar.Hoeffding.Challenge` | `MiscMath.Probability.PoissonTrialsFixedMean` | prepared, not submitted |
 
 ## Where this work lives
 
@@ -81,8 +84,11 @@ private-repository support as future work — so a submission cannot be prepared
 private mirror and submitted from there. What it does not require is that the commit sit
 on the default branch: the form takes a full 40-character SHA, and the specification is
 explicit that the pinned mechanical report, "not the run title or moving branch state", is
-the authoritative result. A public branch is therefore enough, and is where this work
-starts, so that `main` carries none of it until the integration proves itself.
+the authoritative result. A public branch is therefore enough, and is where each
+submission starts, so that `main` carries none of it until that submission proves itself.
+Wyner's has: it registered on 2026-08-23 and was folded into `main` afterwards, which is
+the end state the first bullet below recommends. Hoeffding's is on `palomar-hoeffding`
+and stays there until it registers or is abandoned.
 
 Two consequences worth remembering:
 
@@ -140,9 +146,9 @@ At <https://submit.palomar-registry.org/>, with:
 | --- | --- |
 | Repository | `geoconuk/lean-misc-math` |
 | Commit | the full 40-character SHA to be reviewed — not a branch or tag |
-| Comparator configuration path | `Palomar/Wyner/comparator.json` |
+| Comparator configuration path | `Palomar/<Result>/comparator.json` |
 | Project directory | leave empty (the project is the repository root) |
-| Metadata path | `Palomar/Wyner/formalization.yaml` |
+| Metadata path | `Palomar/<Result>/formalization.yaml` |
 | Relationship | author/maintainer |
 
 Submission requires GitHub sign-in to prove push access; the token is used once and not
