@@ -57,3 +57,17 @@ roots = ["Palomar.Wyner.Challenge"]
 [[lean_lib]]
 name = "PalomarWynerTypeCheck"
 roots = ["Palomar.Wyner.TypeCheck"]
+
+# The Palomar submission for Hoeffding's extrema at a fixed mean, on the same footing as
+# the Wyner pair above: a Challenge stating the theorems with `sorry`, and a TypeCheck
+# ascribing each Challenge statement to the theorem `MiscMath` actually ships. Neither is
+# in `defaultTargets`, so neither reaches `lake build`, `MiscMath/Audit.lean`, or the
+# three checks in `scripts/`. Build them with `lake build PalomarHoeffdingChallenge` and
+# `lake build PalomarHoeffdingTypeCheck`. See `Palomar/README.md`.
+[[lean_lib]]
+name = "PalomarHoeffdingChallenge"
+roots = ["Palomar.Hoeffding.Challenge"]
+
+[[lean_lib]]
+name = "PalomarHoeffdingTypeCheck"
+roots = ["Palomar.Hoeffding.TypeCheck"]
