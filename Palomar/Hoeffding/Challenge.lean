@@ -57,8 +57,12 @@ above without first accepting a definition. Four things are worth knowing.
 * **The model.** `∑ A ∈ s.powerset, (∏ i ∈ A, p i) * ∏ i ∈ s \ A, (1 - p i)) * g A.card`
   is `E[g S]`: the sample space is the set of subsets `A ⊆ s` of successful trials, the
   weight of `A` is `∏_{i ∈ A} p i · ∏_{i ∉ A} (1 - p i)`, and `S` is `A.card`. Those
-  weights sum to `1` by `Finset.prod_add` and no hypothesis on `p` whatsoever, which is
-  what makes this a probability model rather than a formal sum.
+  weights sum to `1` by `Finset.prod_add` and no hypothesis on `p` whatsoever. That alone
+  is not what makes it a probability model: at `p ≡ 2` on a single trial the two weights
+  are `2` and `-1`, which sum to one and are not a distribution. The standing hypotheses
+  `0 ≤ p i ≤ 1` are what make every weight nonnegative, and normalisation together with
+  nonnegativity give the law of independent Bernoulli trials with those success
+  probabilities.
 * **The tail.** `P[S ≤ k]` is that same sum with `g` the indicator `if A.card ≤ k then 1
   else 0`, and the comparator `B(k; n, P)` is `∑_{j ≤ k} C(n,j) P^j (1-P)^(n-j)`. The
   Solution module identifies both with Mathlib's `ProbabilityTheory.binomial` and
@@ -118,9 +122,11 @@ equality clause for Theorem 4.
 
 Mathlib has the binomial distribution `ProbabilityTheory.binomial` and
 `ProbabilityTheory.setBernoulli`, the product of Bernoulli distributions with a **common**
-parameter over a set. It has no product of *heterogeneous* Bernoulli distributions, no
-binomial tail or cumulative distribution function, and nothing from Hoeffding's 1956
-paper. (The `Hoeffding` that does appear in Mathlib, in
+parameter over a set. The *heterogeneous* product is available too, but by construction
+rather than as an API: `MeasureTheory.Measure.pi` applied to a family of
+`ProbabilityTheory.bernoulliMeasure`s is exactly it. What is missing is everything built on
+it — no law of the number of successes under that product, no binomial tail or cumulative
+distribution function, and, at the pinned revision, nothing from Hoeffding's 1956 paper. (The `Hoeffding` that does appear in Mathlib, in
 `Mathlib/Probability/Moments/SubGaussian.lean`, is the unrelated 1963 concentration
 inequality.)
 
