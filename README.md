@@ -105,14 +105,14 @@ Add to your `lakefile.toml`:
 [[require]]
 name = "MiscMath"
 git = "https://github.com/geoconuk/lean-misc-math"
-rev = "v0.1.0"
+rev = "v0.2.0"
 ```
 
 Then `import MiscMath` for everything, or import individual modules
 (`import MiscMath.NumberTheory.Foo`) to keep your build light.
 
 Pin to a tag rather than to `main`: statements here may be strengthened, corrected or
-withdrawn, and you want a fixed target. `v0.1.0` is the first, and each tag records the
+withdrawn, and you want a fixed target. `v0.2.0` is current, and each tag records the
 Mathlib version it was built against. `main` tracks whatever Mathlib the repository
 currently builds against and will move under you.
 
@@ -133,7 +133,7 @@ that contribution visible.
   author  = {Constantinides, George A.},
   title   = {{lean-misc-math}: miscellaneous mathematical results formalised in {Lean 4}},
   year    = {2026},
-  version = {0.1.0},
+  version = {0.2.0},
   url     = {https://github.com/geoconuk/lean-misc-math},
   license = {Apache-2.0},
   note    = {Result selection by the author; Lean statements and proofs machine-generated
@@ -169,6 +169,13 @@ cite the commit hash instead of the version number.
   best-effort read from the author, against a blind read-back of the Lean (see
   [Who did what](#who-did-what)), which removes some of these — but that is one person's
   judgement on one rendering, it is not a review, and it carries no guarantee.
+
+  Every result currently here has also had an independent machine check of the same
+  correspondence, recorded under its `## Provenance` as a [Palomar](https://palomar-registry.org)
+  registration. That is a second reading by something that did not write the statement, and
+  it is worth more than nothing — but Palomar is explicit that it is not peer review, not an
+  endorsement and not a human read of the proof, so it does not convert any of the above
+  into a guarantee. Nothing obliges a future result to carry one.
 - **That a result is not already in Mathlib**, in better generality, under a name you
   would find by searching.
 - **That naming, generality, or API shape follows Mathlib conventions.** They are aimed at
