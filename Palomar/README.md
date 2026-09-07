@@ -99,6 +99,39 @@ Two consequences worth remembering:
   editorial outcome". If we drop the idea, the branch goes away and `main` never carried
   it.
 
+## The Mathlib pin must be an ancestor of `master`
+
+Check this before every submission. It is the one precondition that fails silently in
+advance and expensively at submission time.
+
+Palomar's `dependency-provenance` stage rejects a submission whose pinned Mathlib revision
+is not an ancestor of Mathlib's canonical `refs/heads/master`. The rejection is
+`submission.invalid`, marked neither repairable nor retryable, and it lands *before*
+anything is compiled — no Comparator run, no NanoDa replay, nothing learned about the
+mathematics. The only remedy is a new commit and a new submission.
+
+Which Mathlib tags qualify is not obvious from their names:
+
+| Kind | Example | Ancestor of `master`? |
+| --- | --- | --- |
+| Minor release | `v4.33.0` | yes — cut on master through a pull request |
+| Release candidate | `v4.34.0-rc2` | yes — likewise |
+| **Patch release** | `v4.33.1` | **no** — cut on a release branch |
+
+A patch release carries commits master has never seen; `v4.33.1` diverges from master by
+one. Its subject line is the tell: minor releases and candidates end in a PR number,
+patch releases do not.
+
+This cost submission `eic7zf34a9x8` on 2026-09-07, which was pinned to `v4.33.1` after a
+bump to the newest stable tag. The pin is back on `v4.33.0`, and `lakefile.toml` says why.
+To check a candidate pin before relying on it:
+
+```bash
+gh api "repos/leanprover-community/mathlib4/compare/master...<sha>" --jq '.status'
+```
+
+`behind` or `identical` is fine; `diverged` is not.
+
 ## Submitting
 
 At <https://submit.palomar-registry.org/>, with:

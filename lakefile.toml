@@ -18,7 +18,13 @@ maxSynthPendingDepth = 3
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
-rev = "v4.33.1"
+# Pinned to v4.33.0 and not the newer v4.33.1, deliberately. Palomar's dependency-provenance
+# check requires the pinned Mathlib revision to be an ancestor of Mathlib's canonical
+# `master`. Minor releases and release candidates are cut on master through a pull request
+# and satisfy that; **patch releases are cut on a release branch and never do**. v4.33.1
+# carries one commit master has never seen, and a submission pinned to it is rejected before
+# anything is compiled. See Palomar/README.md.
+rev = "v4.33.0"
 
 [[lean_lib]]
 name = "MiscMath"
