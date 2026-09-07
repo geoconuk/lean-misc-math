@@ -169,6 +169,26 @@ which guard failed: nothing here checks the English against the Lean it accompan
 read-back deliberately never sees the prose, and a false gloss above a true theorem is
 exactly the shape that leaves. That is the residual risk this repository still carries.
 
+Registered in [Palomar](https://palomar-registry.org), a registry of Lean-verified
+mathematics, as `PALOMAR-2026-09-07-000011`, at
+<https://palomar-registry.org/entry?id=PALOMAR-2026-09-07-000011&version=1>. That URL names
+version 1, the immutable snapshot in which these statements were the ones reviewed. The five
+declarations compared there are the definition-free statements of `## The statements` —
+`hoeffding_thm3_unfolded` and its equality clause, `hoeffding_cor21_unfolded` and its
+minimising direction, and `hoeffding_thm4_unfolded`. They are the compared form because a
+Palomar Challenge may import nothing but Lean core, Mathlib, Tau Ceti and CSLib, so the
+natural-form theorems, stated through this library's own definitions, could not be. What was
+written for readability turned out to be the only registrable form of the result.
+
+Registration records that their proofs were replayed through Lean's kernel and through
+NanoDa, an independent kernel implementation, and that an automated review found no problem
+in the alignment between those statements and the informal account above.
+
+That is a second and independent read of the one thing this file cannot check for itself. It
+is not peer review, not an endorsement, and not a human read of the proof; Palomar is
+explicit that it is none of those. The advice above stands — satisfy yourself that the
+statement says what you need before relying on it.
+
 This file is a refactoring of an earlier, unpublished formalisation of the same paper by
 the same author.
 -/

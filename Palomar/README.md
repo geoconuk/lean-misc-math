@@ -75,7 +75,7 @@ library.
 | Result | Challenge | Solution module | Status |
 | --- | --- | --- | --- |
 | [Wyner's spherical covering exponent](Wyner/Challenge.lean) | `Palomar.Wyner.Challenge` | `MiscMath.Geometry.SphereCoveringExponent` | registered, `PALOMAR-2026-08-23-000001` |
-| [Hoeffding's extrema at a fixed mean](Hoeffding/Challenge.lean) | `Palomar.Hoeffding.Challenge` | `MiscMath.Probability.PoissonTrialsFixedMean` | prepared, not submitted |
+| [Hoeffding's extrema at a fixed mean](Hoeffding/Challenge.lean) | `Palomar.Hoeffding.Challenge` | `MiscMath.Probability.PoissonTrialsFixedMean` | registered, `PALOMAR-2026-09-07-000011` |
 
 ## Where this work lives
 
@@ -87,8 +87,9 @@ explicit that the pinned mechanical report, "not the run title or moving branch 
 the authoritative result. A public branch is therefore enough, and is where each
 submission starts, so that `main` carries none of it until that submission proves itself.
 Wyner's has: it registered on 2026-08-23 and was folded into `main` afterwards, which is
-the end state the first bullet below recommends. Hoeffding's is on `palomar-hoeffding`
-and stays there until it registers or is abandoned.
+the end state the first bullet below recommends. Hoeffding's took the same route:
+prepared on `palomar-hoeffding`, rejected once at `dependency-provenance` for a Mathlib pin
+that was not an ancestor of master, resubmitted, registered on 2026-09-07 and folded in.
 
 Two consequences worth remembering:
 
