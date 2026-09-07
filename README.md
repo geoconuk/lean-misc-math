@@ -135,6 +135,7 @@ that contribution visible.
   year    = {2026},
   version = {0.2.0},
   url     = {https://github.com/geoconuk/lean-misc-math},
+  doi     = {10.5281/zenodo.22648192},
   license = {Apache-2.0},
   note    = {Result selection by the author; Lean statements and proofs machine-generated
              and machine-verified}
@@ -144,6 +145,11 @@ that contribution visible.
 Please cite the version or tag you actually used — statements may be strengthened,
 corrected, or withdrawn between releases. If you built against `main` rather than a tag,
 cite the commit hash instead of the version number.
+
+Every release is archived on Zenodo. The DOI above is the *concept* DOI, which always
+resolves to the newest version; each release also has its own version DOI, reachable from
+that page. Cite the version DOI if you need to pin what you actually built against, and the
+concept DOI if you mean the library as a whole.
 
 ## What this repository guarantees
 

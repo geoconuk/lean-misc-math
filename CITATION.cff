@@ -12,6 +12,10 @@ authors:
     alias: geoconuk
     orcid: "https://orcid.org/0000-0002-0201-310X"
 repository-code: "https://github.com/geoconuk/lean-misc-math"
+# The concept DOI, which always resolves to the newest version. Each release also has its
+# own version DOI, reachable from the concept DOI's Zenodo page; this one is recorded here
+# so that a citation stays correct without being updated every release.
+doi: "10.5281/zenodo.22648192"
 abstract: >-
   A Lean 4 library of miscellaneous classical and other mathematical results built on
   Mathlib. The choice of which results to formalise, how they should be stated, and
