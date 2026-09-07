@@ -14,14 +14,15 @@ Comparator can check the shipped proofs against an independently readable statem
 surface. Two copies of a statement can drift apart, and Comparator would only report it
 at submission time.
 
-Each `example` below ascribes the type written in `Challenge.lean` to the theorem the
-library actually ships. Elaboration failure means the two have drifted. This is a local
-convenience, not the authoritative check: Comparator compares the elaborated statements
-of the two modules directly, and it is the check Palomar records. In particular, if a
-statement is edited in `Challenge.lean` and here but not in the library, this file fails;
-if it is edited in the library alone, this file fails; but a statement edited here and in
-`Challenge.lean` in the same wrong way would pass. The file is not `sorry`-free by
-accident either — it must not be, since it asserts the library's real theorems.
+Each `example` below ascribes a type **copied by hand from `Challenge.lean`** to the
+theorem the library ships, and it is worth being exact about the limit of that. This module
+never reads `Challenge.lean`, so an edit made there and nowhere else is invisible here.
+What it does catch is a library statement that has moved away from what the Challenge
+advertises, and a Challenge edit propagated here but not into the library; a wrong edit
+made identically here and in the Challenge would pass. Comparator compares the two actual
+modules and is the check Palomar records — this is a local convenience that fails earlier
+and more cheaply. Every `example` here must elaborate, and none may use `sorry`, since each
+asserts a real theorem of the library.
 
 This module is deliberately outside `MiscMath/`, so it reaches neither `MiscMath/Audit.lean`
 nor the three checks in `scripts/`, all of which are scoped to that directory. Build it with

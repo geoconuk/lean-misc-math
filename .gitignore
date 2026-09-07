@@ -13,3 +13,8 @@
 # Source papers kept locally for reference while formalising. Copyright is not ours
 # to redistribute, so these must never reach the published repository.
 /papers/
+
+# Reviews of this library commissioned from outside it. Someone else's words about our
+# work, kept locally so the findings can be acted on; not ours to publish, and not part
+# of what the library ships.
+/external_review/

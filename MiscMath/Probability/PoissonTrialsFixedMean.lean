@@ -106,8 +106,12 @@ below carries an equality clause for Theorem 4.
 
 Mathlib has the binomial distribution `ProbabilityTheory.binomial` (`Bin(n,p)`, a measure
 on `ℕ`) and `ProbabilityTheory.setBernoulli`, the product of Bernoulli distributions with a
-**common** parameter over a set. It has no product of *heterogeneous* Bernoulli
-distributions, no binomial tail or cumulative distribution function, and nothing from
+**common** parameter over a set. The *heterogeneous* product is available too, but by
+construction rather than as an API: `MeasureTheory.Measure.pi` applied to a family of
+`ProbabilityTheory.bernoulliMeasure`s is exactly it, and
+`bernExp_eq_integral_pi_bernoulliMeasure` is the lemma that says so. What is missing is
+everything built on it — no law of the number of successes under that product, no binomial
+tail or cumulative distribution function, and, at the pinned revision, nothing from
 Hoeffding's 1956 paper. (The `Hoeffding` that does appear in Mathlib, in
 `Mathlib/Probability/Moments/SubGaussian.lean`, is the unrelated 1963 concentration
 inequality.)
@@ -377,6 +381,44 @@ private theorem hoeffding_thm4_worked_instance :
 /-- The instance is not an equality in disguise: the inequality is **strict** there, so the
 comparison has content. -/
 example : (20 : ℝ) / 27 < 49 / 64 := by norm_num
+
+/-! The upper regime alone is not enough. The worked instance above has `lam ≤ k`, and the
+only concrete point of the *lower* regime exhibited elsewhere in this section is
+homogeneous, where the two sides coincide by construction and could not detect a reversed
+inequality. So here is a heterogeneous one: `p = (1, 5/8, 3/8)` has mean `2`, and `k = 1`
+satisfies `k ≤ lam - 1`. The model tail is `15/64`, the comparator `B(1; 3, 2/3)` is
+`7/27`, and this time it is the *model* that is the smaller. -/
+
+/-- The lower regime's success probabilities: heterogeneous, and none of them equal. -/
+private noncomputable def exLowerRegime : ℕ → ℝ :=
+  fun j => if j = 0 then 1 else if j = 1 then 5 / 8 else 3 / 8
+
+private theorem exLowerRegime_mean : (∑ j ∈ range 3, exLowerRegime j) = 2 := by
+  norm_num [Finset.sum_range_succ, exLowerRegime]
+
+/-- **The worked instance below the mean.** Both sides in closed form, and the inequality
+derived from `hoeffding_thm4_range` rather than asserted. -/
+private theorem hoeffding_thm4_worked_instance_lower :
+    tailLe (range 3) exLowerRegime 1 = 15 / 64
+      ∧ binTail 3 ((∑ j ∈ range 3, exLowerRegime j) / (3 : ℝ)) 1 = 7 / 27
+      ∧ tailLe (range 3) exLowerRegime 1
+          ≤ binTail 3 ((∑ j ∈ range 3, exLowerRegime j) / (3 : ℝ)) 1 := by
+  have hmodel : tailLe (range 3) exLowerRegime 1 = 15 / 64 := by
+    rw [tailLe, range_three,
+      bernExp_triple (by norm_num) (by norm_num) (by norm_num)]
+    norm_num [exLowerRegime]
+  have hcomp : binTail 3 ((∑ j ∈ range 3, exLowerRegime j) / (3 : ℝ)) 1 = 7 / 27 := by
+    rw [exLowerRegime_mean, binTail]
+    norm_num [Finset.sum_range_succ]
+  refine ⟨hmodel, hcomp, ?_⟩
+  refine ((hoeffding_thm4_range exLowerRegime (fun j _ => ?_) (fun j _ => ?_) 1).2 ?_).2
+  · unfold exLowerRegime; split_ifs <;> norm_num
+  · unfold exLowerRegime; split_ifs <;> norm_num
+  · rw [exLowerRegime_mean]; norm_num
+
+/-- Strict there too, and in the opposite direction to the instance above it: the two
+regimes really do bound the model from opposite sides. -/
+example : (15 : ℝ) / 64 < 7 / 27 := by norm_num
 
 /-! ### The model rests on `Finset.prod_add`, invoked by name
 
