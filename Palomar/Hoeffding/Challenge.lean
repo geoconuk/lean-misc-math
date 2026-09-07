@@ -45,7 +45,9 @@ homogeneous trials with the same mean. Three statements about how `S` varies ove
        k ≤ lam - 1  ⟹  0 ≤ P[S ≤ k] ≤ B(k; n, p̄).
 
    So among all trial vectors with the given mean, the homogeneous one has the *lightest*
-   lower tail above the mean and the *heaviest* below it.
+   lower tail at thresholds `k ≥ lam` and the *heaviest* at thresholds `k ≤ lam - 1`. The
+   second regime is `k ≤ lam - 1` and not `k < lam`: on the gap between those two readings
+   the comparison reverses, so the narrower one is the true statement.
 
 ## How to read these statements
 
@@ -200,10 +202,11 @@ theorem hoeffding_cor21_min_unfolded (s : Finset ι) (lam : ℝ) (g : ℕ → �
 
 /-! ## Theorem 4: the tail against the binomial, away from the mean -/
 
-/-- **Hoeffding (1956), Theorem 4**, definition-free, in its two extreme regimes: above the
-mean the binomial has the lighter lower tail, below it the heavier, with the trivial bounds
-`0 ≤ P[S ≤ k] ≤ 1` accompanying them as in the paper's display. The middle regime
-`lam - 1 < k < lam` is not claimed. -/
+/-- **Hoeffding (1956), Theorem 4**, definition-free, in its two extreme regimes: at
+thresholds `k ≥ lam` the binomial has the lighter lower tail, at `k ≤ lam - 1` the heavier,
+with the trivial bounds `0 ≤ P[S ≤ k] ≤ 1` accompanying them as in the paper's display. The
+middle regime `lam - 1 < k < lam` is not claimed, and it is not merely unattempted: it is
+where the looser reading `k < lam` of the second regime is false. -/
 theorem hoeffding_thm4_unfolded (s : Finset ι) (p : ι → ℝ)
     (h0 : ∀ i ∈ s, 0 ≤ p i) (h1 : ∀ i ∈ s, p i ≤ 1) (k : ℕ) :
     ((∑ i ∈ s, p i) ≤ (k : ℝ) →
