@@ -79,7 +79,11 @@ status:
     thm4_gap_subsingleton, thm4_gap_eq_floor and thm4_gap_empty_of_natCast: the uncovered
     regime is an open interval of length 1 and so holds at most one integer threshold,
     that threshold is the floor of the mean, and there is none at all when the mean is a
-    whole number. Those three are not among the compared declarations because they are
+    whole number. The same module's thm4_lower_needs_le_sub_one records why that regime is
+    excluded rather than merely unattempted: at p = (1, 1/2) on two trials the mean is 3/2
+    and the threshold k = 1 lies below it but outside the regime, and there the comparison
+    reverses. The second regime's hypothesis is therefore k <= lam - 1 and not k < lam, and
+    the difference decides the truth of the claim rather than being a margin of caution. Those three are not among the compared declarations because they are
     declared in a supporting module rather than in the Solution module, but a reviewer
     checking the scope claim will find them there.
     One further labelling point. The Solution module's documentation records that all four
