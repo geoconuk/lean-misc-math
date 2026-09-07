@@ -39,7 +39,10 @@ homogeneous trials with the same mean. Three statements about how `S` varies ove
        k ≤ lam - 1  ⟹  0 ≤ P[S ≤ k] ≤ B(k; n, p̄).
 
    So among all trial vectors with the given mean, the homogeneous one has the *lightest*
-   lower tail above the mean and the *heaviest* below it. All four bounds are attained.
+   lower tail at thresholds `k ≥ lam` and the *heaviest* at thresholds `k ≤ lam - 1`. All
+   four bounds are attained. Note that the second regime is `k ≤ lam - 1` and not `k < lam`:
+   the two differ on the gap below, and `thm4_lower_needs_le_sub_one` exhibits a point of it
+   where the comparison reverses, so the narrower reading is the true one.
 
 Everything is stated for an arbitrary finite index set `s : Finset ι` with `n = #s`, rather
 than for `range n`. `hoeffding_thm4_range` restates Theorem 4 on `range n`, the form in which
@@ -75,7 +78,10 @@ paper's Theorem 4 has three regimes and only two of them are below.
   `0 ≤ P[S ≤ c]` and `P[S ≤ c] ≤ 1` that accompany them, together with the paper's
   assertion that all of these bounds are attained.
 
-  **Not formalised**: equation (25), the middle regime `np - 1 < c < np`, whose bound is
+  **Not formalised**, and in the first case not merely unattempted — the gap is where the
+  looser reading of the second regime is actually false, which is what forces the
+  hypothesis `c ≤ np - 1` rather than `c < np` (`thm4_lower_needs_le_sub_one`):
+  equation (25), the middle regime `np - 1 < c < np`, whose bound is
   the auxiliary quantity `Q(c,p) = max_{0 ≤ s ≤ c} ∑_{k ≤ c-s} C(n-s,k) a^k (1-a)^(n-s-k)`
   with `a = (np-s)/(n-s)`; equation (29), which locates the maximising `s`; and the
   *uniqueness* half of the attainment statement ("attained only if `p₁ = ⋯ = pₙ = p`").
@@ -152,6 +158,16 @@ vacuity; and that clause (b) of Corollary 2.1 is the three-value reading rather 
 stronger vertex one. It surfaced two things: the empty-`s` degeneracy recorded above,
 which the docstring had not mentioned, and a summation variable in the equality clause of
 Theorem 3 that shadowed the bound variable it was stated under, since renamed.
+
+One error reached publication and was caught later, by an external accuracy review of
+draft announcement posts rather than by a read-back or either check script. The gloss under
+Theorem 4's display read "the *heaviest* below it", where the regime is `k ≤ lam - 1` and
+not `k < lam`; on the gap between those two readings the comparison reverses, so the
+sentence was false and sat directly under the display it appeared to restate.
+`thm4_lower_needs_le_sub_one` now holds the counterexample. What is worth recording is
+which guard failed: nothing here checks the English against the Lean it accompanies, the
+read-back deliberately never sees the prose, and a false gloss above a true theorem is
+exactly the shape that leaves. That is the residual risk this repository still carries.
 
 This file is a refactoring of an earlier, unpublished formalisation of the same paper by
 the same author.
@@ -240,10 +256,12 @@ theorem hoeffding_cor21_min_unfolded (s : Finset ι) (lam : ℝ) (g : ℕ → �
                 ≤ ∑ A ∈ s.powerset, ((∏ i ∈ A, r i) * ∏ i ∈ s \ A, (1 - r i)) * g A.card :=
   hoeffding_cor21_min g ⟨h0, h1, hmean⟩
 
-/-- **Hoeffding (1956), Theorem 4**, definition-free, in its two extreme regimes: above the
-mean the binomial has the lighter lower tail, below it the heavier, and the trivial bounds
-`0 ≤ P[S ≤ k] ≤ 1` accompany them. The middle regime `lam - 1 < k < lam` is not claimed;
-`thm4_gap_subsingleton` bounds what that leaves out. Natural form: `hoeffding_thm4`. -/
+/-- **Hoeffding (1956), Theorem 4**, definition-free, in its two extreme regimes: at
+thresholds `k ≥ lam` the binomial has the lighter lower tail, at `k ≤ lam - 1` the heavier,
+and the trivial bounds `0 ≤ P[S ≤ k] ≤ 1` accompany them. The middle regime
+`lam - 1 < k < lam` is not claimed; `thm4_gap_subsingleton` bounds what that leaves out and
+`thm4_lower_needs_le_sub_one` shows the second hypothesis cannot be relaxed to `k < lam`.
+Natural form: `hoeffding_thm4`. -/
 theorem hoeffding_thm4_unfolded (s : Finset ι) (p : ι → ℝ)
     (h0 : ∀ i ∈ s, 0 ≤ p i) (h1 : ∀ i ∈ s, p i ≤ 1) (k : ℕ) :
     ((∑ i ∈ s, p i) ≤ (k : ℝ) →
@@ -396,7 +414,7 @@ private noncomputable def exLowerRegime : ℕ → ℝ :=
 private theorem exLowerRegime_mean : (∑ j ∈ range 3, exLowerRegime j) = 2 := by
   norm_num [Finset.sum_range_succ, exLowerRegime]
 
-/-- **The worked instance below the mean.** Both sides in closed form, and the inequality
+/-- **The worked instance in the lower regime.** Both sides in closed form, and the inequality
 derived from `hoeffding_thm4_range` rather than asserted. -/
 private theorem hoeffding_thm4_worked_instance_lower :
     tailLe (range 3) exLowerRegime 1 = 15 / 64

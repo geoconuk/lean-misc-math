@@ -25,8 +25,9 @@ open Finset
 
 If the mean number of successes is `lam`, then `k ≥ lam ⟹ P[S ≤ k] ≥ B(k; n, lam/n)` and
 `k ≤ lam - 1 ⟹ P[S ≤ k] ≤ B(k; n, lam/n)`, with `n` the number of trials. So among all trial
-vectors with the given mean, the homogeneous one has the *lightest* lower tail above the mean
-and the *heaviest* below it.
+vectors with the given mean, the homogeneous one has the *lightest* lower tail at thresholds
+`k ≥ lam` and the *heaviest* at thresholds `k ≤ lam - 1`. The second regime is `k ≤ lam - 1`
+and not `k < lam`; `thm4_lower_needs_le_sub_one` shows the difference is real.
 
 **The idea in one line.** Corollary 2.1 reduces the theorem to the extremal shapes — `a`
 coordinates at `1`, `b` at `0`, `r` at a common `x` — and there both halves are the same
@@ -775,8 +776,8 @@ the box**, on an arbitrary ground set.
 
 `tailLe s p k` is `P[S ≤ k]` for independent trials with success probabilities `p`, and
 `binTail #s (lam/#s) k` is the same for `#s` identical trials at the common mean. The
-comparison holds in one direction above the mean and the other below it, and the trivial
-bound of the paper's display accompanies each.
+comparison holds in one direction at thresholds `k ≥ lam` and the other at `k ≤ lam - 1`,
+and the trivial bound of the paper's display accompanies each.
 
 **Not claimed**: the middle regime `lam - 1 < k < lam` of the paper's (25), and the equality
 clause of the paper's attainment statement. The middle regime is empty or a single
@@ -1046,6 +1047,32 @@ theorem thm4_gap_empty_of_natCast {n k : ℕ} (hk : (n : ℝ) - 1 < (k : ℝ))
   have h1' : n < k + 1 := by exact_mod_cast h1
   have h2' : k < n := by exact_mod_cast hk'
   omega
+
+/-- **The lower regime cannot be widened to "below the mean".** Its hypothesis is
+`k ≤ lam - 1`, and the difference from `k < lam` is not slack. At `p = (1, 1/2)` on two
+trials the mean is `3/2`, and the threshold `k = 1` lies below it but outside the regime:
+there `P[S ≤ 1] = 1/2` while `B(1; 2, 3/4) = 7/16`, so the binomial tail is the *lighter*
+one and the inequality of `tailLe_le_binTail` runs the other way.
+
+So the gap `lam - 1 < k < lam` is not merely a regime nobody attempted. It is where the
+looser reading is false, which is why `hoeffding_thm4` carries the hypothesis it does. -/
+theorem thm4_lower_needs_le_sub_one :
+    ∃ p : ℕ → ℝ, (∀ i ∈ range 2, 0 ≤ p i) ∧ (∀ i ∈ range 2, p i ≤ 1)
+      ∧ ((1 : ℕ) : ℝ) < ∑ i ∈ range 2, p i
+      ∧ ¬ (tailLe (range 2) p 1
+            ≤ binTail 2 ((∑ i ∈ range 2, p i) / ((range 2).card : ℝ)) 1) := by
+  refine ⟨fun j => if j = 0 then 1 else 1 / 2, fun i _ => ?_, fun i _ => ?_, ?_, ?_⟩
+  · dsimp only; split_ifs <;> norm_num
+  · dsimp only; split_ifs <;> norm_num
+  · norm_num [Finset.sum_range_succ]
+  · have hsum : (∑ i ∈ range 2, (if i = 0 then (1 : ℝ) else 1 / 2)) = 3 / 2 := by
+      norm_num [Finset.sum_range_succ]
+    have hmodel : tailLe (range 2) (fun j => if j = 0 then (1 : ℝ) else 1 / 2) 1 = 1 / 2 := by
+      rw [tailLe, show (range 2 : Finset ℕ) = {0, 1} by decide +kernel,
+        bernExp_pair (by norm_num)]
+      norm_num
+    rw [hsum, hmodel, Finset.card_range, binTail]
+    norm_num [Finset.sum_range_succ]
 
 end Gap
 
