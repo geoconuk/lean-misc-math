@@ -67,8 +67,9 @@ below are designed to make cheap for you to catch.
 ## Why this repository exists
 
 Mathlib's bottleneck is reviewer attention, and an unreviewed contribution costs it rather
-than helps it. Results here are too small, too scattered, or too far outside Mathlib's
-mission to justify spending that attention on them. Mathlib is the right home for material
+than helps it. Results here are too small, too scattered, too far outside Mathlib's
+mission, or too long in machine-generated proof to justify spending that attention on
+them. Mathlib is the right home for material
 many people will build on; this is a place for the rest. Anything here that turns out to
 be broadly wanted should be proposed upstream, where it will get the human review this
 repository deliberately does not provide.
@@ -115,19 +116,19 @@ Add to your `lakefile.toml`:
 [[require]]
 name = "MiscMath"
 git = "https://github.com/geoconuk/lean-misc-math"
-rev = "v0.2.0"
+rev = "v0.3.0"
 ```
 
 Then `import MiscMath` for everything, or import individual modules
-(`import MiscMath.NumberTheory.Foo`) to keep your build light.
+(`import MiscMath.Analysis.KolmogorovArnold`) to keep your build light.
 
 Pin to a tag rather than to `main`: statements here may be strengthened, corrected or
-withdrawn, and you want a fixed target. `v0.2.0` is current, and each tag records the
+withdrawn, and you want a fixed target. `v0.3.0` is current, and each tag records the
 Mathlib version it was built against. `main` tracks whatever Mathlib the repository
 currently builds against and will move under you.
 
 API documentation: **<https://geoconuk.github.io/lean-misc-math/docs/>** (rebuilt on
-every push; sparse until the library has results in it).
+every push).
 
 ## Citing
 
@@ -143,7 +144,7 @@ that contribution visible.
   author  = {Constantinides, George A.},
   title   = {{lean-misc-math}: miscellaneous mathematical results formalised in {Lean 4}},
   year    = {2026},
-  version = {0.2.0},
+  version = {0.3.0},
   url     = {https://github.com/geoconuk/lean-misc-math},
   doi     = {10.5281/zenodo.22648192},
   license = {Apache-2.0},
