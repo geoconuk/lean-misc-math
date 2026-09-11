@@ -87,10 +87,13 @@ What each states:
   His footnote: Kolmogorov's `2s+1` outer functions versus one is "only apparently weaker …
   in fact equivalent."
 - **Sprecher**, *On the structure of continuous functions of several variables*, Trans. Amer.
-  Math. Soc. 115 (1965) 340–355, Theorem 1: a single **monotonic increasing** Lipschitz `ψ`
-  and the shift form `∑_{q=0}^{2n} χ(∑_p λ^p ψ(x_p + εq) + q)`; the powers `λ^p` may be
-  replaced by any rationally independent `λ_p`. The factored form `λ_p ψ_q` is a corollary
-  (`ψ_q(x) := ψ(x + εq) + q/∑λ_p`). Sprecher credits the single outer function to Lorentz.
+  Math. Soc. 115 (1965) 340–355, Theorem 1: a single **monotonic increasing** `ψ` of class
+  `Lip[ln 2 / ln(2N+2)]` — Hölder, with exponent below `1`: his footnote 2 defines the class
+  by `|ψ(x) − ψ(y)| ≤ c |x − y|^α`, and p. 343 notes that a `ψ` meeting his condition (1.7)
+  cannot be in `Lip[1]` — and the shift form `∑_{q=0}^{2n} χ(∑_p λ^p ψ(x_p + εq) + q)`; the
+  powers `λ^p` may be replaced by any rationally independent `λ_p`. The factored form
+  `λ_p ψ_q` is a corollary (`ψ_q(x) := ψ(x + εq) + q/∑λ_p`). Sprecher credits the single
+  outer function to Lorentz.
 - **Hedberg**, *The Kolmogorov superposition theorem*, Appendix II to H. S. Shapiro, *Topics
   in Approximation Theory*, Lecture Notes in Math. 187, Springer, 1971, 267–275, Theorem 1:
   `∑_{k=1}^{2n+1} g(∑_p λ_p φ_k(x_p))` with `φ_k ∈ C(I)`, ℚ-independent real `λ_p`, and
@@ -103,13 +106,20 @@ What each states:
   `ρ < ρ'` the set `{φ : φ(ρ+0) < φ(ρ'−0)}` is open and dense. Kahane credits the factoring
   to Sprecher and the single outer function to Lorentz's book (1966, Ch. 11).
 
-**Monotonicity, precisely.** Every stated theorem that has it states it *weakly*: Lorentz
-"monotone increasing", Sprecher "monotonic increasing", Hedberg "non-decreasing", Kahane
-"croissantes". `kolmogorov_arnold_lorentz` therefore says `Monotone`. The `StrictMono` in
-`kolmogorov_arnold_lorentz_sprecher` is **stronger than any stated theorem** and is kept as a
-deliberate strengthening, sourced to Kahane's remark: strictly increasing functions are a
-dense `Gδ` in the non-decreasing space, so the residual set of good tuples meets them. It
-costs one lemma and excludes constant inner functions. Decision by George, 2026-09-10.
+**Monotonicity, precisely.** Of the five primaries, every stated theorem that has it states
+it *weakly*: Lorentz "monotone increasing", Sprecher "monotonic increasing", Hedberg
+"non-decreasing", Kahane "croissantes". `kolmogorov_arnold_lorentz` therefore says
+`Monotone`. The `StrictMono` in `kolmogorov_arnold_lorentz_sprecher` is **stronger than any
+of the five stated theorems** and is kept as a deliberate strengthening, sourced to Kahane's
+remark: strictly increasing functions are a dense `Gδ` in the non-decreasing space, so the
+residual set of good tuples meets them. It costs one lemma and excludes constant inner
+functions. Decision by George, 2026-09-10. The refinement is not new to the literature:
+S. A. Morris, *Hilbert 13: Are there any genuine continuous multivariate real-valued
+functions?*, Bull. Amer. Math. Soc. 58 (2021) 107–118, Theorem 4.2, states this exact shape
+— single `g`, factored `λ_p φ_k`, `n ≥ 2` — with strictly increasing continuous inner
+functions, citing Hedberg pp. 272–273 for the strictness, where Hedberg's Remark 2 obtains
+non-decreasing components; the argument that yields strictness is Kahane's. Morris was
+checked on 2026-09-11 and is not among the five primaries the statements were read against.
 
 Other departures, all strengthenings and all deliberate: statements for every `n` (the
 sources: `n ≥ 2`; `n ≤ 1` is true and trivial); inner functions continuous on all of `ℝ`
@@ -117,8 +127,10 @@ rather than on `[0,1]` (extend linearly, which preserves monotonicity); outer fu
 continuous on `ℝ` (Hedberg states it so; the others use a compact interval — Tietze). The
 sources' normalisations — `φ(0) = 0`, `φ(1) = 1`, values in `[0,1]`, `∑λ_p = 1`,
 ℚ-independence of the `λ_p` — are proof devices and are not claimed. The `n = 2` instance in
-factored form is also the theorem of S. Dzhenzher and A. Skopenkov, *A structured proof of
-Kolmogorov's Superposition Theorem*, arXiv:2105.00408.
+factored form has the shape of the theorem of S. Dzhenzher and A. Skopenkov, *A structured
+proof of Kolmogorov's Superposition Theorem*, arXiv:2105.00408, who fix the weights as `1`
+and `√2` and take continuous `φ_k : [0,1] → [0,1]`; ours asserts only positivity of the
+weights and, in return, strictness of the `ψ_q`, so neither statement contains the other.
 
 Not targeted: Sprecher's shift form above, as corrected by Köppen (2002) and Braun–Griebel,
 Constr. Approx. 30 (2009), Thm 2.14. It is what "Sprecher's version" usually means, which is
@@ -149,6 +161,9 @@ independence is a proof device, not a claim. The monotonicity clause of Lorentz'
 after the comparison with the primaries, had a read-back of its own, which rendered it as
 non-decreasing with constant inner functions admitted.
 
+No [Palomar](https://palomar-registry.org) registration as of 2026-09-11; the entry ID and
+version go here once there is one.
+
 ## Sanity checks
 
 The derivations `kolmogorov_arnold_lorentz` and `kolmogorov_arnold` are themselves checks:
@@ -163,7 +178,7 @@ witnesses Kolmogorov's form but admits no single outer function (it would force
 Lorentz witness — is not `λ_p ψ_q` with `λ_p > 0` and `ψ_q` strictly increasing, because a
 constant layer cannot be. So the single outer function and the strictly increasing factored
 inner functions are each a real constraint, not a rewording; the second separates on exactly
-the clause that is stronger than the stated theorems.
+the clause that is stronger than the five primaries' stated theorems.
 
 ## Relation to Mathlib
 
@@ -282,8 +297,8 @@ example :
   push_cast
   ring
 
-/-- Kolmogorov's form at `n = 2`: the five-term statement that settles the continuous
-form of Hilbert's 13th problem. Recorded so the indexing is visibly right: `2 * 2 + 1 = 5`. -/
+/-- Kolmogorov's form at `n = 2`: the five-term representation of continuous functions of two
+variables. Recorded so the indexing is visibly right: `2 * 2 + 1 = 5`. -/
 example :
     ∃ φ : Fin 5 → Fin 2 → ℝ → ℝ,
       (∀ q p, Continuous (φ q p)) ∧
@@ -291,6 +306,19 @@ example :
         ∃ Φ : Fin 5 → ℝ → ℝ, (∀ q, Continuous (Φ q)) ∧
           ∀ x ∈ Icc (0 : Fin 2 → ℝ) 1, f x = ∑ q, Φ q (∑ p, φ q p (x p)) :=
   kolmogorov_arnold 2
+
+/-- Kolmogorov's form at `n = 3`: seven terms. This, not `n = 2`, is the case that bears on
+Hilbert's 13th problem, which concerns functions of *three* variables: it writes every
+continuous function on `[0,1]³` with continuous functions of one variable and addition, hence
+with continuous functions of two variables, which Hilbert had conjectured impossible (Arnold's
+1957 theorem refuted the conjecture first, with two-variable functions). -/
+example :
+    ∃ φ : Fin 7 → Fin 3 → ℝ → ℝ,
+      (∀ q p, Continuous (φ q p)) ∧
+      ∀ f : (Fin 3 → ℝ) → ℝ, ContinuousOn f (Icc 0 1) →
+        ∃ Φ : Fin 7 → ℝ → ℝ, (∀ q, Continuous (Φ q)) ∧
+          ∀ x ∈ Icc (0 : Fin 3 → ℝ) 1, f x = ∑ q, Φ q (∑ p, φ q p (x p)) :=
+  kolmogorov_arnold 3
 
 /-- **Lorentz's form asks more of the inner functions than Kolmogorov's.** At `n = 1` the
 inner family `(t, 1 − t, 0)` witnesses Kolmogorov's form — take `Φ₀ = f ∘ clamp` and

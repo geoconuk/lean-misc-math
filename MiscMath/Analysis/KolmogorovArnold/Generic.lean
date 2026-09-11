@@ -29,8 +29,11 @@ Fix `n` and constants `λ : Fin n → ℝ` linearly independent over `ℚ`. Ther
 constants `c ≥ 0` and `0 ≤ θ < 1`, such that for every continuous `f : [0,1]ⁿ → ℝ` there is a
 bounded continuous `g : ℝ → ℝ` with `‖g‖ ≤ c ‖f‖` and
 `sup_{x ∈ [0,1]ⁿ} |f(x) - ∑_q g(∑_p λ_p ψ_q(x_p))| ≤ θ ‖f‖` (`exists_generic_tuple`). The proof
-gives `c = 1/(2n+3)` and `θ = (8n+11)/(8n+12)`; at `n = 2` these are Hedberg's `1/7` and a
-`θ` between his `7/8` and `8/9`.
+gives `c = 1/(2n+3)` and `θ = (8n+11)/(8n+12)`; at `n = 2` these are Hedberg's `1/7` and
+`θ = 27/28`, a weaker contraction than his `8/9`: the one-step constant is taken as
+`(4n+5)/(4n+6)` (`13/14` at `n = 2`, against his `7/8`), and half the remaining slack is spent
+approximating `f` from the countable dense family, where he spends `1/72`. Any `θ < 1` drives
+the iteration of Layer 4.
 
 The tuple does not depend on `f` — that is the point — and it comes from a residual set, so
 "quasi-every" tuple of monotone inner functions would do.

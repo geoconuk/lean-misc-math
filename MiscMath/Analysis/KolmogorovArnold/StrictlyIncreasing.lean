@@ -10,9 +10,10 @@ import Mathlib.Topology.Baire.Lemmas
 # Quasi-every monotone function is strictly increasing
 
 Support module for `MiscMath.Analysis.KolmogorovArnold`, where the theorem is stated and where
-the reader should start; Layer 1 of the development, the part that pays for the one clause of
-the statement that goes beyond every stated theorem in the literature. Its declarations are
-proof: machine-generated, kernel-checked and axiom-audited, and may be read by no one.
+the reader should start; Layer 1 of the development, the part that pays for the `StrictMono`
+clause of the statement, which none of the five primaries states (Kahane remarks it; Morris,
+Bull. Amer. Math. Soc. 58 (2021), Theorem 4.2, states it). Its declarations are proof:
+machine-generated, kernel-checked and axiom-audited, and may be read by no one.
 
 The Baire-category proof produces a tuple of inner functions in the complete metric space of
 *monotone* continuous functions on `I = [0, 1]`, and the residual set it produces is stable

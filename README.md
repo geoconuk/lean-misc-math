@@ -187,12 +187,13 @@ concept DOI if you mean the library as a whole.
   [Who did what](#who-did-what)), which removes some of these — but that is one person's
   judgement on one rendering, it is not a review, and it carries no guarantee.
 
-  Every result currently here has also had an independent machine check of the same
-  correspondence, recorded under its `## Provenance` as a [Palomar](https://palomar-registry.org)
-  registration. That is a second reading by something that did not write the statement, and
-  it is worth more than nothing — but Palomar is explicit that it is not peer review, not an
-  endorsement and not a human read of the proof, so it does not convert any of the above
-  into a guarantee. Nothing obliges a future result to carry one.
+  A result may also have had an independent machine check of the same correspondence,
+  recorded under its `## Provenance` as a [Palomar](https://palomar-registry.org)
+  registration; a result whose `## Provenance` records no registration has none. That is a
+  second reading by something that did not write the statement, and it is worth more than
+  nothing — but Palomar is explicit that it is not peer review, not an endorsement and not a
+  human read of the proof, so it does not convert any of the above into a guarantee. Nothing
+  obliges a result to carry one.
 - **That anything other than an advertised statement has been read by anyone.** A result
   file exports lemmas and definitions besides the statements it advertises, and a larger
   result exports whole support modules of them. They are kernel-checked and axiom-audited
