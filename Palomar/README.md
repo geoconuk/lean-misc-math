@@ -53,22 +53,23 @@ It is kept honest structurally rather than by promise:
 
 - `Palomar/` is outside `MiscMath/`, so the Challenge reaches neither the axiom audit nor
   `scripts/check-conventions.sh`, and cannot launder a `sorry` into the library.
-- `PalomarWynerChallenge` is not in `defaultTargets`, so `lake build` never elaborates it
-  and the library's build stays warning-free.
+- No Challenge target is in `defaultTargets`, so `lake build` never elaborates one and
+  the library's build stays warning-free.
 - `TypeCheck.lean` re-checks each advertised statement against the shipped theorem, so the
   Challenge cannot quietly advertise something the library does not prove.
 
 ## Building and checking
 
 ```bash
-lake build PalomarWynerChallenge     && lake build PalomarWynerTypeCheck
-lake build PalomarHoeffdingChallenge && lake build PalomarHoeffdingTypeCheck
+lake build PalomarWynerChallenge            && lake build PalomarWynerTypeCheck
+lake build PalomarHoeffdingChallenge        && lake build PalomarHoeffdingTypeCheck
+lake build PalomarKolmogorovArnoldChallenge && lake build PalomarKolmogorovArnoldTypeCheck
 ```
 
 Each Challenge elaborates the statement surface and reports one `declaration uses 'sorry'`
-warning per compared theorem — five for Wyner, five for Hoeffding. Any other warning or
-error is a problem. Each TypeCheck reports nothing if the Challenge still matches the
-library.
+warning per compared theorem — five for Wyner, five for Hoeffding, three for
+Kolmogorov–Arnold. Any other warning or error is a problem. Each TypeCheck reports nothing
+if the Challenge still matches the library.
 
 ## Submissions
 
@@ -76,6 +77,7 @@ library.
 | --- | --- | --- | --- |
 | [Wyner's spherical covering exponent](Wyner/Challenge.lean) | `Palomar.Wyner.Challenge` | `MiscMath.Geometry.SphereCoveringExponent` | registered, `PALOMAR-2026-08-23-000001` |
 | [Hoeffding's extrema at a fixed mean](Hoeffding/Challenge.lean) | `Palomar.Hoeffding.Challenge` | `MiscMath.Probability.PoissonTrialsFixedMean` | registered, `PALOMAR-2026-09-07-000011` |
+| [The Kolmogorov–Arnold representation theorem](KolmogorovArnold/Challenge.lean) | `Palomar.KolmogorovArnold.Challenge` | `MiscMath.Analysis.KolmogorovArnold` | prepared, not yet submitted |
 
 ## Where this work lives
 
@@ -90,6 +92,8 @@ Wyner's has: it registered on 2026-08-23 and was folded into `main` afterwards, 
 the end state the first bullet below recommends. Hoeffding's took the same route:
 prepared on `palomar-hoeffding`, rejected once at `dependency-provenance` for a Mathlib pin
 that was not an ancestor of master, resubmitted, registered on 2026-09-07 and folded in.
+Kolmogorov–Arnold's starts the same way, on `palomar-kolmogorov-arnold`; its development
+repository is a separate matter, discussed at the end of this section.
 
 Two consequences worth remembering:
 
@@ -105,6 +109,21 @@ Two consequences worth remembering:
   submission can be withdrawn from any non-terminal state, which "leaves no public
   editorial outcome". If we drop the idea, the branch goes away and `main` never carried
   it.
+
+One more, for a result that was developed elsewhere and copied in, as Kolmogorov–Arnold
+was. The registry entry points at *this* repository, not at the development repository,
+and that choice is sticky: Palomar's `CONTRIBUTING.md` requires every later version of an
+entry — a Mathlib bump, a correction — to come from the same source repository, project
+path and Comparator path, and a repository transfer needs operator review. This is the
+repository that produces those versions, the copy under the audit and the release
+discipline, and the copy a citation names; the development repository is kept as the
+development it was built in, not as a release vehicle. It is disclosed instead under
+`related_formalizations`, as the development the result was built in, and the roof's
+`## Provenance` links to it — so it must be public before the submission goes in, or the
+review meets a link it cannot follow. Palomar does not archive it from a submission here,
+since it is neither a dependency nor a thin wrapper's substantive formalisation; that
+arrangement is for a wrapper that *depends* on the development, which this library does
+not, because its audit does not walk a dependency's declarations.
 
 ## The Mathlib pin must be an ancestor of `master`
 
