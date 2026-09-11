@@ -4,8 +4,9 @@ Miscellaneous classical and other mathematical results, formalised in Lean 4 on 
 [Mathlib](https://github.com/leanprover-community/mathlib4).
 
 > [!IMPORTANT]
-> **The selection of results is a human contribution and the statements get a
-> best-effort human read; the proofs are machine-generated and are read by no one.**
+> **The selection of results is a human contribution, and each result's advertised
+> statements get a best-effort human read. Everything else — the proofs, and every lemma
+> and definition they are built from — is machine-generated and may be read by no one.**
 > See [Who did what](#who-did-what) and
 > [What this repository guarantees](#what-this-repository-guarantees) before depending
 > on it. The short version: the *proofs* are checked by Lean's kernel and audited for
@@ -19,30 +20,39 @@ This repository is the product of two very different kinds of work, and it is wo
 being precise about which is which.
 
 **George A. Constantinides's contribution — selection, specification, and a best-effort
-read of the statements.** Which results are worth formalising at all; which are missing
-from Mathlib or awkward to use there; what each theorem should say and in what
-generality; which hypotheses belong in the statement; whether a generated result is
-worth keeping or should be thrown away; and the design of the checks in
+read of each result's advertised statements.** Which results are worth formalising at
+all; which are missing from Mathlib or awkward to use there; what each theorem should say
+and in what generality; which hypotheses belong in the statement; whether a generated
+result is worth keeping or should be thrown away; and the design of the checks in
 [What this repository guarantees](#what-this-repository-guarantees). This is the
 editorial and mathematical judgement that determines what the library contains, and it
 is not automatable.
 
-Each generated Lean statement is also read against its informal claim before the result
-is published. That read is genuine but explicitly **best-effort**: one person, no second
-reader, none of the systematic scrutiny a Mathlib review would apply, and no reading of
-the proof. It removes some bad statements. It is not a warrant, and it is not a
-substitute for the check described in
+Each result's **advertised statements** are also read against its informal claim before
+the result is published. A result's advertised statements are the declarations its
+`## Informal statement` makes claims about, and its `## Provenance` names them. That is
+the whole of what the read covers. A result file holds a great deal more — the lemmas its
+proof is assembled from, the definitions those lemmas need, and for a larger result whole
+supporting modules of both — and all of it is proof, whatever keyword introduces it, and
+may be read by no one. An advertised statement stated through a definition of this
+library's own is read together with that definition, since it cannot be read without it;
+that is why the house rule prefers there to be none.
+
+That read is genuine but explicitly **best-effort**: one person, no second reader, none
+of the systematic scrutiny a Mathlib review would apply, and no reading of the proof. It
+removes some bad statements. It is not a warrant, and it is not a substitute for the
+check described in
 [Reviewing a result in thirty seconds](#reviewing-a-result-in-thirty-seconds).
 
-That read is preceded by a **blind read-back**. The Lean statement is given, on its own,
-to an agent that has not seen the informal statement, the source, or the rest of the
-file, and which writes out what the statement literally asserts; the author then compares
-that rendering against the informal claim. The point is that every other guard here is
-applied by someone who already knows what the statement was meant to say, and therefore
-tends to see it — a read-back is the one reading not exposed to that. It is machinery,
-not a reviewer: it produces evidence, and the judgement about what the divergence means
-stays with one person. Where a read-back surfaced something, the result's
-`## Provenance` section says so.
+That read is preceded by a **blind read-back**. The advertised statements are given — with
+any definition they are stated through, and nothing else — to an agent that has not seen
+the informal statement, the source, or the rest of the file, and which writes out what
+they literally assert; the author then compares that rendering against the informal
+claim. The point is that every other guard here is applied by someone who already knows
+what the statement was meant to say, and therefore tends to see it — a read-back is the
+one reading not exposed to that. It is machinery, not a reviewer: it produces evidence,
+and the judgement about what the divergence means stays with one person. Where a
+read-back surfaced something, the result's `## Provenance` section says so.
 
 **Claude's contribution — formalisation and proof.** Given a result to prove, the Lean
 statement and its proof term are generated by Claude. Both are verified by Lean's kernel
@@ -82,8 +92,8 @@ before here.
 
 What distinguishes this repository is not its review — it has none — but who is answerable
 for the selection, and how exactly the gap is described. A named person chose each result,
-specified what it should say, read the statement against its informal claim, and has
-written down precisely which of those steps is a guarantee and which is not (see
+specified what it should say, read its advertised statements against its informal claim,
+and has written down precisely which of those steps is a guarantee and which is not (see
 [Who did what](#who-did-what) and
 [What this repository guarantees](#what-this-repository-guarantees)). That does not scale,
 which is the point: it is why the library is small and expected to stay small, and why
@@ -171,8 +181,8 @@ concept DOI if you mean the library as a whole.
   it is unautomatable. A theorem can be correctly proved, non-vacuous, axiom-clean, and
   still not be the theorem you wanted — because it quantifies over the wrong thing, uses
   truncated `Nat` subtraction, relies on a junk-value convention (`x / 0 = 0`), or is
-  stated in terms of a bespoke definition rather than Mathlib's. Statements do get a
-  best-effort read from the author, against a blind read-back of the Lean (see
+  stated in terms of a bespoke definition rather than Mathlib's. Advertised statements do
+  get a best-effort read from the author, against a blind read-back of the Lean (see
   [Who did what](#who-did-what)), which removes some of these — but that is one person's
   judgement on one rendering, it is not a review, and it carries no guarantee.
 
@@ -182,6 +192,13 @@ concept DOI if you mean the library as a whole.
   it is worth more than nothing — but Palomar is explicit that it is not peer review, not an
   endorsement and not a human read of the proof, so it does not convert any of the above
   into a guarantee. Nothing obliges a future result to carry one.
+- **That anything other than an advertised statement has been read by anyone.** A result
+  file exports lemmas and definitions besides the statements it advertises, and a larger
+  result exports whole support modules of them. They are kernel-checked and axiom-audited
+  like everything else here, and that is all that is claimed for them: any of them may be
+  read by no one. Where a result's documentation cites such a declaration by name — to
+  bound what was not formalised, say, or to show a hypothesis cannot be dropped — it is
+  pointing you at a kernel-checked fact whose statement you must read for yourself.
 - **That a result is not already in Mathlib**, in better generality, under a name you
   would find by searching.
 - **That naming, generality, or API shape follows Mathlib conventions.** They are aimed at
@@ -192,15 +209,16 @@ The repository is structured so that checking the unguaranteed part is cheap. Se
 ## Reviewing a result in thirty seconds
 
 The author's best-effort read has already happened by the time a result is published,
-but it is one pair of eyes on the statement and none on the proof. Do your own check —
-every result file has the same shape, and you can convince yourself of a statement
-without reading its proof:
+but it is one pair of eyes on the advertised statements, and nothing else is guaranteed
+any. Do your own check — every result file has the same shape, and you can convince
+yourself of a statement without reading its proof:
 
-1. **`## Informal statement`** — the claim in English. Compare it against the Lean
-   statement. This is the check that matters, and it is the one you have to do yourself.
+1. **`## Informal statement`** — the claim in English. Compare it against the advertised
+   statements. This is the check that matters, and it is the one you have to do yourself.
 2. **`## Source`** — a citation, so you can check the informal statement is the real
    theorem.
-3. **`## Provenance`** — who selected the result and what was machine-generated.
+3. **`## Provenance`** — who selected the result, which declarations were read, and what
+   was machine-generated.
 4. **`## Sanity checks`** — `example`s that (a) exhibit values satisfying the hypotheses,
    so you know the theorem is not vacuous, and (b) confirm the conclusion at concrete
    values by `decide` or `norm_num`, independently of the proof. If a statement has

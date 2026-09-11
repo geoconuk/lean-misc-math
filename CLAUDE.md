@@ -7,10 +7,12 @@ operational summary.
 
 ## What makes this repository unusual
 
-Proofs here are machine-generated and **nobody reads them**. Statements get a
-best-effort read from the author, which is not a review. Everything about the workflow
-follows from that: Lean's kernel already guarantees the proofs are correct, so the only
-defect that can reach a user is **a statement that does not say what it appears to
+Proofs here are machine-generated and **nobody reads them**. Only a result's *advertised
+statements* — the declarations its `## Informal statement` makes claims about, named under
+its `## Provenance` — get a best-effort read from the author, which is not a review; every
+other lemma and definition is proof, and may be read by no one. Everything about the
+workflow follows from that: Lean's kernel already guarantees the proofs are correct, so the
+only defect that can reach a user is **a statement that does not say what it appears to
 say**. Effort goes into statements, not proof elegance.
 
 Concretely, when generating a result, spend the care on:
@@ -34,7 +36,9 @@ Concretely, when generating a result, spend the care on:
    `docs/examples/` holds filled-in models if it is present locally.
 2. Fill in every docstring section — the convention check requires
    `## Informal statement`, `## Source`, `## Provenance` and `## Sanity checks`, and
-   they are what make the statement reviewable without its proof.
+   they are what make the statement reviewable without its proof. Under `## Provenance`,
+   name the advertised statements — the declarations the informal statement makes claims
+   about, wherever they live. The read covers those, and nothing else is guaranteed one.
 3. Write the sanity checks. **If the theorem has hypotheses, a satisfiability witness
    is mandatory**, and it must cover universally quantified hypotheses, where an
    unsatisfiable assumption most easily hides. Note that such a witness usually cannot
@@ -43,16 +47,16 @@ Concretely, when generating a result, spend the care on:
    statement; investigate before working around it.
 4. Add the `import` line to `MiscMath.lean`, alphabetically.
 5. Run the checks (below). All three must pass.
-6. Get a **read-back** of the statement before it goes for its best-effort read. Send the
-   Lean statement — and nothing else — to a subagent, and have it write out in English what
-   that statement literally asserts. Compare the result against the `## Informal statement`
-   and against the source. Where they diverge the statement has drifted; fix it and re-run
-   step 5.
+6. Get a **read-back** of the advertised statements before they go for their best-effort
+   read. Send them — with the definitions they are stated through, and nothing else — to a
+   subagent, and have it write out in English what they literally assert. Compare the
+   result against the `## Informal statement` and against the source. Where they diverge
+   the statement has drifted; fix it and re-run step 5.
 
    The constraint is what makes this worth doing: the read-back agent must not see the
    module docstring, the informal statement, the source, or the rest of the file. Given any
    of them it paraphrases the intended meaning back and the exercise is worthless. Give it
-   the theorem and the definitions its statement reads, nothing else.
+   the advertised statements and the definitions they read, nothing else.
 
    This is the only guard here that does not assume its reader already knows what the
    statement was meant to say — which is exactly what makes an author's own read of a
@@ -82,6 +86,10 @@ applies the four docstring sections and the `example` requirement to result modu
 ones `MiscMath.lean` names — and to every module, result or support, the escape-hatch and
 elaboration-option guards. A support module still needs a module docstring saying what it is
 for and which roof it belongs to; it has no informal statement or source of its own to give.
+An advertised statement may live in a support module — the natural-form theorems of
+`PoissonTrialsFixedMean` do — and the roof's `## Provenance` names it wherever it lives. A
+declaration `## Provenance` does not name is proof, in the roof or under it, and the roof's
+docstring should not describe one as though it had been read.
 
 Split when the file stops being navigable or its rebuild stops being quick, not by line
 count. Do not split a single theorem away from the definitions its statement reads.
