@@ -46,8 +46,9 @@ In every form the inner functions are quantified **before** `f`: one family serv
 the weaker `∀ f, ∃ φ` form that the `lean-eval` benchmark poses.
 
 The statements are made for every `n`. The literature states `n ≥ 2`; the cases `n = 0`
-and `n = 1` are true and trivial (`n = 1`: take every inner function to be the identity and
-`g = f/3`).
+and `n = 1` are true and trivial (`n = 1`: take `λ = 1`, every inner function the identity,
+and `g` one third of a continuous extension of `f` from `[0,1]` to `ℝ` — `f ∘ clamp / 3` in
+the Solution's sanity check; `f/3` itself need not be continuous off the cube).
 
 ## How to read these statements
 
@@ -129,13 +130,19 @@ states this exact shape — single `g`, factored `λ_p φ_k`, `n ≥ 2` — with
 continuous inner functions, citing Hedberg for the strictness; the argument that yields it is
 Kahane's. Morris is not among the five primaries the statements were read against.
 
-**Other departures, all strengthenings and all deliberate:** statements for every `n` (the
-sources: `n ≥ 2`; `n ≤ 1` is true and trivial); inner functions continuous on all of `ℝ`
-rather than on `[0,1]`; outer function continuous on `ℝ`. The sources' normalisations —
-`φ(0) = 0`, `φ(1) = 1`, values in `[0,1]`, `∑λ_p = 1`, ℚ-independence of the `λ_p` — are
-proof devices and are not claimed: the Lorentz–Sprecher form asserts nothing about the `λ_p`
-beyond positivity. No hypothesis of a source theorem has been strengthened and no conclusion
-weakened.
+**Other departures, all deliberate, in both directions.** Strengthened: statements for
+every `n` (the sources: `n ≥ 2`; `n ≤ 1` is true and trivial); inner functions continuous on
+all of `ℝ` rather than on `[0,1]`; outer function continuous on `ℝ`. Omitted: the conditions
+the sources place on the objects they construct — Kahane's `φ(0) = 0`, `φ(1) = 1`, values in
+`[0,1]` and `λ_p` distinct with `∑λ_p = 1`; Hedberg's ℚ-independence of the `λ_p`; Lorentz's
+values in `[0,1]`; Sprecher's Hölder class. They are proof devices, and the conclusions here
+neither assert nor imply them — the Lorentz–Sprecher form says nothing of the `λ_p` beyond
+positivity. An existential conclusion that omits a conjunct is weaker in that respect, so
+against each source's own formulation the statements here strengthen some clauses and omit
+others, and neither contains the other as stated. The exception is Kolmogorov's: his
+statement carries no condition beyond continuity, and `kolmogorov_arnold` strengthens it and
+omits nothing. What all three match is the theorem as it is usually cited, which carries none
+of the omitted conditions.
 
 **Not targeted:** Sprecher's shift form above, as corrected by Köppen (2002) and
 Braun–Griebel, Constr. Approx. 30 (2009), Thm 2.14. It is what "Sprecher's version" usually

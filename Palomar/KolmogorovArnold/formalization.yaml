@@ -80,11 +80,12 @@ sources:
       Theorem 7 and (3): continuous monotone increasing inner functions with values in [0,1],
       indexed by both p and q (not factored), and a single outer function continuous on
       [0,s]. This is kolmogorov_arnold_lorentz, which carries his monotonicity clause as
-      Monotone. Departures are strengthenings only: every n; inner functions continuous and
-      monotone on all of R, with values not confined to [0,1]; outer function continuous on
-      R. His footnote that Kolmogorov's 2s+1 outer functions versus one is only apparently
-      weaker and in fact equivalent is the derivation kolmogorov_arnold_lorentz ->
-      kolmogorov_arnold in the Solution.
+      Monotone. Strengthened: every n; inner functions continuous and monotone on all of R;
+      outer function continuous on R. Omitted, and weaker in that respect: his condition
+      that the inner functions take values in [0,1], which the conclusion neither asserts
+      nor implies. His footnote that Kolmogorov's 2s+1 outer functions versus one is only
+      apparently weaker and in fact equivalent is the derivation kolmogorov_arnold_lorentz
+      -> kolmogorov_arnold in the Solution.
     license: "unknown"
     author_endorsement: "n/a"
   - title: "On the structure of continuous functions of several variables"
@@ -101,8 +102,9 @@ sources:
       inner functions lam_p psi_q that kolmogorov_arnold_lorentz_sprecher states are a
       corollary of it, psi_q(x) := psi(x + eps q) + q / sum lam_p, and the factoring is what
       the name credits to Sprecher. The shift form itself, as corrected by Koeppen (2002) and
-      Braun-Griebel (2009), is not formalised, and no regularity beyond continuity is claimed
-      of the psi_q. Sprecher credits the single outer function to Lorentz.
+      Braun-Griebel (2009), is not formalised, and his regularity class is omitted: nothing
+      beyond continuity is asserted of the psi_q, which is weaker in that respect than his
+      Theorem 1. Sprecher credits the single outer function to Lorentz.
     license: "unknown"
     author_endorsement: "n/a"
   - title: "The Kolmogorov superposition theorem"
@@ -120,9 +122,10 @@ sources:
       rationally independent real lam_p, and g continuous on all of R -- exactly the shape of
       kolmogorov_arnold_lorentz_sprecher. Remark 2: the phi_k can be taken non-decreasing by
       running the Baire argument in that closed subspace. The formal statement strengthens
-      non-decreasing to strictly increasing (see Kahane) and drops the rational independence
-      of the lam_p from the conclusion, asserting only their positivity. The proof route is
-      his and Kahane's Baire-category argument.
+      non-decreasing to strictly increasing (see Kahane) and omits the rational independence
+      of the lam_p from the conclusion, asserting only their positivity -- weaker in that
+      respect, since the conclusion neither asserts nor implies it. The proof route is his
+      and Kahane's Baire-category argument.
     license: "unknown"
     author_endorsement: "n/a"
   - title: "Sur le théorème de superposition de Kolmogorov"
@@ -139,7 +142,9 @@ sources:
       that quasi-every such phi is strictly increasing -- for rationals rho < rho' the set of
       phi with phi(rho+0) < phi(rho'-0) is open and dense -- is the source of the StrictMono
       clause in kolmogorov_arnold_lorentz_sprecher, which is stronger than any of the five
-      primaries' stated theorems. His normalisations are proof devices and are not claimed.
+      primaries' stated theorems. His normalisations -- phi(0) = 0, phi(1) = 1, values in
+      [0,1], lam_p distinct and summing to 1 -- are proof devices and are omitted from the
+      conclusion, which is weaker in those respects.
     license: "unknown"
     author_endorsement: "n/a"
   - title: "Hilbert 13: Are there any genuine continuous multivariate real-valued functions?"
@@ -224,21 +229,22 @@ status:
     functions) -- together with the two derivations between them. Not formalised: Sprecher's
     shift form, in which one inner function serves every layer through translates; the
     Hoelder regularity of Sprecher's inner function; and the sources' normalisations of the
-    inner functions and weights (values in [0,1], phi(0) = 0, phi(1) = 1, weights summing to
-    1, rational independence of the weights), which are proof devices rather than claims.
+    inner functions and weights (values in [0,1], phi(0) = 0, phi(1) = 1, weights distinct
+    and summing to 1, rational independence of the weights), which are proof devices in the
+    sources and are omitted from the conclusions here, which are weaker in those respects.
     Nothing is asserted about the outer function beyond continuity and existence: no
-    uniqueness, no continuity in f. No hypothesis of a source theorem has been strengthened
-    and no conclusion weakened; every departure from the sources is in the strengthening
-    direction and is listed under fidelity.divergences. The three compared statements have
-    no hypotheses beyond n -- the one assumption inside them, that f be continuous on the
-    cube, is met by every polynomial -- so the guard against vacuity is that the conclusions
-    are satisfiable in a non-degenerate way: the Solution module's Sanity checks
-    section proves the n = 1 case of the Lorentz-Sprecher form outright, without the
-    theorem, instantiates Kolmogorov's form at n = 2 and n = 3 so the indexing is visibly
-    right, and separates the three forms at the level of witnesses. Those examples are not
-    among the compared declarations because they are anonymous examples in the Solution
-    module rather than named theorems, but a reviewer checking the non-vacuity claim will
-    find them there.
+    uniqueness, no continuity in f. The statements have no hypotheses to strengthen; against
+    each source's own formulation they strengthen some clauses of the conclusion and omit
+    others, as itemised in both directions under fidelity.divergences. The three compared
+    statements have no hypotheses beyond n -- the one assumption inside them, that f be
+    continuous on the cube, is met by every polynomial -- so the guard against vacuity is
+    that the conclusions are satisfiable in a non-degenerate way: the Solution module's
+    Sanity checks section proves the n = 1 case of the Lorentz-Sprecher form outright,
+    without the theorem, instantiates Kolmogorov's form at n = 2 and n = 3 so the indexing
+    is visibly right, and separates the three forms at the level of witnesses. Those
+    examples are not among the compared declarations because they are anonymous examples in
+    the Solution module rather than named theorems, but a reviewer checking the non-vacuity
+    claim will find them there.
   sorry_count: 0
   sorry_in_definitions: 0
   # v0.4 asks for every axiom used, standard ones included, so this is not the permitted
@@ -300,9 +306,11 @@ automation:
     This submission comes from a library whose division of labour is deliberate and is
     documented in its README. The human contribution is selection, specification, and a
     best-effort read of each advertised Lean statement against its informal claim and its
-    sources; the machine contribution is the formal statement and the proof. The proofs are
-    read by nobody, and every declaration other than the three compared statements -- the
-    whole of the twelve support modules -- is proof and may be read by no one. What defends
+    sources; the machine contribution is the formal statement and the proof. No human has
+    read the proofs, and every declaration other than the three compared statements -- the
+    whole of the twelve support modules -- is proof and may be read by no one; no read of it
+    by a person is claimed. The one reading the proofs have had is the machine read described
+    below, whose scope is stated exactly so that it is not taken for more. What defends
     the library is mechanical rather than editorial: Lean's kernel for the proofs, an axiom
     audit requiring every declaration to depend only on propext, Classical.choice and
     Quot.sound, a self-test that plants a sorry and fails if the audit does not reject it,
@@ -325,24 +333,39 @@ automation:
     own, which rendered it as non-decreasing with constant inner functions admitted. On
     2026-09-09 a read-back of an earlier draft written specifically to test for weakenings
     caught MonotoneOn where the theorem requires strictly increasing.
-    After publication, on 2026-09-11, an independent review of the published copy by a
-    different model (OpenAI Codex) found no defect in the three statements or in the proof
-    chain and five errors in the accompanying prose, all verified against the primaries and
-    corrected before this submission; none changed a Lean statement. The development record,
-    with the fixed target and the layers in the order they were built, is the repository
-    listed under related_formalizations.
+    After publication, on 2026-09-11, an independent machine review of the published copy
+    (v0.3.0) was made by an OpenAI Codex agent. What it inspected: mechanically, it rebuilt
+    the library from a fresh export of the commit, re-ran the axiom audit, the import and
+    convention guards and the audit self-test, wrote its own ascriptions of the three
+    statements in an independent form (explicit finite sums, a coordinatewise cube, outside
+    the library namespace) and elaborated them against the shipped theorems, and printed the
+    axioms of each; and it read the roof module and all twelve support modules --
+    definitions, the main dependencies and the transitions of the argument. It reported no
+    defect in the three statements or in the proofs, and five errors in the accompanying
+    prose, all verified against the primaries and corrected before this submission; none
+    changed a Lean statement. What it did not do: run a second kernel, audit the compiler,
+    recheck the dependency library, or repeat every page-level attribution in the five
+    primaries. It is a machine read, not a human one, and not a review in the sense the
+    library disclaims above; the review account below says the same. The development
+    record, with the fixed target and the layers in the order they were built, is the
+    repository listed under related_formalizations.
 
 fidelity:
   divergences: >-
-    No compared statement is weaker than the corresponding claim of its source, and none
-    hides a hypothesis. Every departure from the sources is a strengthening, and all are
-    deliberate.
+    Against each source's own formulation, the compared statements strengthen some clauses
+    of the conclusion and omit others; none hides a hypothesis, and no clause they do state
+    is weaker than the source's. Both directions are itemised here, the strengthenings
+    first. The exception is Kolmogorov's statement, which carries no condition beyond
+    continuity: kolmogorov_arnold strengthens it and omits nothing.
     The statements are made for every n, where the sources state n >= 2. At n = 0 the cube
     Icc 0 1 in Fin 0 -> R is a single point, the inner sum over Fin 0 is empty, and the
     representation reads f(x) = g(0) for that one point: true with g constant, and empty. At
-    n = 1 the statements are true and trivial, with every inner function the identity and
-    g = f/3; the Solution's sanity checks prove this instance of the Lorentz-Sprecher form
-    outright. Neither degenerate case is excluded by hypothesis.
+    n = 1 the statements are true and trivial: take lam = 1, every inner function the
+    identity, and g one third of a continuous extension of f from [0,1] to R -- f composed
+    with the clamp onto [0,1], divided by three, as in the Solution's sanity check, which
+    proves this instance of the Lorentz-Sprecher form outright; f/3 itself need not be
+    continuous off the cube, since f is assumed continuous on the cube only. Neither
+    degenerate case is excluded by hypothesis.
     The inner functions are continuous, and monotone or strictly monotone, on all of R, where
     the sources state them on [0,1] and sometimes confine their values to [0,1]. The outer
     function is continuous on all of R, as in Hedberg's statement; Kolmogorov, Lorentz and
@@ -355,13 +378,20 @@ fidelity:
     non-decreasing: constant inner functions are admitted there, exactly as the blind
     read-back rendered it. kolmogorov_arnold carries no monotonicity, following Kolmogorov's
     statement rather than his remark.
-    What is not claimed: the sources' normalisations -- phi(0) = 0, phi(1) = 1, values in
-    [0,1], weights summing to 1, rational independence of the weights -- which are proof
-    devices; Sprecher's Hoelder regularity of the inner function; Sprecher's shift form,
-    which is what "Sprecher's version" usually means and is why the strongest statement is
-    named _lorentz_sprecher rather than _sprecher; and anything about the outer function
-    beyond continuity and existence. The Lorentz-Sprecher form asserts nothing about the
-    lam_p beyond positivity.
+    Omitted, and weaker in that respect than the source's formulation: Kahane's
+    normalisations -- phi(0) = 0, phi(1) = 1, values in [0,1], weights distinct and summing
+    to 1; Hedberg's rational independence of the weights; Lorentz's confinement of the inner
+    functions' values to [0,1]; and Sprecher's Hoelder regularity of the inner function.
+    None of these is asserted or implied by the compared statements: they are conditions the
+    sources place on the objects they construct, proof devices rather than part of the
+    theorem as it is usually cited, and the Lorentz-Sprecher form asserts nothing about the
+    lam_p beyond positivity. So against Lorentz, Sprecher, Hedberg and Kahane neither the
+    compared statement nor the source formulation contains the other as stated: each has a
+    clause the other lacks, and no claim is made either way about recovering an omitted
+    clause by renormalisation. Also not claimed: Sprecher's shift form, which is what "Sprecher's
+    version" usually means and is why the strongest statement is named _lorentz_sprecher
+    rather than _sprecher; and anything about the outer function beyond continuity and
+    existence.
     Where a compared statement could be misread: ContinuousOn f (Icc 0 1) asks continuity of
     f on the cube only, and the representation is asserted on the cube only, so nothing is
     said about f or the representation outside it; the outer function depends on f, and the
@@ -386,9 +416,11 @@ review:
     statements compared here are those statements unchanged, as
     Palomar/KolmogorovArnold/TypeCheck.lean asserts. The read was preceded by the blind
     read-backs described under automation.notes and followed, on 2026-09-11, by the
-    independent model review described there. It is genuine but explicitly not a review: one
-    person, no second reader, none of the systematic scrutiny a Mathlib review would apply,
-    and no reading of the proof. The proof development has been read by no one. The library
+    independent machine review described there. It is genuine but explicitly not a review:
+    one person, no second reader, none of the systematic scrutiny a Mathlib review would
+    apply, and no reading of the proof by him. No human has read the proof development; the
+    one reading it has had is the Codex machine read, whose exact scope is under
+    automation.notes and which is neither a human read nor a second kernel. The library
     states this plainly rather than implying more, and the checks that do carry weight are
     mechanical: kernel verification, the axiom audit, the audit self-test, and the sanity
     checks in MiscMath/Analysis/KolmogorovArnold.lean, which prove the n = 1 case of the
@@ -404,29 +436,33 @@ alignment:
       module: "MiscMath.Analysis.KolmogorovArnold"
       status: "adapted"
       note: >-
-        Adapted only by strengthening: strictly increasing rather than non-decreasing inner
-        functions, every n rather than n >= 2, inner functions on all of R, and no
-        normalisation or rational-independence clause in the conclusion -- the lam_p are
-        asserted positive and nothing more. The shape is Hedberg's Theorem 1 with g
-        continuous on R; the strict form is also Morris (2021), Theorem 4.2.
+        Adapted in both directions. Strengthened: strictly increasing rather than
+        non-decreasing inner functions, every n rather than n >= 2, inner functions on all
+        of R. Omitted: Hedberg's rational independence of the lam_p, Kahane's normalisations
+        and Sprecher's regularity class -- the lam_p are asserted positive and nothing more,
+        and the psi_q continuous and strictly increasing and nothing more. The shape is
+        Hedberg's Theorem 1 with g continuous on R; the strict form is also Morris (2021),
+        Theorem 4.2.
     - source: "Lorentz (1962), Theorem 7 and equation (3)"
       lean: "MiscMath.Analysis.kolmogorov_arnold_lorentz"
       module: "MiscMath.Analysis.KolmogorovArnold"
       status: "adapted"
       note: >-
-        Adapted only by strengthening: every n, inner functions continuous and monotone on
-        all of R with values not confined to [0,1], outer function continuous on R rather
-        than on [0,s]. Carries his monotonicity clause as Monotone, that is, non-decreasing.
-        Derived in the Solution from the Lorentz-Sprecher form by phi_{q,p} := lam_p * psi_q.
+        Adapted in both directions. Strengthened: every n, inner functions continuous and
+        monotone on all of R, outer function continuous on R rather than on [0,s]. Omitted:
+        his confinement of the inner functions' values to [0,1]. Carries his monotonicity
+        clause as Monotone, that is, non-decreasing. Derived in the Solution from the
+        Lorentz-Sprecher form by phi_{q,p} := lam_p * psi_q.
     - source: "Kolmogorov (1957), the theorem"
       lean: "MiscMath.Analysis.kolmogorov_arnold"
       module: "MiscMath.Analysis.KolmogorovArnold"
       status: "adapted"
       note: >-
-        Adapted only by strengthening: every n rather than n >= 2, and inner functions
-        continuous on all of R rather than on [0,1]. No monotonicity clause, as in his
-        statement. Derived in the Solution from Lorentz's form by taking every outer function
-        to be the single one.
+        Adapted only by strengthening, which is possible here because his statement carries
+        no condition beyond continuity: every n rather than n >= 2, and inner functions
+        continuous on all of R rather than on [0,1]; nothing of his statement is omitted. No
+        monotonicity clause, as in his statement. Derived in the Solution from Lorentz's
+        form by taking every outer function to be the single one.
 
 acknowledgements: >-
   Built on Mathlib, whose Baire category theorem for complete metrizable spaces, sup-norm
