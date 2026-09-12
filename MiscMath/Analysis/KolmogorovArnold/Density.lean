@@ -133,7 +133,8 @@ theorem abs_cubeSign_le (f : C(Fin n → I, ℝ)) (N : ℕ) (a : CubeIndex n N) 
 theorem cubeSign_eq_one {f : C(Fin n → I, ℝ)} {N : ℕ} {a : CubeIndex n N}
     (h : ∀ y ∈ redCube N a, 0 < f y) : cubeSign f N a = 1 := by
   unfold cubeSign
-  rw [if_pos h]
+  split_ifs
+  rfl
 
 theorem cubeSign_eq_neg_one {f : C(Fin n → I, ℝ)} {N : ℕ} {a : CubeIndex n N}
     (h : ∀ y ∈ redCube N a, f y < 0) (hne : (redCube N a).Nonempty) : cubeSign f N a = -1 := by
@@ -142,7 +143,8 @@ theorem cubeSign_eq_neg_one {f : C(Fin n → I, ℝ)} {N : ℕ} {a : CubeIndex n
     intro h'
     obtain ⟨y, hy⟩ := hne
     exact absurd (h y hy) (not_lt.mpr (h' y hy).le)
-  rw [if_neg h1, if_pos h]
+  split_ifs
+  rfl
 
 /-- The arithmetic of Hedberg's estimate, abstracted: with `(2n+3) δ = 1`, `|a| ≤ 1`,
 `|s| ≤ (2n+1) δ`, and `s` on the side of `δ` when `a` is beyond `δ`, one has

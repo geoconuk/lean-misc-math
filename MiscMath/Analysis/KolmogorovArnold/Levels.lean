@@ -20,7 +20,7 @@ Hedberg's approximating inner functions (Lemma 2, properties a) and b), p. 269) 
 each cell with a **rational** value, the values on distinct cells of one rank are distinct, and a
 value taken on a cell of rank `i` differs from every value taken on a cell of rank `j ≠ i`.
 Together with the rational independence of the `λ_p` (his Lemma 1′) this makes the *cell map*
-`(q, j⃗) ↦ ∑_p λ_p · (value on cell (q, j_p))` injective, which is what lets the outer function
+`(q, j) ↦ ∑_p λ_p · (value on cell (q, j_p))` injective, which is what lets the outer function
 be prescribed cell by cell without conflict.
 
 Here the levels are given by a closed formula rather than an inductive choice. With `b̂_{q,j}`
@@ -175,7 +175,7 @@ theorem level_injective (φ : Fin m → Inner) (N : ℕ) {M : ℕ} (hM : 0 < M) 
 
 /-- **The cell map is injective** (Hedberg, Lemma 1′ with properties a) and b)): for rationally
 independent `λ`, the value `∑_p λ_p · level(q, j_p)` determines the rank `q` and the cell
-indices `j⃗`. Stated for `m = 2n + 1` ranks; the case `n = 0` is covered because then there is
+indices `j`. Stated for `m = 2n + 1` ranks; the case `n = 0` is covered because then there is
 a single rank. -/
 theorem cellMap_injective {n : ℕ} {lam : Fin n → ℝ} (hlam : LinearIndependent ℚ lam)
     (φ : Fin (2 * n + 1) → Inner) (N : ℕ) {M : ℕ} (hM : 0 < M) :

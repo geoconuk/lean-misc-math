@@ -381,9 +381,9 @@ example : ∃ φ : Fin 3 → Fin 1 → ℝ → ℝ,
     refine ⟨fun q t => if q = 0 then f (c t) else 0, ?_, ?_⟩
     · intro q
       by_cases hq : q = 0
-      · simp only [hq, if_true]
+      · simp only [hq, ite_true]
         exact hf.comp_continuous hc_cont hc_maps
-      · simp only [hq, if_false]
+      · simp only [hq, ite_false]
         exact continuous_const
     · intro x hx
       have hx0 : x 0 ∈ Icc (0 : ℝ) 1 := ⟨hx.1 0, hx.2 0⟩
@@ -443,7 +443,7 @@ example : ∃ φ : Fin 3 → Fin 1 → ℝ → ℝ,
       have hc0 : c 0 = fun _ => 0 := by
         funext i
         simp [hc]
-      simp +decide only [Fin.sum_univ_three, Fin.sum_univ_one, if_true, if_false,
+      simp +decide only [Fin.sum_univ_three, Fin.sum_univ_one, ite_true, ite_false,
         Fin.isValue]
       rw [hcx, hc0, ← hf0]
       ring
