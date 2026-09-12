@@ -71,3 +71,17 @@ roots = ["Palomar.Hoeffding.Challenge"]
 [[lean_lib]]
 name = "PalomarHoeffdingTypeCheck"
 roots = ["Palomar.Hoeffding.TypeCheck"]
+
+# The Palomar submission for the Kolmogorov–Arnold representation theorem, on the same
+# footing as the two pairs above: a Challenge stating the three theorems with `sorry`, and a
+# TypeCheck ascribing each Challenge statement to the theorem `MiscMath` actually ships.
+# Neither is in `defaultTargets`, so neither reaches `lake build`, `MiscMath/Audit.lean`, or
+# the three checks in `scripts/`. Build them with `lake build PalomarKolmogorovArnoldChallenge`
+# and `lake build PalomarKolmogorovArnoldTypeCheck`. See `Palomar/README.md`.
+[[lean_lib]]
+name = "PalomarKolmogorovArnoldChallenge"
+roots = ["Palomar.KolmogorovArnold.Challenge"]
+
+[[lean_lib]]
+name = "PalomarKolmogorovArnoldTypeCheck"
+roots = ["Palomar.KolmogorovArnold.TypeCheck"]
