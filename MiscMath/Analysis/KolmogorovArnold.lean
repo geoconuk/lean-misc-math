@@ -179,8 +179,24 @@ independence is a proof device, not a claim. The monotonicity clause of Lorentz'
 after the comparison with the primaries, had a read-back of its own, which rendered it as
 non-decreasing with constant inner functions admitted.
 
-No [Palomar](https://palomar-registry.org) registration as of 2026-09-11; the entry ID and
-version go here once there is one.
+Registered in [Palomar](https://palomar-registry.org), a registry of Lean-verified
+mathematics, as `PALOMAR-2026-09-11-000002`, at
+<https://palomar-registry.org/entry?id=PALOMAR-2026-09-11-000002&version=1>. That URL names
+version 1, the immutable snapshot in which these statements were the ones reviewed, taken
+from commit `7a3052c` of this repository. The three declarations compared there are the
+three advertised statements, restated from Mathlib alone in
+`Palomar/KolmogorovArnold/Challenge.lean` and ascribed to the theorems of this module by
+`Palomar/KolmogorovArnold/TypeCheck.lean`. Registration records that their proofs were
+replayed through Lean's kernel and through NanoDa, an independent kernel implementation,
+and that an automated review found no problem in the alignment between those statements and
+the informal account above. The first submission, at `ce03fc3`, passed the mechanical
+checks and was returned by that review with three corrections to the prose — none to the
+Lean — which this docstring and the submission carry.
+
+That is a second and independent read of the one thing this file cannot check for itself.
+It is not peer review, not an endorsement, and not a human read of the proof; Palomar is
+explicit that it is none of those. The advice above stands — satisfy yourself that the
+statement says what you need before relying on it.
 
 ## Sanity checks
 

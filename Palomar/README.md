@@ -77,7 +77,7 @@ if the Challenge still matches the library.
 | --- | --- | --- | --- |
 | [Wyner's spherical covering exponent](Wyner/Challenge.lean) | `Palomar.Wyner.Challenge` | `MiscMath.Geometry.SphereCoveringExponent` | registered, `PALOMAR-2026-08-23-000001` |
 | [Hoeffding's extrema at a fixed mean](Hoeffding/Challenge.lean) | `Palomar.Hoeffding.Challenge` | `MiscMath.Probability.PoissonTrialsFixedMean` | registered, `PALOMAR-2026-09-07-000011` |
-| [The Kolmogorov–Arnold representation theorem](KolmogorovArnold/Challenge.lean) | `Palomar.KolmogorovArnold.Challenge` | `MiscMath.Analysis.KolmogorovArnold` | submitted 2026-09-11; three prose corrections requested, no Lean change; corrected, for resubmission |
+| [The Kolmogorov–Arnold representation theorem](KolmogorovArnold/Challenge.lean) | `Palomar.KolmogorovArnold.Challenge` | `MiscMath.Analysis.KolmogorovArnold` | registered, `PALOMAR-2026-09-11-000002` |
 
 ## Where this work lives
 
@@ -92,14 +92,15 @@ Wyner's has: it registered on 2026-08-23 and was folded into `main` afterwards, 
 the end state the first bullet below recommends. Hoeffding's took the same route:
 prepared on `palomar-hoeffding`, rejected once at `dependency-provenance` for a Mathlib pin
 that was not an ancestor of master, resubmitted, registered on 2026-09-07 and folded in.
-Kolmogorov–Arnold's starts the same way, on `palomar-kolmogorov-arnold`: its first
+Kolmogorov–Arnold's took the same route, on `palomar-kolmogorov-arnold`: its first
 submission, at `ce03fc3`, passed mechanical verification and came back from the editorial
 review with three prose corrections and no Lean change — a "only strengthenings" account of
 the departures from the sources that ignored the omitted normalisation and independence
 clauses, an unclear statement of what an earlier machine review had inspected, and an `n = 1`
-witness `g = f/3` that is not continuous off the cube — corrected in the next commit for
-resubmission. Its development repository is a separate matter, discussed at the end of this
-section.
+witness `g = f/3` that is not continuous off the cube — corrected in `7a3052c`, which was
+resubmitted, registered on 2026-09-11 as `PALOMAR-2026-09-11-000002`, and folded into `main`
+by a plain merge, so that both submitted commits stay reachable. Its development repository
+is a separate matter, discussed at the end of this section.
 
 Two consequences worth remembering:
 
