@@ -179,6 +179,14 @@ concept DOI if you mean the library as a whole.
 | Audit self-test | The audit silently becoming a no-op. Plants a `sorry` and fails if the audit does not reject it — an audit that passes everything is worse than none | [`scripts/self-test-audit.sh`](scripts/self-test-audit.sh) |
 | Non-vacuity witnesses | The largest failure mode for machine-generated statements: hypotheses that cannot be simultaneously satisfied make a theorem vacuously true and worthless. Every result with hypotheses ships an `example` exhibiting values that satisfy them | each result file |
 
+**Checked by hand before each release (tags after `v0.3.0`):**
+
+| Check | What it rules out | Where |
+| --- | --- | --- |
+| Independent re-check | A proof Lean's kernel accepted but should not have, and an axiom the audit missed. Every declaration the audit covers is exported with [lean4export](https://github.com/leanprover/lean4export), together with its whole dependency cone into Mathlib and Lean core, and re-checked by [con-leche](https://github.com/leanprover/con-leche): an external checker that shares no code with Lean's kernel and is itself proven, in Lean, to accept only environments with a set-theoretic model — so it can accept no proof of `False`, and admits no axiom beyond the three above. The gate builds that proof and prints the axioms of its two main theorems before trusting the binary, and ends with a negative control: one of this library's theorems retargeted to `False`, which must be rejected. The release notes record the checker revision and the count | [`scripts/check-conleche.sh`](scripts/check-conleche.sh) |
+
+That is a second verdict on the proofs, which were the guaranteed part already; it says nothing about statements. con-leche confirms that every accepted theorem holds in its model *as elaborated*, and does not read the docstring. A commit between tags has not necessarily had it, which is one more reason to pin to a tag.
+
 **Not guaranteed:**
 
 - **That a statement means what its docstring says it means.** This is the real risk, and
@@ -239,7 +247,7 @@ MiscMath.lean                  root; imports every result
 MiscMath/Audit.lean            runs the library-wide axiom audit at build time
 MiscMath/Meta/AxiomAudit.lean  the #audit_axioms command
 MiscMath/<Area>/<Result>.lean  one result (or one tight cluster) per file
-scripts/                       the textual CI guards
+scripts/                       the shell guards: three run in CI, one by hand before a release
 docs/TEMPLATE.lean             skeleton for a new result
 ```
 
@@ -254,6 +262,13 @@ forget. The shell guards run in CI and can be run locally:
 
 ```bash
 ./scripts/check-imports.sh && ./scripts/check-conventions.sh && ./scripts/self-test-audit.sh
+```
+
+One more runs by hand before each release rather than in CI: the independent re-check
+described under [What this repository guarantees](#what-this-repository-guarantees).
+
+```bash
+./scripts/check-conleche.sh
 ```
 
 ## Mathlib version

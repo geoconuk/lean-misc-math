@@ -128,6 +128,25 @@ info: axiom audit passed: N declarations across M modules
 If that line is missing from a successful build, something is wrong — investigate
 rather than proceeding.
 
+Before a release is tagged, one more check runs by hand:
+
+```bash
+./scripts/check-conleche.sh
+```
+
+It exports every declaration the audit covers, with its dependency cone into Mathlib and
+Lean core, and re-checks the lot with [con-leche](https://github.com/leanprover/con-leche),
+an external checker proven in Lean to accept only environments with a set-theoretic model;
+it then confirms the checker rejects a copy with one of our theorems retargeted to `False`.
+It is a release gate and not a per-result check, by George's decision: it re-checks proofs,
+the part the kernel already guarantees, and says nothing about statements. It is not in CI:
+the first run at a given pin clones and builds the two tools under `.lake/conleche/`,
+con-leche's consistency proof included (about fifteen minutes, then cached), and prints the
+axioms of its two main theorems to confirm they rest on the standard three; after that a run
+takes a few minutes. Paste the summary line it prints into the release notes. The two pinned
+revisions are explained at the head of the script; the con-leche pin must move forward if a
+toolchain bump outruns its `pins/`.
+
 ## Never
 
 - **Never `sorry`, `native_decide`, `axiom`, `unsafe`, or `@[implemented_by]`.** The
