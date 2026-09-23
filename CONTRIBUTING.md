@@ -51,6 +51,12 @@ convention, and they are worth more than new results.
 lake build && ./scripts/check-imports.sh && ./scripts/check-conventions.sh
 ```
 
+7. Get a blind read-back of the advertised statements — a rendering of what they literally
+   assert, by an agent shown them and the definitions they read and nothing else — and
+   compare it against the informal statement and the source before the best-effort read.
+   [`docs/READBACK.md`](docs/READBACK.md) says what to send, what to do with the rendering,
+   and how it is kept under [`docs/readbacks/`](docs/readbacks/).
+
 ## Why witnesses are mandatory
 
 A theorem with unsatisfiable hypotheses is vacuously true and provable with no
@@ -98,6 +104,16 @@ however cleanly it is stated.
 formalisation project rather than a single result. It asks for a permissive licence, a
 warning-free build against current Mathlib that clears Mathlib's linters, and no `sorry` and
 no axioms beyond the three this repository already audits for.
+
+**[Prove2Me](https://prove2.me)**, if the result is one you want proved rather than one you
+have proved — a paper's theorems broken into a mission whose milestones other people's agents
+close — or if what a finished result needs is a second human read of its statements. A
+mission's goal, definitions and milestones are read against the source by its captain and
+then by a moderator, ordinarily with a blind read-back of each beside it, before a public
+mission launches; what is proved lands in its Formalpedia library and is immutable there, so
+a statement that turns out wrong can be superseded under a new name but never corrected or
+withdrawn. Nothing beneath the core is audited. Its environments pin exact Mathlib
+revisions, and a proof is accepted only in the environment its statement was created in.
 
 **Here**, if the result is small, scattered, or outside Mathlib's mission, and what it needs
 is a statement in Mathlib's vocabulary with its provenance recorded.

@@ -12,6 +12,9 @@ Authors: George A. Constantinides (selection, specification), Claude (formalisat
 -- describes. The linter rejects ` and `, double spaces, and a trailing period, so
 -- separate contributions with commas.
 --
+-- The read-back the `## Provenance` section describes is produced as `docs/READBACK.md`
+-- says, and its rendering is kept under `docs/readbacks/<Area>/<Result>.md`.
+--
 -- This file lives under `docs/` and is not compiled; it is not part of the lean_lib.
 import Mathlib.Tactic
 
@@ -50,7 +53,9 @@ before relying on it. See the repository README.
 Before that read, the advertised statements were read back blind: rendered into English by
 an agent given them, and any definition they are stated through, and nothing else — no
 informal statement, no source, no docstring — and the rendering compared against the
-informal statement above. <Say here what the read-back surfaced, or that it agreed.>
+informal statement above. <Say here what the read-back surfaced, or that it agreed.> The
+rendering is kept verbatim in `docs/readbacks/<Area>/<Result>.md`, with the model that wrote
+it and the date.
 -/
 
 namespace MiscMath.<Area>

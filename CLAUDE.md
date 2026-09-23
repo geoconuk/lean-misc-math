@@ -48,21 +48,28 @@ Concretely, when generating a result, spend the care on:
 4. Add the `import` line to `MiscMath.lean`, alphabetically.
 5. Run the checks (below). All three must pass.
 6. Get a **read-back** of the advertised statements before they go for their best-effort
-   read. Send them — with the definitions they are stated through, and nothing else — to a
-   subagent, and have it write out in English what they literally assert. Compare the
-   result against the `## Informal statement` and against the source. Where they diverge
-   the statement has drifted; fix it and re-run step 5.
+   read, following [`docs/READBACK.md`](docs/READBACK.md). Send them — as Lean source with
+   docstrings and comments stripped, together with the definitions they are stated through,
+   and nothing else — to a fresh subagent carrying that file's brief, and have it write out
+   what they literally assert. Compare the rendering against the `## Informal statement` and
+   against the source. Where they diverge the statement has drifted; fix it, re-run step 5,
+   and read back again whatever changed — a rendering of an earlier version describes a
+   statement that no longer exists, and counts for nothing. Record the rendering verbatim,
+   with the model that wrote it and the date, in `docs/readbacks/<Area>/<Result>.md`, and
+   say under `## Provenance` what the comparison found and where the rendering is.
 
    The constraint is what makes this worth doing: the read-back agent must not see the
-   module docstring, the informal statement, the source, or the rest of the file. Given any
-   of them it paraphrases the intended meaning back and the exercise is worthless. Give it
-   the advertised statements and the definitions they read, nothing else.
+   module docstring, the informal statement, the source, the declaration docstrings, or the
+   rest of the file. Given any of them it paraphrases the intended meaning back and the
+   exercise is worthless. Give it the advertised statements and the definitions they read,
+   nothing else.
 
    This is the only guard here that does not assume its reader already knows what the
    statement was meant to say — which is exactly what makes an author's own read of a
    statement they specified the weakest link in the chain. The technique is
-   [Prove2Me](https://prove2.me)'s: its mission captains may not self-audit, and a blind
-   rendering by a sub-agent is what their human compares against the source.
+   [Prove2Me](https://prove2.me)'s: there the agent that drafts a mission's statements may
+   not write their read-backs, a blind sub-agent renders each from the Lean alone, and that
+   rendering is what the human captain, and then a moderator, compare against the source.
 7. Say whether the result is worth registering with
    [Palomar](https://palomar-registry.org), which supplies the independent
    statement-versus-informal-claim read this repository cannot give itself. Its floor is
@@ -188,3 +195,12 @@ earns its place. Useful for this, in rough order of directness:
 Mathlib's naming convention is itself a search tool: a lemma about `a * b ≤ c` is
 called something like `mul_le_of_…`. If you cannot guess a plausible name, that is
 weak evidence it is not there.
+
+Beyond Mathlib, [Formalpedia](https://prove2.me/formalpedia) — Prove2Me's library of
+agent-proved statements, searchable without an account at
+`https://prove2.me/formalpedia?q=<words>` — is worth a look once the statement is drafted,
+for a formalisation of the same theorem to hold ours against. It is a second rendering to
+compare shapes with, not a source: nothing there outside a mission's audited core is
+guaranteed a read by anyone, and nothing there can be a dependency here, since a Palomar
+Challenge may import only Lean core, Mathlib, Tau Ceti and CSLib, and a statement read
+through Formalpedia's definitions is not in Mathlib's vocabulary.
