@@ -95,3 +95,11 @@ roots = ["Palomar.KolmogorovArnold.TypeCheck"]
 [[lean_lib]]
 name = "RedBluePebbleGameTarget"
 roots = ["Target.RedBluePebbleGame"]
+
+# Holds the red-blue pebble game's proved theorems to the frozen targets above, by ascribing each
+# target's type to the theorem `MiscMath` ships. No `sorry` of its own, but outside
+# `defaultTargets` for the same reason as the Palomar TypeChecks. Build it with
+# `lake build RedBluePebbleGameTypeCheck`.
+[[lean_lib]]
+name = "RedBluePebbleGameTypeCheck"
+roots = ["Target.RedBluePebbleGame.TypeCheck"]
