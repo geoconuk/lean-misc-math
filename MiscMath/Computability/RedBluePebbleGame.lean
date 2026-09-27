@@ -5,12 +5,13 @@ Authors: George A. Constantinides (selection, specification), Claude (formalisat
 -/
 import MiscMath.Computability.RedBluePebbleGame.Bounds
 import MiscMath.Computability.RedBluePebbleGame.Feasibility
+import MiscMath.Computability.RedBluePebbleGame.MatMulChain
 import MiscMath.Computability.RedBluePebbleGame.Parts
 import Mathlib.Analysis.Asymptotics.Lemmas
 import Mathlib.Data.Fin.VecNotation
 
 /-!
-# Hong and Kung's red-blue pebble game: the key lemma, and the I/O complexity of the FFT
+# Hong and Kung's red-blue pebble game: the key lemma, the FFT and matrix multiplication
 
 ## Informal statement
 
@@ -71,15 +72,39 @@ are level `0` and the outputs level `k`. For it:
 9. **Corollary 4.1 as the paper states it** (`fft_io_lower_bound_isBigO`): `Q · log S = Ω(n log n)`,
    with one constant for every `n ≥ 2` and every `S ≥ 3`.
 
+**Matrix multiplication.** The *ordinary algorithm* for the product of an `m × k` matrix `A` by a
+`k × n` matrix `B` forms the `m k n` products `A i l · B l j`, and adds up the `k` products of each
+entry `(i, j)` of the result. A computation DAG *evaluates* it (`IsMatMulEvaluation`) if some of
+its vertices can be labelled so that:
+
+* the entries of `A` and of `B` are `m k + k n` distinct inputs;
+* each product `A i l · B l j` is a vertex of its own, with an edge from each of its two factors;
+* no vertex can be reached from the products of two different entries of the result.
+
+How the products are then combined, in what order, and what else the graph computes, are left
+free. For such graphs:
+
+10. **Feasibility, and non-vacuity** (`exists_isMatMulEvaluation`). For all `m, k, n ≥ 1`, some
+    such graph has a complete calculation exactly when `S ≥ 3`.
+11. **The two bounds the direct argument gives** (`matMul_io_bounds`). For `k ≥ 1` and `S ≥ 1`,
+    every complete calculation costs `q ≥ m k + k n + m n`, and `q ≥ m k n / √(2S) − S`.
+12. **Corollary 6.2, with its constant** (`matMul_io_lower_bound`). Every complete calculation
+    with at most `S` red pebbles, costing `q`, has `m k n ≤ 2 q √S`.
+13. **Corollary 6.2 as the paper states it** (`matMul_io_lower_bound_isBigO`): `Q · √S = Ω(m k n)`.
+    Over any collection of such graphs, one constant serves every graph of the collection and every
+    `S` at which that graph has a complete calculation.
+
 ## How to read these statements
 
-The ten definitions they are stated through are in `RedBluePebbleGame/Spec.lean`, and they are
+The twelve definitions they are stated through are in `RedBluePebbleGame/Spec.lean`, and they are
 part of the read:
 
 * the game: `Step` (the five moves, each labelled with its charge), `HasCompleteCalculation`,
   `fftEdge` and `minIOTime` (the paper's `Q`, as an infimum over `ℕ`);
 * the key lemma: `IsComputationDAG`, `Dominates`, `IsDominatorPartition`, `IsPartition`, and
-  `minParts` and `minDominatorParts` (the paper's `P(S)` and `P_D(S)`, as infima over `ℕ`).
+  `minParts` and `minDominatorParts` (the paper's `P(S)` and `P_D(S)`, as infima over `ℕ`);
+* matrix multiplication: `IsMatMulLabelling` (which vertices are the entries and the products) and
+  `IsMatMulEvaluation` (a computation DAG with such a labelling).
 
 The FFT's inputs and outputs are written inline, as `Finset.univ.filter (·.1 = 0)` and
 `Finset.univ.filter (·.1 = Fin.last k)`.
@@ -106,8 +131,9 @@ The FFT's inputs and outputs are written inline, as `Finset.univ.filter (·.1 = 
 * **Mathlib has no `Ω`.** So "`g = Ω(f)`" is written "`f = O(g)`", with `n = 2^k` and natural
   logarithms (the base only moves the constant). `Q · log S = Ω(n log n)` becomes
   `n log n = O(Q · log S)`, and `P_D(S) = Ω(n log n / (S log S))` becomes
-  `n log n / (S log S) = O(P_D(S))`.
-* **The asymptotic statements are uniform.** Their filters are principal, on
+  `n log n / (S log S) = O(P_D(S))`. For matrix multiplication, `Q · √S = Ω(m k n)` becomes
+  `m k n = O(Q · √S)`.
+* **The FFT's asymptotic statements are uniform.** Their filters are principal, on
   `{(k, S) : k ≥ 1, S ≥ 3}` and `{(k, S) : k ≥ 1, S ≥ 2}`. So each says there is one constant `C`
   for every such `k` and `S` at once: `n ln n ≤ C · Q · ln S` (`C = 5` works), and
   `n ln n / (S ln S) ≤ C · P_D(S)` (`C = 2` works).
@@ -155,6 +181,58 @@ The FFT's inputs and outputs are written inline, as `Finset.univ.filter (·.1 = 
   - `P_D(S)` is a genuine minimum for every `S ≥ 1`: the single vertices, level by level, form an
     `S`-dominator partition.
 
+**Matrix multiplication.**
+
+* **The class is what the proof uses, and it is wider than the paper's.** The paper proves
+  Corollary 6.2 for *independent evaluations* (its E1 and E2). There the products are formed first,
+  and each entry of the result is then summed from its own products by a tree of additions and
+  subtractions; the trees of different entries share no vertex. `IsMatMulLabelling` asks only for
+  what the proof needs.
+  - Every independent evaluation is in the class, whatever the shapes of its trees and the order of
+    its additions: everything reached from a product lies in the tree of its entry.
+  - So is a chain of fused multiply-adds `s ← s + a · b`, each `s` standing for its product: a
+    product may have predecessors besides its two factors.
+  - An entry of `A` or `B` may have other successors, there may be inputs besides the entries, and
+    the graph may compute other things too. `O` is constrained only by `IsComputationDAG`.
+* **What the class leaves out.** The class is about the shape of the graph, which vertices feed
+  which, and not about the operations at its vertices.
+  - It leaves out work shared between entries of the result, such as a partial sum used by two of
+    them: `independent` forbids it.
+  - It leaves out Strassen's `2 × 2` algorithm: a brute-force search over its graph finds no
+    labelling at all.
+* **The class is weak at degenerate sizes, where nothing is claimed.** If `k = 0`, or `m = n = 0`,
+  every computation DAG is in it. If `m = 0 < k, n`, the labelling asks only for `k n` distinct
+  inputs, and `n = 0` is symmetric. In all these cases `m k n = 0`.
+  - So `k ≥ 1` in `matMul_io_bounds` carries weight. Its first bound counts the `m n` outputs that
+    the products reach, and with `k = 0` there are no products. The sanity checks show the bound
+    failing at `k = 0`.
+* **The hypotheses on `S` restrict nothing.**
+  - A complete calculation of a graph in the class with `m k n ≥ 1` forces `S ≥ 3`: when a product
+    is first computed, it and its two factors are red. So `matMul_io_lower_bound` needs no
+    hypothesis on `S`.
+  - In `matMul_io_bounds`, `S ≥ 1` keeps `√(2S)` visibly away from `0`. At `S = 0` a calculation
+    exists only on the empty graph, where both bounds hold.
+* **The second bound of `matMul_io_bounds` can say nothing.** Its left side is `≤ 0` exactly when
+  `m k n ≤ S √(2S)`. There the first bound carries the claim, and `matMul_io_lower_bound` combines
+  the two.
+* **`exists_isMatMulEvaluation` is about one graph of each size.** It says that some graph of the
+  class has a complete calculation exactly when `S ≥ 3`, not that every graph does. Every graph of
+  the class with `m k n ≥ 1` needs `S ≥ 3`, and some need more. The graph its proof exhibits is the
+  ordinary algorithm itself, each entry of the result summed left to right.
+* **The asymptotic statement is about a collection of graphs.** One graph has one size, so the
+  statement takes a collection, indexed by any type `ι`, in which graph `i` evaluates the product of
+  an `m i × k i` matrix by a `k i × n i` matrix. It says there is one constant `C` with
+  `m i · k i · n i ≤ C · Q_i(S) · √S` at every point `(i, S)` of its filter (`C = 2` works).
+  - The constant is chosen after the collection. That loses nothing: a collection may hold every
+    graph of the class, and then one constant covers the class.
+  - The filter is principal, on the pairs `(i, S)` at which graph `i` has a complete calculation
+    with `S` red pebbles. There `Q_i(S)` is a genuine minimum. The set is upward closed in `S`, and
+    on it the right-hand side vanishes only for an empty graph.
+  - Unlike the FFT's, the filter could not be `S ≥ 3`. A chain of fused multiply-adds with `k ≥ 2`
+    needs four red pebbles. At `S = 3` it has no calculation, `Q` would take `minIOTime`'s value
+    `0`, and the statement would be false.
+  - The paper names no filter. This reading, uniform in the sizes and in `S`, is the strongest.
+
 ## Source
 
 Hong Jia-Wei and H. T. Kung, *I/O Complexity: The Red-Blue Pebble Game*, Proceedings of the 13th
@@ -165,7 +243,10 @@ doi:10.1145/800076.802486; a scan is on H. T. Kung's page,
 * the game, its standing assumptions on the graph, and the definition of `Q`: §2, p. 327;
 * `S`-partitions (P1–P4), Theorem 3.1 and its proof: §3, p. 328;
 * `P(S)`, Lemma 3.1, `S`-dominator partitions, `P_D(S)`, Theorem 4.1 and its proof, and
-  Corollary 4.1 ("`Q · log S = Ω(n log n)`"): §§3–4, p. 329.
+  Corollary 4.1 ("`Q · log S = Ω(n log n)`"): §§3–4, p. 329;
+* independent evaluations (E1, E2) and Theorem 6.1: §6, p. 330, with the proof of Theorem 6.1
+  running on to p. 331;
+* Lemma 6.1 and its proof, and Corollary 6.2 ("`Q · √S = Ω(mkn)`"): §6, p. 331.
 
 Later restatements of the model, for comparison:
 
@@ -176,8 +257,9 @@ Later restatements of the model, for comparison:
 ## Relation to Mathlib
 
 Mathlib has no pebble games and no I/O complexity, and its `Digraph` is a bare adjacency
-relation with no path API. The game and the key lemma are therefore stated through ten new
-definitions, in `RedBluePebbleGame/Spec.lean`, which are part of the read.
+relation with no path API. The game, the key lemma and the matrix-multiplication graphs are
+therefore stated through twelve new definitions, in `RedBluePebbleGame/Spec.lean`, which are part
+of the read.
 
 Everything else is Mathlib's:
 
@@ -223,12 +305,31 @@ Prove2Me's Formalpedia (searched 2026-09-25).
     `S` loads and stores directly.
   - With the corrected Theorem 4.1 applied at `2S`, the paper's route gives the second bound of
     `fft_io_bounds`.
+* **Generalised: Corollary 6.2 is proved for a wider class of graphs.** The paper derives it from
+  its Theorem 6.1, about independent evaluations. Here the class is cut down to what the proof
+  uses; see above.
+* **Avoided: Theorem 6.1's statement has `H(S)` where its proof gives `H(2S)`.**
+  - The proof bounds the sets of an `S`-partition, then applies Lemma 3.1, which reads
+    `2S`-partitions; its last line has `H(2S)`.
+  - That needs `H(2S) = O(H(S))`. It holds for matrix multiplication, where `H(S) = O(S^{3/2})`,
+    so Corollary 6.2 stands.
+  - Here the argument works with `2S`-partitions throughout, and Theorem 6.1 is not stated.
+* **A different route to Lemma 6.1.** Both routes bound the products in one set of the partition.
+  - The paper splits the rows of `A` at `√S` entries in the set's dominator.
+  - Here the products with both factors in the dominator are counted slice by slice in the inner
+    index `l`. Slice `l` has at most `min(2S, α_l β_l) ≤ √(2S) (α_l + β_l) / 2` of them, where
+    `α_l` and `β_l` count the entries of column `l` of `A` and of row `l` of `B` in the dominator.
+    The `2S` bounds the entries of the result the set meets, one vertex of its minimum set each.
+  - That gives at most `S √(2S)` products per set.
 * **Strengthened: explicit constants.**
   - Corollary 4.1's `Ω` gets the constant `1/5` (`fft_io_lower_bound`).
   - Theorem 4.1 gets `n (log₂ n + 1) ≤ h S log₂ (2S)`.
-  - Both `Ω` forms are stated uniformly in `n` and `S`.
-* **Added: `q ≥ 2n`.** Every input is loaded and every output stored. The paper does not state
-  this, and for large `S` its step from Lemma 3.1 to Corollary 4.1 silently needs it.
+  - The FFT's two `Ω` forms are stated uniformly in `n` and `S`.
+  - Corollary 6.2's `Ω` gets the constant `1/2` (`matMul_io_lower_bound`), and is stated uniformly
+    in the sizes and `S`, over any collection of graphs of the class.
+* **Added: `q ≥ 2n`, and `q ≥ m k + k n + m n`.** Every input is loaded and every output stored.
+  The paper states neither, and for large `S` its step from Lemma 3.1 to Corollary 4.1 silently
+  needs the first. Its route to Corollary 6.2 needs the second in the same way.
 * **Convention: no move is a no-op.** A load onto a vertex already red is not a move, and nor are
   the like. This loses nothing: deleting a no-op from a calculation leaves one no dearer.
 * **Convention: the end is exact.** A calculation ends with blue pebbles on exactly the outputs and
@@ -238,35 +339,40 @@ Prove2Me's Formalpedia (searched 2026-09-25).
   red pebbles where they are. With sliding, two red pebbles would do for the FFT graph.
 * **Omitted: everything else in the paper.** That includes:
   - Theorem 2.1, the matching upper bound, which the paper states without proof;
-  - §§5–8, including matrix multiplication (§6, whose own use of the method bounds each set
-    through its minimum set as well as its dominator).
+  - §§5, 7 and 8;
+  - from §6: Theorem 6.1 for other expressions, with its `S`-combination number `H(S)`;
+    Lemma 6.1 as stated; and Corollary 6.1, on matrix–vector products.
 
 ## Provenance
 
 Result selected and specified by George A. Constantinides, who has read its advertised
 statements on a best-effort basis, before any proof of them existed.
 
-They are nine theorems:
+They are thirteen theorems:
 
 * `exists_partition_of_hasCompleteCalculation`, `io_lower_bound_of_parts` and
   `minIOTime_lower_bound`;
 * `fft_parts_lower_bound` and `fft_parts_lower_bound_isBigO`;
-* `fft_io_lower_bound`, `fft_io_bounds`, `fft_complete_iff` and `fft_io_lower_bound_isBigO`.
+* `fft_io_lower_bound`, `fft_io_bounds`, `fft_complete_iff` and `fft_io_lower_bound_isBigO`;
+* `matMul_io_lower_bound`, `matMul_io_bounds`, `exists_isMatMulEvaluation` and
+  `matMul_io_lower_bound_isBigO`.
 
-They are stated through ten definitions in `RedBluePebbleGame/Spec.lean`: `Step`,
+They are stated through twelve definitions in `RedBluePebbleGame/Spec.lean`: `Step`,
 `HasCompleteCalculation`, `fftEdge`, `minIOTime`, `IsComputationDAG`, `Dominates`,
-`IsDominatorPartition`, `IsPartition`, `minParts` and `minDominatorParts`.
+`IsDominatorPartition`, `IsPartition`, `minParts`, `minDominatorParts`, `IsMatMulLabelling` and
+`IsMatMulEvaluation`.
 
 The statements and their proofs were generated by Claude, and are kernel-verified and
 axiom-audited; the proofs are read by nobody. Every other lemma and definition here is proof, and
 may be read by no one. A best-effort read is not a review — satisfy yourself that the statement
 says what you need before relying on it. See the repository README.
 
-The statements were written, read back and read before any proof existed. They were frozen in two
-phases as `Target/RedBluePebbleGame.lean`:
+The statements were written, read back and read before any proof existed. They were frozen in
+three phases as `Target/RedBluePebbleGame.lean`:
 
 * the FFT statements in commit `783e5a3`;
-* the key lemma and Theorem 4.1 in commits `7c3c34d` and `d971e3f`.
+* the key lemma and Theorem 4.1 in commits `7c3c34d` and `d971e3f`;
+* matrix multiplication in commit `0049cbf`.
 
 `Target/RedBluePebbleGame/TypeCheck.lean` ascribes each frozen type to the theorem proved here, so
 the two cannot drift apart.
@@ -286,8 +392,15 @@ statements. Each phase had two rounds:
   graph. It also confirmed that empty sets make `q ≤ S h` free.
 * **Phase 2, round 2** followed the gathering of the four graph hypotheses into
   `IsComputationDAG`. It surfaced that the conclusion of Theorem 3.1 fixes `h` almost exactly.
+* **Phase 3, round 1** surfaced four points about the matrix-multiplication statements:
+  - the asymptotic statement does not degenerate on its filter;
+  - the filter is upward closed in `S`;
+  - the class is weak at degenerate sizes, where nothing is claimed;
+  - the constant may depend on the whole collection, which may hold the whole class.
+* **Phase 3, round 2** followed the folding of `IsComputationDAG` into `IsMatMulEvaluation`, and
+  the restatement of `exists_isMatMulEvaluation` as an equivalence. It surfaced nothing new.
 
-The points from Phase 2 are said above too. The renderings are kept verbatim in
+The points from Phases 2 and 3 are said above too. The renderings are kept verbatim in
 `docs/readbacks/Computability/RedBluePebbleGame.md`, with the model that wrote them and the date.
 -/
 
@@ -498,6 +611,113 @@ theorem fft_parts_lower_bound_isBigO :
     div_le_iff₀ (mul_pos hSpos hlogSpos)]
   nlinarith [hb', h1, h2]
 
+/-- **Hong and Kung's Corollary 6.2, with its constant.** Every complete calculation of a graph that
+evaluates the ordinary product of an `m × k` matrix by a `k × n` matrix (`IsMatMulEvaluation`),
+with at most `S` red pebbles and charged `q`, has `m k n ≤ 2 q √S`. -/
+theorem matMul_io_lower_bound {V : Type*} [DecidableEq V] [Finite V]
+    {E : V → V → Prop} {I O : Finset V} {m k n S q : ℕ} (hM : IsMatMulEvaluation m k n E I O)
+    (hq : HasCompleteCalculation E I O S q) :
+    (m * k * n : ℝ) ≤ 2 * q * Real.sqrt S := by
+  obtain ⟨hG, a, b, p, hL⟩ := hM
+  rcases Nat.eq_zero_or_pos (m * k * n) with h0 | hpos
+  · have h0' : (m * k * n : ℝ) = 0 := by exact_mod_cast h0
+    rw [h0']
+    positivity
+  have hm : 0 < m := Nat.pos_of_ne_zero fun h => by simp [h] at hpos
+  have hk : 0 < k := Nat.pos_of_ne_zero fun h => by simp [h] at hpos
+  have hn : 0 < n := Nat.pos_of_ne_zero fun h => by simp [h] at hpos
+  have h3 : 3 ≤ S := hL.three_le hG (⟨0, hm⟩, ⟨0, hk⟩, ⟨0, hn⟩) hq
+  have h1 := add_le_of_isMatMulLabelling hG hL hk hq
+  have h2 := mul_le_of_isMatMulLabelling hG hL (by omega) hq
+  have hS : (3 : ℝ) ≤ S := by exact_mod_cast h3
+  have hq0 : (0 : ℝ) ≤ q := Nat.cast_nonneg q
+  have hsS : 0 ≤ Real.sqrt S := Real.sqrt_nonneg _
+  rcases le_or_gt (3 * S) q with hbig | hsmall
+  · -- Many loads and stores: `q + S ≤ 4q/3`, and `(4/3) √2 ≤ 2`.
+    have hbig' : (3 : ℝ) * S ≤ q := by exact_mod_cast hbig
+    have hr2 : Real.sqrt 2 ≤ 3 / 2 := by
+      rw [Real.sqrt_le_left (by norm_num)]
+      norm_num
+    have hkey : ((q : ℝ) + S) * Real.sqrt 2 ≤ 2 * q := by
+      nlinarith [mul_le_mul_of_nonneg_left hr2 (by positivity : (0 : ℝ) ≤ q + S)]
+    rw [Real.sqrt_mul (by norm_num)] at h2
+    calc (m * k * n : ℝ) ≤ (q + S) * (Real.sqrt 2 * Real.sqrt S) := h2
+      _ = ((q + S) * Real.sqrt 2) * Real.sqrt S := by ring
+      _ ≤ (2 * q) * Real.sqrt S := mul_le_mul_of_nonneg_right hkey hsS
+  · -- Few: each of `m k`, `k n` and `m n` is at most `q < 3S`, so `(m k n)² ≤ q³ < 4 q² S`.
+    have hsmall' : (q : ℝ) < 3 * S := by exact_mod_cast hsmall
+    have hx : ((m * k : ℕ) : ℝ) ≤ q := by exact_mod_cast (show m * k ≤ q by omega)
+    have hy : ((k * n : ℕ) : ℝ) ≤ q := by exact_mod_cast (show k * n ≤ q by omega)
+    have hz : ((m * n : ℕ) : ℝ) ≤ q := by exact_mod_cast (show m * n ≤ q by omega)
+    have hxy : ((m * k : ℕ) : ℝ) * ((k * n : ℕ) : ℝ) ≤ q * q :=
+      mul_le_mul hx hy (Nat.cast_nonneg _) hq0
+    have hxyz : ((m * k : ℕ) : ℝ) * ((k * n : ℕ) : ℝ) * ((m * n : ℕ) : ℝ) ≤ q * q * q :=
+      mul_le_mul hxy hz (Nat.cast_nonneg _) (mul_nonneg hq0 hq0)
+    have hq3 : (q : ℝ) * q * q ≤ 3 * S * (q * q) := by
+      nlinarith [mul_nonneg hq0 hq0]
+    refine le_of_sq_le_sq ?_ (by positivity)
+    have hsq : (2 * (q : ℝ) * Real.sqrt S) ^ 2 = 4 * (q * q) * S := by
+      rw [mul_pow, mul_pow, Real.sq_sqrt (Nat.cast_nonneg _)]
+      ring
+    rw [hsq]
+    push_cast at hxyz
+    nlinarith [mul_nonneg (mul_nonneg hq0 hq0) (Nat.cast_nonneg S : (0 : ℝ) ≤ S)]
+
+/-- **The two bounds the argument gives.** For `k ≥ 1`, every complete calculation of a graph that
+evaluates the ordinary product of an `m × k` matrix by a `k × n` matrix, charged `q`, loads each
+entry of the two matrices and stores an output for each entry of the product, so
+`q ≥ m k + k n + m n`; and for `S ≥ 1` red pebbles, `q ≥ m k n / √(2S) − S`. -/
+theorem matMul_io_bounds {V : Type*} [DecidableEq V] [Finite V]
+    {E : V → V → Prop} {I O : Finset V} {m k n S q : ℕ} (hk : 1 ≤ k) (hS : 1 ≤ S)
+    (hM : IsMatMulEvaluation m k n E I O) (hq : HasCompleteCalculation E I O S q) :
+    m * k + k * n + m * n ≤ q ∧ (m * k * n : ℝ) / Real.sqrt (2 * S) - S ≤ q := by
+  obtain ⟨hG, a, b, p, hL⟩ := hM
+  refine ⟨add_le_of_isMatMulLabelling hG hL hk hq, ?_⟩
+  have hS' : (1 : ℝ) ≤ S := by exact_mod_cast hS
+  have hpos : 0 < Real.sqrt (2 * S) := Real.sqrt_pos.2 (by linarith)
+  rw [sub_le_iff_le_add, div_le_iff₀ hpos]
+  rcases Nat.eq_zero_or_pos (m * k * n) with h0 | hmkn
+  · have h0' : (m * k * n : ℝ) = 0 := by exact_mod_cast h0
+    rw [h0']
+    positivity
+  · have hm : 0 < m := Nat.pos_of_ne_zero fun h => by simp [h] at hmkn
+    have hn : 0 < n := Nat.pos_of_ne_zero fun h => by simp [h] at hmkn
+    have h3 : 3 ≤ S := hL.three_le hG (⟨0, hm⟩, ⟨0, hk⟩, ⟨0, hn⟩) hq
+    exact mul_le_of_isMatMulLabelling hG hL (by omega) hq
+
+/-- **Non-vacuity, and feasibility.** For all `m, k, n ≥ 1` some graph evaluates the ordinary
+product of an `m × k` matrix by a `k × n` matrix (`IsMatMulEvaluation`) and has a complete
+calculation exactly when at least three red pebbles are available. The graph is the ordinary
+algorithm itself, each entry of the product summed left to right. -/
+theorem exists_isMatMulEvaluation {m k n : ℕ} (hm : 1 ≤ m) (hk : 1 ≤ k) (hn : 1 ≤ n) :
+    ∃ (V : Type) (_ : DecidableEq V) (_ : Finite V) (E : V → V → Prop) (I O : Finset V),
+      IsMatMulEvaluation m k n E I O ∧ ∀ S, (∃ q, HasCompleteCalculation E I O S q) ↔ 3 ≤ S :=
+  ⟨MatMulChain.Vertex m k n, inferInstance, inferInstance, MatMulChain.edge,
+    MatMulChain.inputs m k n, MatMulChain.outputs m k n, MatMulChain.isMatMulEvaluation hm hn,
+    MatMulChain.complete_iff hm hk hn⟩
+
+/-- **Hong and Kung's Corollary 6.2 as stated: `Q · √S = Ω(m k n)`.** For any collection of graphs,
+the `i`-th evaluating the ordinary product of an `m i × k i` matrix by a `k i × n i` matrix, and
+with `Q` the minimum I/O time, `m k n = O(Q · √S)` along the principal filter of the pairs `(i, S)`
+at which graph `i` has a complete calculation with `S` red pebbles: one constant serves every graph
+of the collection and every such `S`. -/
+theorem matMul_io_lower_bound_isBigO {ι : Type*} {m k n : ι → ℕ} {W : ι → Type*}
+    [∀ i, DecidableEq (W i)] [∀ i, Finite (W i)] {E : ∀ i, W i → W i → Prop}
+    {I O : ∀ i, Finset (W i)} (hM : ∀ i, IsMatMulEvaluation (m i) (k i) (n i) (E i) (I i) (O i)) :
+    (fun x : ι × ℕ => (m x.1 * k x.1 * n x.1 : ℝ))
+      =O[𝓟 {x | ∃ q, HasCompleteCalculation (E x.1) (I x.1) (O x.1) x.2 q}]
+      fun x => (minIOTime (E x.1) (I x.1) (O x.1) x.2 : ℝ) * Real.sqrt x.2 := by
+  rw [Asymptotics.isBigO_principal]
+  refine ⟨2, ?_⟩
+  rintro ⟨i, S⟩ hx
+  have hmem : HasCompleteCalculation (E i) (I i) (O i) S (minIOTime (E i) (I i) (O i) S) :=
+    Nat.sInf_mem (s := {q | HasCompleteCalculation (E i) (I i) (O i) S q}) hx
+  have hb := matMul_io_lower_bound (hM i) hmem
+  dsimp only
+  rw [Real.norm_eq_abs, Real.norm_eq_abs, abs_of_nonneg (by positivity),
+    abs_of_nonneg (by positivity)]
+  linarith
+
 /-! ## Sanity checks
 
 Guards against the ways a correct proof can still accompany a useless statement. These are
@@ -539,6 +759,31 @@ For the key lemma and Theorem 4.1:
     Theorem 3.1 is false.
   - The printed theorem's other defect, inputs computed under the literal rule R3, needs a
     different `Step`. It was checked by brute force, not here.
+
+For matrix multiplication:
+
+* **Non-vacuity.** `exists_isMatMulEvaluation` is itself the check for the other three
+  statements. At every size `m, k, n ≥ 1` their hypotheses hold together with any `S ≥ 3`, and a
+  family of its witnesses meets the hypothesis of the asymptotic statement with every `S ≥ 3` in
+  its filter.
+  - Here, besides, the `1 × 1 × 2` product is in the class, and `mm112_calc` is a complete
+    calculation of it with three red pebbles and five loads and stores, checked move by move by
+    `decide`. It has two entries, so `independent` says something there.
+* **The first bound is attained.** At that point `minIOTime` is exactly `5 = 1 · 1 + 1 · 2 + 1 · 2`:
+  at most `5` by the calculation, at least `5` by `matMul_io_bounds`.
+* **`k ≥ 1` cannot be dropped from `matMul_io_bounds`.** With `k = 0` the labelling says nothing,
+  so the graph with one edge evaluates the `2 × 0 × 2` product. It costs `2`, where the first bound
+  would demand `4`.
+* **`independent` carries weight.** Add the two products of the `1 × 1 × 2` product into a sixth
+  vertex, and every other field of `IsMatMulLabelling` still holds. Four red pebbles then give a
+  calculation costing `4`, below the first bound's `5`.
+* **Other fields carry weight too, at larger sizes.** This was checked by brute force, not here.
+  - Drop one of `independent`, `injective_a`, `a_mem` and `edge_a`, and keep everything else.
+    Then some graph has a calculation, checked move by move, that breaks both
+    `matMul_io_lower_bound` and the second bound of `matMul_io_bounds`. The matrices are square, of
+    sizes 30 to 100.
+  - By symmetry the same holds for the fields of `B`.
+  - No such example is known for `injective_p` or `disjoint_ab`.
 -/
 
 section Sanity
@@ -812,6 +1057,122 @@ example : (∀ v, v ∈ ({0, 1, 2} : Finset (Fin 5)) ↔ ∀ u, ¬ cycE u v) ∧
   refine ⟨by decide, by decide, by decide, fun h => h 3 (Relation.TransGen.head (b := 4)
       (by decide) (Relation.TransGen.single (by decide))), ?_, not_conclusion le_rfl (by decide)⟩
   exact ⟨3, ![(∅, {0, 1, 2}), (∅, {1, 2}), (∅, {2}), (∅, ∅)], ![0, 0, 0], by decide⟩
+
+/-! ### Matrix multiplication -/
+
+/-- The graph of the `1 × 1 × 2` product: `0 = A 0 0`, `1 = B 0 0`, `2 = B 0 1`,
+`3 = A 0 0 * B 0 0` and `4 = A 0 0 * B 0 1`. With `k = 1` there are no additions: each product is an
+entry of the result. -/
+private def mm112E (u v : Fin 5) : Prop :=
+  (u = 0 ∧ v = 3) ∨ (u = 1 ∧ v = 3) ∨ (u = 0 ∧ v = 4) ∨ (u = 2 ∧ v = 4)
+private instance : DecidableRel mm112E := fun u v => by unfold mm112E; infer_instance
+
+/-- From a vertex with no successor, a path reaches only the vertex itself. -/
+private theorem reach_eq_of_sink {V : Type*} {E : V → V → Prop} {x w : V} (hx : ∀ y, ¬ E x y)
+    (h : Relation.ReflTransGen E x w) : w = x := by
+  induction h with
+  | refl => rfl
+  | tail _ h ih => subst ih; exact absurd h (hx _)
+
+/-- The `1 × 1 × 2` product is in the class, with `A 0 0 ↦ 0`, `B 0 j ↦ 1 + j` and
+`A 0 0 * B 0 j ↦ 3 + j`. Its two entries make `independent` say something. -/
+private theorem mm112_eval : IsMatMulEvaluation 1 1 2 mm112E {0, 1, 2} {3, 4} := by
+  refine ⟨⟨acyclic_of_potential (fun v => v) fun u v h => by unfold mm112E at h; omega,
+    by decide, by decide, by decide⟩, fun _ => 0, fun x => if x.2 = 0 then 1 else 2,
+    fun x => if x.2.2 = 0 then 3 else 4,
+    ⟨by decide, by decide, by decide, ?_, by decide, by decide, by decide, by decide, ?_⟩⟩
+  · rw [Set.disjoint_left]
+    rintro _ ⟨x, rfl⟩ ⟨y, hy⟩
+    exact (by decide : ∀ x : Fin 1 × Fin 1, ∀ y : Fin 1 × Fin 2,
+      (if y.2 = 0 then (1 : Fin 5) else 2) ≠ 0) x y hy
+  · intro i l j i' l' j' w h h'
+    have hs : ∀ x : Fin 1 × Fin 1 × Fin 2, ∀ y, ¬ mm112E (if x.2.2 = 0 then 3 else 4) y := by
+      decide
+    have e := (reach_eq_of_sink (hs _) h).symm.trans (reach_eq_of_sink (hs _) h')
+    exact (by decide : ∀ x y : Fin 1 × Fin 1 × Fin 2, (if x.2.2 = 0 then (3 : Fin 5) else 4) =
+      (if y.2.2 = 0 then 3 else 4) → x.1 = y.1 ∧ x.2.2 = y.2.2) (i, l, j) (i', l', j') e
+
+/-- The `1 × 1 × 2` product with three red pebbles: load `A 0 0` and `B 0 0`, compute and store the
+first product, drop it and `B 0 0`, load `B 0 1`, compute and store the second, then clear up.
+Five loads and stores. -/
+private theorem mm112_calc : HasCompleteCalculation mm112E {0, 1, 2} {3, 4} 3 5 :=
+  ⟨15, ![(∅, {0, 1, 2}), ({0}, {0, 1, 2}), ({0, 1}, {0, 1, 2}), ({0, 1, 3}, {0, 1, 2}),
+      ({0, 1, 3}, {0, 1, 2, 3}), ({0, 1}, {0, 1, 2, 3}), ({0}, {0, 1, 2, 3}),
+      ({0, 2}, {0, 1, 2, 3}), ({0, 2, 4}, {0, 1, 2, 3}), ({0, 2, 4}, {0, 1, 2, 3, 4}),
+      ({2, 4}, {0, 1, 2, 3, 4}), ({4}, {0, 1, 2, 3, 4}), (∅, {0, 1, 2, 3, 4}),
+      (∅, {1, 2, 3, 4}), (∅, {2, 3, 4}), (∅, {3, 4})],
+    ![1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0], by decide⟩
+
+-- Non-vacuity at a size with two entries: the hypotheses of `matMul_io_lower_bound` and of
+-- `matMul_io_bounds` hold together at `1 × 1 × 2`, `S = 3`, `q = 5`.
+example : 1 ≤ 1 ∧ 1 ≤ 3 ∧ IsMatMulEvaluation 1 1 2 mm112E {0, 1, 2} {3, 4} ∧
+    HasCompleteCalculation mm112E {0, 1, 2} {3, 4} 3 5 :=
+  ⟨le_rfl, by norm_num, mm112_eval, mm112_calc⟩
+
+-- The first bound of `matMul_io_bounds`, `q ≥ 1 · 1 + 1 · 2 + 1 · 2 = 5`, is attained there, and
+-- `minIOTime` is a genuine minimum.
+example : minIOTime mm112E {0, 1, 2} {3, 4} 3 = 5 := by
+  refine le_antisymm (Nat.sInf_le mm112_calc) ?_
+  have hmem : HasCompleteCalculation mm112E {0, 1, 2} {3, 4} 3
+      (minIOTime mm112E {0, 1, 2} {3, 4} 3) :=
+    Nat.sInf_mem (s := {q | HasCompleteCalculation mm112E {0, 1, 2} {3, 4} 3 q}) ⟨5, mm112_calc⟩
+  exact (matMul_io_bounds le_rfl (by norm_num) mm112_eval hmem).1
+
+/-- One edge, `0 → 1`. -/
+private def edgeE (u v : Fin 2) : Prop := u = 0 ∧ v = 1
+private instance : DecidableRel edgeE := fun u v => by unfold edgeE; infer_instance
+
+-- `1 ≤ k` cannot be dropped from `matMul_io_bounds`: with `k = 0` the labelling says nothing, so
+-- the one-edge graph evaluates the `2 × 0 × 2` product. Load, compute, store: `q = 2`, where the
+-- first bound would demand `2 · 0 + 0 · 2 + 2 · 2 = 4`.
+example : IsMatMulEvaluation 2 0 2 edgeE {0} {1} ∧ HasCompleteCalculation edgeE {0} {1} 2 2 ∧
+    ¬ 2 * 0 + 0 * 2 + 2 * 2 ≤ 2 :=
+  ⟨⟨⟨acyclic_of_potential (fun v => v) fun u v h => by unfold edgeE at h; omega,
+      by decide, by decide, by decide⟩,
+    fun x => x.2.elim0, fun x => x.1.elim0, fun x => x.2.1.elim0,
+    ⟨fun x => x.2.elim0, fun x => x.1.elim0, fun x => x.2.1.elim0,
+      Set.disjoint_left.2 fun _ ⟨x, _⟩ => x.2.elim0, fun x => x.2.elim0, fun x => x.1.elim0,
+      fun _ l => l.elim0, fun _ l => l.elim0, fun _ l => l.elim0⟩⟩,
+    ⟨6, ![(∅, {0}), ({0}, {0}), ({0, 1}, {0}), ({0, 1}, {0, 1}), ({1}, {0, 1}), (∅, {0, 1}),
+      (∅, {1})], ![1, 0, 1, 0, 0, 0], by decide⟩, by norm_num⟩
+
+/-- The `1 × 1 × 2` product with its two products added into a sixth vertex `5`, the only output. -/
+private def mm112SumE (u v : Fin 6) : Prop :=
+  (u = 0 ∧ v = 3) ∨ (u = 1 ∧ v = 3) ∨ (u = 0 ∧ v = 4) ∨ (u = 2 ∧ v = 4) ∨ (u = 3 ∧ v = 5) ∨
+    (u = 4 ∧ v = 5)
+private instance : DecidableRel mm112SumE := fun u v => by unfold mm112SumE; infer_instance
+
+/-- The labelling of `mm112E`, on six vertices. -/
+private def sumA (_ : Fin 1 × Fin 1) : Fin 6 := 0
+private def sumB (x : Fin 1 × Fin 2) : Fin 6 := if x.2 = 0 then 1 else 2
+private def sumP (x : Fin 1 × Fin 1 × Fin 2) : Fin 6 := if x.2.2 = 0 then 3 else 4
+
+-- `independent` carries weight. With the two products added into one vertex, the graph is a
+-- computation DAG and every other field of `IsMatMulLabelling` holds, but `independent` fails. Then
+-- four red pebbles give a calculation with three loads and one store, `q = 4`, where the first
+-- bound of `matMul_io_bounds` demands `5`.
+example : IsComputationDAG mm112SumE {0, 1, 2} {5} ∧
+    Function.Injective sumA ∧ Function.Injective sumB ∧ Function.Injective sumP ∧
+    Disjoint (Set.range sumA) (Set.range sumB) ∧ (∀ x, sumA x ∈ ({0, 1, 2} : Finset (Fin 6))) ∧
+    (∀ x, sumB x ∈ ({0, 1, 2} : Finset (Fin 6))) ∧
+    (∀ i l j, mm112SumE (sumA (i, l)) (sumP (i, l, j))) ∧
+    (∀ i l j, mm112SumE (sumB (l, j)) (sumP (i, l, j))) ∧
+    ¬ (∀ i l j i' l' j' w, Relation.ReflTransGen mm112SumE (sumP (i, l, j)) w →
+      Relation.ReflTransGen mm112SumE (sumP (i', l', j')) w → i = i' ∧ j = j') ∧
+    HasCompleteCalculation mm112SumE {0, 1, 2} {5} 4 4 ∧ ¬ 1 * 1 + 1 * 2 + 1 * 2 ≤ 4 := by
+  refine ⟨⟨acyclic_of_potential (fun v => v) fun u v h => by unfold mm112SumE at h; omega,
+      by decide, by decide, by decide⟩, by decide, by decide, by decide, ?_, by decide, by decide,
+    by decide, by decide, fun h => ?_, ?_, by norm_num⟩
+  · rw [Set.disjoint_left]
+    rintro _ ⟨x, rfl⟩ ⟨y, hy⟩
+    exact (by decide : ∀ x : Fin 1 × Fin 1, ∀ y : Fin 1 × Fin 2, sumB y ≠ sumA x) x y hy
+  · exact absurd (h 0 0 0 0 0 1 5 (.single (by decide)) (.single (by decide))).2 (by decide)
+  · exact ⟨16, ![(∅, {0, 1, 2}), ({0}, {0, 1, 2}), ({0, 1}, {0, 1, 2}), ({0, 1, 3}, {0, 1, 2}),
+      ({0, 3}, {0, 1, 2}), ({0, 2, 3}, {0, 1, 2}), ({0, 2, 3, 4}, {0, 1, 2}),
+      ({2, 3, 4}, {0, 1, 2}), ({3, 4}, {0, 1, 2}), ({3, 4, 5}, {0, 1, 2}),
+      ({3, 4, 5}, {0, 1, 2, 5}), ({4, 5}, {0, 1, 2, 5}), ({5}, {0, 1, 2, 5}),
+      (∅, {0, 1, 2, 5}), (∅, {1, 2, 5}), (∅, {2, 5}), (∅, {5})],
+      ![1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], by decide⟩
 
 end Sanity
 

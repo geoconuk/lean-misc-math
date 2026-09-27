@@ -50,3 +50,15 @@ example : type_of% @Target.RedBluePebbleGame.fft_parts_lower_bound :=
 
 example : type_of% @Target.RedBluePebbleGame.fft_parts_lower_bound_isBigO :=
   @MiscMath.Computability.fft_parts_lower_bound_isBigO
+
+example : type_of% @Target.RedBluePebbleGame.matMul_io_lower_bound :=
+  @MiscMath.Computability.matMul_io_lower_bound
+
+example : type_of% @Target.RedBluePebbleGame.matMul_io_bounds :=
+  @MiscMath.Computability.matMul_io_bounds
+
+example : type_of% @Target.RedBluePebbleGame.exists_isMatMulEvaluation :=
+  @MiscMath.Computability.exists_isMatMulEvaluation
+
+example : type_of% @Target.RedBluePebbleGame.matMul_io_lower_bound_isBigO :=
+  @MiscMath.Computability.matMul_io_lower_bound_isBigO
