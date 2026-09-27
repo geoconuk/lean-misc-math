@@ -268,15 +268,6 @@ Later restatements of the model, for comparison:
 * P. A. Papp and R. Wattenhofer, *On the hardness of red-blue pebble games* (2020),
   arXiv:2005.08609: sources can be computed for free.
 
-Later work on these bounds, for comparison:
-
-* D. Irony, S. Toledo and A. Tiskin, *Communication lower bounds for distributed-memory matrix
-  multiplication*, J. Parallel Distrib. Comput. 64 (2004), 1017–1026;
-* G. Ballard, J. Demmel, O. Holtz and O. Schwartz, *Minimizing communication in numerical linear
-  algebra*, SIAM J. Matrix Anal. Appl. 32 (2011), 866–901, arXiv:0905.2485;
-* G. Bilardi and L. De Stefani, *The DAG visit approach for pebbling and I/O lower bounds*,
-  FSTTCS 2022, extended version arXiv:2210.01897.
-
 ## Relation to Mathlib
 
 Mathlib has no pebble games and no I/O complexity, and its `Digraph` is a bare adjacency
