@@ -386,7 +386,7 @@ three phases as `Target/RedBluePebbleGame.lean`:
 * matrix multiplication in commit `0049cbf`.
 
 `Target/RedBluePebbleGame/TypeCheck.lean` ascribes each frozen type to the theorem proved here, so
-the two cannot differ while it builds; it is built by hand, with
+the two cannot differ while it builds; it is built by CI and by
 `lake build RedBluePebbleGameTypeCheck`, not by `lake build`. Both read the definitions in
 `Spec.lean`, which were frozen with the statements and have not changed since.
 

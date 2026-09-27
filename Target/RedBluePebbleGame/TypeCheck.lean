@@ -21,9 +21,9 @@ The library's statements are also textually the targets' statements, so that the
 them. This module checks the types, not the text.
 
 This module is deliberately outside `MiscMath/` and outside `defaultTargets`, as the target is,
-so neither `lake build` nor CI builds it. It asserts real theorems and contains no `sorry` of its
-own; the targets it reads are the only declarations it sees that do. Build it with
-`lake build RedBluePebbleGameTypeCheck`.
+so `lake build` does not build it; CI builds it in a step of its own. It asserts real theorems and
+contains no `sorry` of its own; the targets it reads are the only declarations it sees that do.
+Build it with `lake build RedBluePebbleGameTypeCheck`.
 -/
 
 example : type_of% @Target.RedBluePebbleGame.fft_io_lower_bound :=
