@@ -50,4 +50,42 @@ theorem fft_io_lower_bound_isBigO :
         (Finset.univ.filter (·.1 = Fin.last p.1)) p.2 : ℝ) * Real.log p.2 := by
   sorry
 
+theorem exists_partition_of_hasCompleteCalculation {V : Type*} [DecidableEq V] [Finite V]
+    {E : V → V → Prop} {I O : Finset V} {S q : ℕ} (hG : IsComputationDAG E I O)
+    (hq : HasCompleteCalculation E I O S q) :
+    ∃ (h : ℕ) (P : Fin h → Finset V), IsPartition E I (2 * S) P ∧ q ≤ S * h ∧ S * h ≤ q + S := by
+  sorry
+
+theorem io_lower_bound_of_parts {V : Type*} [DecidableEq V] [Finite V]
+    {E : V → V → Prop} {I O : Finset V} {S q h₀ : ℕ} (hG : IsComputationDAG E I O)
+    (hparts : ∀ (h : ℕ) (P : Fin h → Finset V), IsPartition E I (2 * S) P → h₀ ≤ h)
+    (hq : HasCompleteCalculation E I O S q) :
+    S * h₀ ≤ q + S := by
+  sorry
+
+theorem minIOTime_lower_bound {V : Type*} [DecidableEq V] [Finite V]
+    {E : V → V → Prop} {I O : Finset V} {S : ℕ} (hG : IsComputationDAG E I O)
+    (hcalc : ∃ q, HasCompleteCalculation E I O S q) :
+    (S : ℤ) * (minParts E I (2 * S) - 1) ≤ minIOTime E I O S := by
+  sorry
+
+theorem io_lower_bound_of_dominated_card {V : Type*} [DecidableEq V] [Finite V]
+    {E : V → V → Prop} {I O : Finset V} {S q U : ℕ} (hG : IsComputationDAG E I O)
+    (hU : ∀ D W : Finset V, D.card ≤ 2 * S → Dominates E I D W → W.card ≤ U)
+    (hq : HasCompleteCalculation E I O S q) :
+    S * Nat.card V ≤ (q + S) * U := by
+  sorry
+
+theorem fft_parts_lower_bound {k S h : ℕ} (hS : 1 ≤ S)
+    {P : Fin h → Finset (Fin (k + 1) × Fin (2 ^ k))}
+    (hP : IsDominatorPartition (fftEdge k) (Finset.univ.filter (·.1 = 0)) S P) :
+    (2 : ℝ) ^ k * (k + 1) ≤ h * (S * Real.logb 2 (2 * S)) := by
+  sorry
+
+theorem fft_parts_lower_bound_isBigO :
+    (fun p : ℕ × ℕ => (2 : ℝ) ^ p.1 * Real.log ((2 : ℝ) ^ p.1) / (p.2 * Real.log p.2))
+      =O[𝓟 {p | 1 ≤ p.1 ∧ 2 ≤ p.2}]
+      fun p => (minDominatorParts (fftEdge p.1) (Finset.univ.filter (·.1 = 0)) p.2 : ℝ) := by
+  sorry
+
 end Target.RedBluePebbleGame
