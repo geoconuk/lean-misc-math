@@ -1,9 +1,15 @@
 # Read-back: `Computability/RedBluePebbleGame`
 
 The blind read-backs of the red-blue pebble game's advertised statements, produced as
-[`docs/READBACK.md`](../../READBACK.md) describes. The statements came in two phases, each read
+[`docs/READBACK.md`](../../READBACK.md) describes. The statements came in three phases, each read
 back before it was read and frozen:
 
+- **Phase 3, matrix multiplication (Hong and Kung's Corollary 6.2).** Two rounds:
+  - **Round 2 is current for Phase 3.** It renders the four Phase 3 statements, and the six
+    definitions they are stated through, as they now stand.
+  - **Round 1 is kept** for what it surfaced. Its renderings of `IsMatMulEvaluation` and of the
+    four statements describe versions that took `IsComputationDAG` separately; those versions no
+    longer exist. Its rendering of `IsMatMulLabelling`, which has not changed, still holds.
 - **Phase 2, the key lemma (Hong and Kung's §3 and Theorem 4.1).** Two rounds:
   - **Round 2 is current for Phase 2.** It renders the Phase 2 statements, and every definition
     they are stated through, as they now stand. One of the six it renders,
@@ -15,6 +21,998 @@ back before it was read and frozen:
     definitions they are stated through, as they now stand.
   - **Round 1 is kept** because it surfaced the charging point recorded under it. Its rendering
     of `fft_io_bounds` describes a version of that statement that no longer exists.
+
+## Phase 3, round 2 (current for Phase 3), 2026-09-27
+
+### What changed since round 1
+
+George read round 1's handover and asked for two changes on 2026-09-27:
+
+- **`IsMatMulEvaluation` now includes `IsComputationDAG`.** It takes the outputs `O` as well, and
+  is `IsComputationDAG E I O ∧ ∃ a b p, IsMatMulLabelling E I a b p`. The four statements drop
+  their separate `hG` and take `hM : IsMatMulEvaluation m k n E I O`, per index in the asymptotic
+  statement. There was no good reason for the separation: it carried over from Phase 2.
+- **`exists_isMatMulEvaluation` names the red-pebble bound.** Round 1's form had a bare `3` in the
+  position of `S`, easy to misread as a cost. It now says that for every `S`, a calculation exists
+  if and only if `3 ≤ S`, as `fft_complete_iff` does for the FFT.
+
+`IsMatMulLabelling` and the conclusions of the other three statements are unchanged. Everything
+was sent again, so that this round renders the whole current Phase 3 surface.
+
+### What was sent
+
+- **Taken from:** an uncommitted draft on branch `hong-kung`, based on `016d53e`, on 2026-09-27.
+  The SHA-256 of each stripped module exactly as sent is
+  - `cea3c6a97a907752f0a6eb0493bc9560e707666a97bf7f1e617ec7a0a0362024` for Module 1;
+  - `fe9da8b15040234c328e4186224fee927c6ca7f4903483b2f9e8764dba312841` for Module 2.
+- **Declarations and definitions:** the same four and six as in round 1. They are still the only
+  project constants the statements reach, with the constructors of `Step`, `IsComputationDAG`
+  and `IsMatMulLabelling`; the walk was repeated.
+- **The prompt** was composed as in round 1: Part 2 of `READBACK.md`, verbatim, followed by the
+  two stripped modules below as unlabelled Lean blocks.
+
+### Who wrote it
+
+`claude-opus-5-5` (Claude Opus 5.5), as a fresh subagent with no prior context, on 2026-09-27. It
+made seven tool calls, checked in its transcript:
+
+- six read definitions in Mathlib's source: the infimum on ℕ, big-O, `eventually_principal`, and
+  `TransGen` and `ReflTransGen`. One of them also listed the installed Lean toolchains.
+- one was the hand-back.
+
+It opened no file of the repository outside Mathlib. Its reply began with a paragraph saying
+this, and then marked the rendering off between two delimiter lines. Only the part between them
+is recorded below, with its headings demoted two levels to fit this file.
+
+### What the comparison found
+
+The rendering agrees with the intended statements clause by clause:
+
+- **`IsMatMulEvaluation`** is rendered as the four conditions of `IsComputationDAG` followed by
+  the nine of `IsMatMulLabelling`. The rendering again lists what is not asked, as in round 1.
+- **`matMul_io_lower_bound`, `matMul_io_bounds` and `matMul_io_lower_bound_isBigO`** read as in
+  round 1, with the separate graph hypotheses now inside `hM`. The degenerate cases (`S = 0`,
+  `q = 0`, the empty graph, `m`, `k` or `n` zero) come out as in round 1.
+- **`exists_isMatMulEvaluation`:** for `m, k, n ≥ 1` there is one graph, chosen before `S` and
+  serving every `S` at once, in the class, which has a complete calculation within `S` red
+  pebbles if and only if `S ≥ 3`. Nothing is said about the cost.
+
+It surfaced nothing that round 1 had not. One flaw in the rendering itself: in its block for
+`matMul_io_lower_bound_isBigO` it writes `i` both for the index of the family and for the row
+index of the matrix, inside the unfolded condition. The Lean has separate binders, and the
+meaning is clear from context.
+
+No error of substance was found in the rendering.
+
+### The rendering, verbatim
+
+**Conventions (all blocks).** For $r\in\mathbb N$, $[r]=\{0,1,\dots,r-1\}$, so $[0]=\varnothing$. $|X|$ is the number of elements of a finite set $X$. For a binary relation $E$ on a type $X$:
+- $u$ is an *$E$-predecessor* of $v$, and $v$ an *$E$-successor* of $u$, when $E(u,v)$ holds.
+- An *$E$-path of length $r\ge 0$ from $x$ to $y$* is a sequence $x=x_0,x_1,\dots,x_r=y$ in $X$ with $E(x_{s-1},x_s)$ for $1\le s\le r$. Length $0$ means $x=y$.
+
+Natural numbers inside real-valued expressions are cast to $\mathbb R$ by the standard embedding. A "decidable-equality structure" on a type is used here only to add one element to a finite subset or remove one from it. Any two such structures on a type are equal.
+
+---
+
+##### Target.RedBluePebbleGame.matMul_io_lower_bound
+
+**Binders**, in this order. All are universally quantified; the statement makes no existential choice.
+- $V$: a type of any universe level. It has a decidable-equality structure and is assumed finite, i.e. it has finitely many elements, possibly none.
+- $E$: an arbitrary binary relation on $V$.
+- $I$, $O$: finite subsets of $V$.
+- $m,k,n,S,q$: natural numbers.
+
+**Hypothesis (hM).** All of the following hold.
+- (a) *acyclic*: there is no $E$-path of length $\ge 1$ from any $v\in V$ to itself. In particular $E(v,v)$ never holds. This reading rests on Relation.TransGen, whose chains have length $\ge 1$.
+- (b) *inputs_eq_sources*: for every $v\in V$, $v\in I$ if and only if $v$ has no $E$-predecessor in $V$.
+- (c) *sinks_subset_outputs*: every $v\in V$ with no $E$-successor in $V$ belongs to $O$.
+- (d) *disjoint*: $I$ and $O$ have no element in common.
+- (e) There exist maps $a:[m]\times[k]\to V$, $b:[k]\times[n]\to V$ and $p:[m]\times[k]\times[n]\to V$ such that:
+  - (e1) *injective_a, injective_b, injective_p*: each of $a$, $b$, $p$ is injective.
+  - (e2) *disjoint_ab*: no value of $a$ is also a value of $b$.
+  - (e3) *a_mem, b_mem*: every value of $a$ and every value of $b$ lies in $I$.
+  - (e4) *edge_a*: $E(a(i,l),\,p(i,l,j))$ for all $i\in[m]$, $l\in[k]$, $j\in[n]$.
+  - (e5) *edge_b*: $E(b(l,j),\,p(i,l,j))$ for all $i\in[m]$, $l\in[k]$, $j\in[n]$.
+  - (e6) *independent*: take any $i,i'\in[m]$, $l,l'\in[k]$, $j,j'\in[n]$ and $w\in V$. If there is an $E$-path of length $\ge 0$ from $p(i,l,j)$ to $w$, and one of length $\ge 0$ from $p(i',l',j')$ to $w$, then $i=i'$ and $j=j'$. This reading rests on Relation.ReflTransGen, whose chains have length $\ge 0$.
+
+  Conditions (b) and (c) range over every element of the type $V$. Nothing further is required:
+  - $V$ may contain elements outside the images of $a$, $b$, $p$.
+  - $I$ may contain elements that are values of neither $a$ nor $b$.
+  - $p(i,l,j)$ may have $E$-predecessors besides $a(i,l)$ and $b(l,j)$.
+  - Values of $a$ and $b$ may have $E$-successors besides those given by (e4) and (e5).
+  - $O$ appears only in (c) and (d).
+  - (e6) imposes nothing when $(i,j)=(i',j')$, whatever $l$ and $l'$ are.
+
+**Hypothesis (hq).** There exist $t\in\mathbb N$, pairs $(R_j,B_j)$ of finite subsets of $V$ for $j=0,1,\dots,t$, and natural numbers $c_0,\dots,c_{t-1}$, such that:
+1. $(R_0,B_0)=(\varnothing,\,I)$.
+2. $(R_t,B_t)=(\varnothing,\,O)$. The second component must be exactly $O$.
+3. $|R_j|\le S$ for every $j\in\{0,\dots,t\}$. There is no bound on $|B_j|$, and $R_j$ and $B_j$ may overlap.
+4. For each $i\in\{0,\dots,t-1\}$, the transition from $(R_i,B_i)$ to $(R_{i+1},B_{i+1})$ is a *move of cost $c_i$* (this is the relation Step, relative to $E$ and $I$). That is, for some $v\in V$ it is one of the following five kinds, and there are no other moves:
+   - *load*: $v\in B_i$ and $v\notin R_i$; $(R_{i+1},B_{i+1})=(R_i\cup\{v\},\,B_i)$; $c_i=1$.
+   - *store*: $v\in R_i$ and $v\notin B_i$; $(R_{i+1},B_{i+1})=(R_i,\,B_i\cup\{v\})$; $c_i=1$.
+   - *compute*: $v\notin I$, $v\notin R_i$, and every $E$-predecessor of $v$ lies in $R_i$; $(R_{i+1},B_{i+1})=(R_i\cup\{v\},\,B_i)$; $c_i=0$.
+   - *deleteRed*: $v\in R_i$; $(R_{i+1},B_{i+1})=(R_i\setminus\{v\},\,B_i)$; $c_i=0$.
+   - *deleteBlue*: $v\in B_i$; $(R_{i+1},B_{i+1})=(R_i,\,B_i\setminus\{v\})$; $c_i=0$.
+5. $c_0+c_1+\dots+c_{t-1}=q$.
+
+Consequences of this definition:
+- Every $c_i$ is $0$ or $1$.
+- Consider a transition that adds to $R_i$ a vertex $v$ with $v\in B_i$, $v\notin I$ and every $E$-predecessor of $v$ in $R_i$. It is both a load and a compute, so it may be given cost $1$ or cost $0$. No other transition can be given two different costs.
+- So $q$ is the number of transitions given cost $1$: every store, every load that is not also a compute, and whichever load-and-compute transitions the calculation counts at cost $1$.
+- Nothing stops a vertex from being loaded, computed, stored or deleted more than once.
+- $t$ is unbounded. $t=0$ is allowed; it requires $I=O$ and gives $q=0$.
+
+**Conclusion.** $m\,k\,n\le 2\,q\,\sqrt{S}$, as an inequality between real numbers. Here $m,k,n,q,S$ are cast to $\mathbb R$ and $\sqrt{\cdot}$ is the real square root, applied to $S\ge 0$.
+
+**Edge cases.**
+- If $m=0$, $k=0$ or $n=0$, the conclusion reads $0\le 2q\sqrt S$ and holds trivially. The statement only says something when $m,k,n\ge 1$.
+- When $k=0$, all three maps in (e) have empty domain. Then (e) holds automatically and (hM) reduces to (a)–(d).
+- $S=0$: condition 3 forces every $R_j$ to be empty, so every move is a deleteBlue. The conclusion then reads $mkn\le 0$, i.e. it asserts $mkn=0$.
+- $q=0$: the conclusion reads $mkn\le 0$.
+- $q$ is the total cost of *some* complete calculation, not necessarily a cheapest one. The inequality is asserted for every such $q$.
+- $V=\varnothing$ is allowed. Then:
+  - $I=O=\varnothing$.
+  - (e) forces $k=0$ or $m=n=0$, because a map into the empty set must have empty domain.
+  - The only calculation has $t=0$ and $q=0$.
+  - The conclusion is $0\le 0$.
+- A calculation with $t=0$ needs $I=O$. Together with (d), that means $I=O=\varnothing$.
+- By (b), every vertex outside $I$ has at least one $E$-predecessor. So the predecessor condition in *compute* is never vacuous here.
+- No junk values arise: there is no subtraction or division, and the square root is taken of a nonnegative number.
+- The hypotheses can hold together with $m,k,n\ge 1$. exists_isMatMulEvaluation (rendered below) asserts that for every $m,k,n\ge 1$ there is an instance satisfying (hM) that admits complete calculations for every $S\ge 3$.
+
+---
+
+##### Target.RedBluePebbleGame.matMul_io_bounds
+
+**Binders**, in this order. All are universally quantified.
+- $V$: a type of any universe level. It has a decidable-equality structure and is assumed finite, possibly empty.
+- $E$: an arbitrary binary relation on $V$.
+- $I$, $O$: finite subsets of $V$.
+- $m,k,n,S,q$: natural numbers.
+
+**Hypotheses**, in this order.
+- (hk) $k\ge 1$.
+- (hS) $S\ge 1$.
+- (hM) All of the following hold.
+  - (a) *acyclic*: there is no $E$-path of length $\ge 1$ from any $v\in V$ to itself. In particular $E(v,v)$ never holds. This reading rests on Relation.TransGen, whose chains have length $\ge 1$.
+  - (b) *inputs_eq_sources*: for every $v\in V$, $v\in I$ if and only if $v$ has no $E$-predecessor in $V$.
+  - (c) *sinks_subset_outputs*: every $v\in V$ with no $E$-successor in $V$ belongs to $O$.
+  - (d) *disjoint*: $I$ and $O$ have no element in common.
+  - (e) There exist maps $a:[m]\times[k]\to V$, $b:[k]\times[n]\to V$ and $p:[m]\times[k]\times[n]\to V$ such that:
+    - (e1) *injective_a, injective_b, injective_p*: each of $a$, $b$, $p$ is injective.
+    - (e2) *disjoint_ab*: no value of $a$ is also a value of $b$.
+    - (e3) *a_mem, b_mem*: every value of $a$ and every value of $b$ lies in $I$.
+    - (e4) *edge_a*: $E(a(i,l),\,p(i,l,j))$ for all $i\in[m]$, $l\in[k]$, $j\in[n]$.
+    - (e5) *edge_b*: $E(b(l,j),\,p(i,l,j))$ for all $i\in[m]$, $l\in[k]$, $j\in[n]$.
+    - (e6) *independent*: take any $i,i'\in[m]$, $l,l'\in[k]$, $j,j'\in[n]$ and $w\in V$. If there is an $E$-path of length $\ge 0$ from $p(i,l,j)$ to $w$, and one of length $\ge 0$ from $p(i',l',j')$ to $w$, then $i=i'$ and $j=j'$. This reading rests on Relation.ReflTransGen, whose chains have length $\ge 0$.
+
+    Conditions (b) and (c) range over every element of the type $V$. Nothing further is required:
+    - $V$ may contain elements outside the images of $a$, $b$, $p$.
+    - $I$ may contain elements that are values of neither $a$ nor $b$.
+    - $p(i,l,j)$ may have $E$-predecessors besides $a(i,l)$ and $b(l,j)$.
+    - Values of $a$ and $b$ may have $E$-successors besides those given by (e4) and (e5).
+    - $O$ appears only in (c) and (d).
+    - (e6) imposes nothing when $(i,j)=(i',j')$, whatever $l$ and $l'$ are.
+- (hq) There exist $t\in\mathbb N$, pairs $(R_j,B_j)$ of finite subsets of $V$ for $j=0,1,\dots,t$, and natural numbers $c_0,\dots,c_{t-1}$, such that:
+  1. $(R_0,B_0)=(\varnothing,\,I)$.
+  2. $(R_t,B_t)=(\varnothing,\,O)$. The second component must be exactly $O$.
+  3. $|R_j|\le S$ for every $j\in\{0,\dots,t\}$. There is no bound on $|B_j|$, and $R_j$ and $B_j$ may overlap.
+  4. For each $i\in\{0,\dots,t-1\}$, the transition from $(R_i,B_i)$ to $(R_{i+1},B_{i+1})$ is a *move of cost $c_i$* (this is the relation Step, relative to $E$ and $I$). That is, for some $v\in V$ it is one of the following five kinds, and there are no other moves:
+     - *load*: $v\in B_i$ and $v\notin R_i$; $(R_{i+1},B_{i+1})=(R_i\cup\{v\},\,B_i)$; $c_i=1$.
+     - *store*: $v\in R_i$ and $v\notin B_i$; $(R_{i+1},B_{i+1})=(R_i,\,B_i\cup\{v\})$; $c_i=1$.
+     - *compute*: $v\notin I$, $v\notin R_i$, and every $E$-predecessor of $v$ lies in $R_i$; $(R_{i+1},B_{i+1})=(R_i\cup\{v\},\,B_i)$; $c_i=0$.
+     - *deleteRed*: $v\in R_i$; $(R_{i+1},B_{i+1})=(R_i\setminus\{v\},\,B_i)$; $c_i=0$.
+     - *deleteBlue*: $v\in B_i$; $(R_{i+1},B_{i+1})=(R_i,\,B_i\setminus\{v\})$; $c_i=0$.
+  5. $c_0+c_1+\dots+c_{t-1}=q$.
+
+  Consequences of this definition:
+  - Every $c_i$ is $0$ or $1$.
+  - Consider a transition that adds to $R_i$ a vertex $v$ with $v\in B_i$, $v\notin I$ and every $E$-predecessor of $v$ in $R_i$. It is both a load and a compute, so it may be given cost $1$ or cost $0$. No other transition can be given two different costs.
+  - So $q$ is the number of transitions given cost $1$: every store, every load that is not also a compute, and whichever load-and-compute transitions the calculation counts at cost $1$.
+  - Nothing stops a vertex from being loaded, computed, stored or deleted more than once.
+  - $t$ is unbounded. $t=0$ is allowed; it requires $I=O$ and gives $q=0$.
+
+**Conclusion.** Both of the following hold.
+1. $mk+kn+mn\le q$, as an inequality between natural numbers.
+2. $\dfrac{mkn}{\sqrt{2S}}-S\le q$, as an inequality between real numbers. Here $m,k,n,S,q$ are cast to $\mathbb R$, $\sqrt{\cdot}$ is the real square root, and the division and subtraction are real operations.
+
+**Edge cases.**
+- $m=0$ and/or $n=0$ are allowed.
+  - If $m=0$, the maps $a$ and $p$ have empty domain, and (e) asks only for an injective $b:[k]\times[n]\to V$ with values in $I$. Conclusion 1 reads $kn\le q$; conclusion 2 reads $-S\le q$.
+  - If $n=0$, symmetrically, (e) asks only for an injective $a:[m]\times[k]\to V$ with values in $I$. Conclusion 1 reads $mk\le q$; conclusion 2 reads $-S\le q$.
+  - If $m=n=0$, (e) asks nothing and conclusion 1 is $0\le q$.
+- The left side of conclusion 2 is $\le 0$ whenever $mkn\le S\sqrt{2S}$. In that case conclusion 2 holds automatically, since $q\ge 0$.
+- Since $S\ge 1$, the denominator satisfies $\sqrt{2S}\ge\sqrt2>0$, so the convention $x/0=0$ plays no part.
+- The subtraction in conclusion 2 is real subtraction, not truncated. Conclusion 1 uses only $+$ and $\times$ on $\mathbb N$.
+- $q$ is the total cost of *some* complete calculation, not necessarily a cheapest one.
+- $V=\varnothing$ is possible here only when $m=n=0$, because $k\ge 1$. Then $I=O=\varnothing$ and $q=0$.
+- By (b), every vertex outside $I$ has at least one $E$-predecessor. So the predecessor condition in *compute* is never vacuous here.
+- The hypotheses can hold together with $m,k,n\ge 1$ and any $S\ge 3$: exists_isMatMulEvaluation asserts this.
+
+---
+
+##### Target.RedBluePebbleGame.exists_isMatMulEvaluation
+
+**Binders.** Natural numbers $m,k,n$, universally quantified.
+
+**Hypotheses.** (hm) $m\ge 1$; (hk) $k\ge 1$; (hn) $n\ge 1$.
+
+**Conclusion.** The following objects exist. They are chosen after $m,k,n$ and may depend on them, but not on $S$:
+- a type $V$ in Lean's lowest universe;
+- a decidable-equality structure on $V$;
+- the fact that $V$ is finite;
+- a binary relation $E$ on $V$;
+- finite subsets $I,O\subseteq V$.
+
+They satisfy (A) and (B).
+
+(A) All of the following hold.
+- (a) *acyclic*: there is no $E$-path of length $\ge 1$ from any $v\in V$ to itself. In particular $E(v,v)$ never holds. This reading rests on Relation.TransGen, whose chains have length $\ge 1$.
+- (b) *inputs_eq_sources*: for every $v\in V$, $v\in I$ if and only if $v$ has no $E$-predecessor in $V$.
+- (c) *sinks_subset_outputs*: every $v\in V$ with no $E$-successor in $V$ belongs to $O$.
+- (d) *disjoint*: $I$ and $O$ have no element in common.
+- (e) There exist maps $a:[m]\times[k]\to V$, $b:[k]\times[n]\to V$ and $p:[m]\times[k]\times[n]\to V$ such that:
+  - (e1) *injective_a, injective_b, injective_p*: each of $a$, $b$, $p$ is injective.
+  - (e2) *disjoint_ab*: no value of $a$ is also a value of $b$.
+  - (e3) *a_mem, b_mem*: every value of $a$ and every value of $b$ lies in $I$.
+  - (e4) *edge_a*: $E(a(i,l),\,p(i,l,j))$ for all $i\in[m]$, $l\in[k]$, $j\in[n]$.
+  - (e5) *edge_b*: $E(b(l,j),\,p(i,l,j))$ for all $i\in[m]$, $l\in[k]$, $j\in[n]$.
+  - (e6) *independent*: take any $i,i'\in[m]$, $l,l'\in[k]$, $j,j'\in[n]$ and $w\in V$. If there is an $E$-path of length $\ge 0$ from $p(i,l,j)$ to $w$, and one of length $\ge 0$ from $p(i',l',j')$ to $w$, then $i=i'$ and $j=j'$. This reading rests on Relation.ReflTransGen, whose chains have length $\ge 0$.
+
+  Conditions (b) and (c) range over every element of the type $V$. Nothing further is required:
+  - $V$ may contain elements outside the images of $a$, $b$, $p$.
+  - $I$ may contain elements that are values of neither $a$ nor $b$.
+  - $p(i,l,j)$ may have $E$-predecessors besides $a(i,l)$ and $b(l,j)$.
+  - Values of $a$ and $b$ may have $E$-successors besides those given by (e4) and (e5).
+  - $O$ appears only in (c) and (d).
+  - (e6) imposes nothing when $(i,j)=(i',j')$, whatever $l$ and $l'$ are.
+
+(B) For every natural number $S$, chosen after $V,E,I,O$, the following are equivalent:
+- there is some $q\in\mathbb N$ for which a complete calculation of total cost $q$ under bound $S$ exists, as defined below;
+- $S\ge 3$.
+
+Here, "there exist $t\in\mathbb N$, pairs $(R_j,B_j)$ of finite subsets of $V$ for $j=0,1,\dots,t$, and natural numbers $c_0,\dots,c_{t-1}$, such that":
+  1. $(R_0,B_0)=(\varnothing,\,I)$.
+  2. $(R_t,B_t)=(\varnothing,\,O)$. The second component must be exactly $O$.
+  3. $|R_j|\le S$ for every $j\in\{0,\dots,t\}$. There is no bound on $|B_j|$, and $R_j$ and $B_j$ may overlap.
+  4. For each $i\in\{0,\dots,t-1\}$, the transition from $(R_i,B_i)$ to $(R_{i+1},B_{i+1})$ is a *move of cost $c_i$* (this is the relation Step, relative to $E$ and $I$). That is, for some $v\in V$ it is one of the following five kinds, and there are no other moves:
+     - *load*: $v\in B_i$ and $v\notin R_i$; $(R_{i+1},B_{i+1})=(R_i\cup\{v\},\,B_i)$; $c_i=1$.
+     - *store*: $v\in R_i$ and $v\notin B_i$; $(R_{i+1},B_{i+1})=(R_i,\,B_i\cup\{v\})$; $c_i=1$.
+     - *compute*: $v\notin I$, $v\notin R_i$, and every $E$-predecessor of $v$ lies in $R_i$; $(R_{i+1},B_{i+1})=(R_i\cup\{v\},\,B_i)$; $c_i=0$.
+     - *deleteRed*: $v\in R_i$; $(R_{i+1},B_{i+1})=(R_i\setminus\{v\},\,B_i)$; $c_i=0$.
+     - *deleteBlue*: $v\in B_i$; $(R_{i+1},B_{i+1})=(R_i,\,B_i\setminus\{v\})$; $c_i=0$.
+  5. $c_0+c_1+\dots+c_{t-1}=q$.
+
+Consequences of this definition:
+- Every $c_i$ is $0$ or $1$.
+- Consider a transition that adds to $R_i$ a vertex $v$ with $v\in B_i$, $v\notin I$ and every $E$-predecessor of $v$ in $R_i$. It is both a load and a compute, so it may be given cost $1$ or cost $0$. No other transition can be given two different costs.
+- So $q$ is the number of transitions given cost $1$: every store, every load that is not also a compute, and whichever load-and-compute transitions the calculation counts at cost $1$.
+- Nothing stops a vertex from being loaded, computed, stored or deleted more than once.
+- $t$ is unbounded. $t=0$ is allowed; it requires $I=O$ and gives $q=0$.
+
+**Edge cases.**
+- Only $m,k,n\ge 1$ are covered.
+- A single instance $(V,E,I,O)$ serves every $S$ at once.
+- For $S\in\{0,1,2\}$ the instance admits no complete calculation of any cost. For every $S\ge 3$ it admits at least one, of unspecified cost.
+- The threshold $3$ is the same for all $m,k,n$.
+- Nothing is asserted about:
+  - the value of any cost $q$;
+  - the least achievable cost, or how it depends on $S$;
+  - the instance beyond (A) and (B). The maps $a,b,p$ are only asserted to exist.
+- The decidable-equality structure is one of the objects asserted to exist. Since any two such structures on a type are equal, this adds nothing.
+
+---
+
+##### Target.RedBluePebbleGame.matMul_io_lower_bound_isBigO
+
+**Binders**, in this order. All are universally quantified.
+- $\iota$: an arbitrary type of any universe level, possibly empty.
+- $m,k,n:\iota\to\mathbb N$.
+- $(W_i)_{i\in\iota}$: a family of types, all in one universe.
+- For each $i$, a decidable-equality structure on $W_i$.
+- The assumption that each $W_i$ is finite, possibly empty.
+- $(E_i)_{i\in\iota}$: $E_i$ is a binary relation on $W_i$.
+- $(I_i)_{i\in\iota}$ and $(O_i)_{i\in\iota}$: $I_i$ and $O_i$ are finite subsets of $W_i$.
+
+Below, for a fixed $i$, write $V=W_i$, $E=E_i$, $I=I_i$, $O=O_i$, $m=m_i$, $k=k_i$, $n=n_i$.
+
+**Hypothesis (hM).** For every $i\in\iota$, all of the following hold. The maps in (e) may depend on $i$.
+- (a) *acyclic*: there is no $E$-path of length $\ge 1$ from any $v\in V$ to itself. In particular $E(v,v)$ never holds. This reading rests on Relation.TransGen, whose chains have length $\ge 1$.
+- (b) *inputs_eq_sources*: for every $v\in V$, $v\in I$ if and only if $v$ has no $E$-predecessor in $V$.
+- (c) *sinks_subset_outputs*: every $v\in V$ with no $E$-successor in $V$ belongs to $O$.
+- (d) *disjoint*: $I$ and $O$ have no element in common.
+- (e) There exist maps $a:[m]\times[k]\to V$, $b:[k]\times[n]\to V$ and $p:[m]\times[k]\times[n]\to V$ such that:
+  - (e1) *injective_a, injective_b, injective_p*: each of $a$, $b$, $p$ is injective.
+  - (e2) *disjoint_ab*: no value of $a$ is also a value of $b$.
+  - (e3) *a_mem, b_mem*: every value of $a$ and every value of $b$ lies in $I$.
+  - (e4) *edge_a*: $E(a(i,l),\,p(i,l,j))$ for all $i\in[m]$, $l\in[k]$, $j\in[n]$.
+  - (e5) *edge_b*: $E(b(l,j),\,p(i,l,j))$ for all $i\in[m]$, $l\in[k]$, $j\in[n]$.
+  - (e6) *independent*: take any $i,i'\in[m]$, $l,l'\in[k]$, $j,j'\in[n]$ and $w\in V$. If there is an $E$-path of length $\ge 0$ from $p(i,l,j)$ to $w$, and one of length $\ge 0$ from $p(i',l',j')$ to $w$, then $i=i'$ and $j=j'$. This reading rests on Relation.ReflTransGen, whose chains have length $\ge 0$.
+
+  Conditions (b) and (c) range over every element of the type $V$. Nothing further is required:
+  - $V$ may contain elements outside the images of $a$, $b$, $p$.
+  - $I$ may contain elements that are values of neither $a$ nor $b$.
+  - $p(i,l,j)$ may have $E$-predecessors besides $a(i,l)$ and $b(l,j)$.
+  - Values of $a$ and $b$ may have $E$-successors besides those given by (e4) and (e5).
+  - $O$ appears only in (c) and (d).
+  - (e6) imposes nothing when $(i,j)=(i',j')$, whatever $l$ and $l'$ are.
+
+**Notions the conclusion reads.**
+
+*Complete calculation for index $i$, of total cost $q$ under bound $S$* (for $S,q\in\mathbb N$): there exist $t\in\mathbb N$, pairs $(R_j,B_j)$ of finite subsets of $V$ for $j=0,1,\dots,t$, and natural numbers $c_0,\dots,c_{t-1}$, such that:
+  1. $(R_0,B_0)=(\varnothing,\,I)$.
+  2. $(R_t,B_t)=(\varnothing,\,O)$. The second component must be exactly $O$.
+  3. $|R_j|\le S$ for every $j\in\{0,\dots,t\}$. There is no bound on $|B_j|$, and $R_j$ and $B_j$ may overlap.
+  4. For each $i\in\{0,\dots,t-1\}$, the transition from $(R_i,B_i)$ to $(R_{i+1},B_{i+1})$ is a *move of cost $c_i$* (this is the relation Step, relative to $E$ and $I$). That is, for some $v\in V$ it is one of the following five kinds, and there are no other moves:
+     - *load*: $v\in B_i$ and $v\notin R_i$; $(R_{i+1},B_{i+1})=(R_i\cup\{v\},\,B_i)$; $c_i=1$.
+     - *store*: $v\in R_i$ and $v\notin B_i$; $(R_{i+1},B_{i+1})=(R_i,\,B_i\cup\{v\})$; $c_i=1$.
+     - *compute*: $v\notin I$, $v\notin R_i$, and every $E$-predecessor of $v$ lies in $R_i$; $(R_{i+1},B_{i+1})=(R_i\cup\{v\},\,B_i)$; $c_i=0$.
+     - *deleteRed*: $v\in R_i$; $(R_{i+1},B_{i+1})=(R_i\setminus\{v\},\,B_i)$; $c_i=0$.
+     - *deleteBlue*: $v\in B_i$; $(R_{i+1},B_{i+1})=(R_i,\,B_i\setminus\{v\})$; $c_i=0$.
+  5. $c_0+c_1+\dots+c_{t-1}=q$.
+
+Consequences of this definition:
+- Every $c_i$ is $0$ or $1$.
+- Consider a transition that adds to $R_i$ a vertex $v$ with $v\in B_i$, $v\notin I$ and every $E$-predecessor of $v$ in $R_i$. It is both a load and a compute, so it may be given cost $1$ or cost $0$. No other transition can be given two different costs.
+- So $q$ is the number of transitions given cost $1$: every store, every load that is not also a compute, and whichever load-and-compute transitions the calculation counts at cost $1$.
+- Nothing stops a vertex from being loaded, computed, stored or deleted more than once.
+- $t$ is unbounded. $t=0$ is allowed; it requires $I=O$ and gives $q=0$.
+
+*The set $D$*: $D\subseteq\iota\times\mathbb N$ is the set of pairs $(i,S)$ for which some $q\in\mathbb N$ admits a complete calculation for $i$ of total cost $q$ under bound $S$.
+
+*$M(i,S)$ (this is minIOTime)*: if some complete calculation for $i$ under bound $S$ exists, $M(i,S)$ is the least $q\in\mathbb N$ for which one of total cost $q$ exists. If none exists, $M(i,S)=0$. The second clause is Mathlib's convention that the infimum of the empty set of natural numbers is $0$. It never applies on $D$, where $M(i,S)$ is the genuine least cost.
+
+**Conclusion.** The real-valued function $(i,S)\mapsto m_ik_in_i$ is big-O of the real-valued function $(i,S)\mapsto M(i,S)\sqrt S$ along the principal filter of $D$ on $\iota\times\mathbb N$.
+
+This reading rests on two Mathlib facts:
+- Big-O along a filter means: there is a real $c$ with $\|f(x)\|\le c\,\|g(x)\|$ eventually along the filter.
+- "Eventually along the principal filter of $D$" means "at every point of $D$".
+
+Unfolded, the conclusion says: there is a real constant $C$ such that for every $i\in\iota$ and every $S\in\mathbb N$ with $(i,S)\in D$,
+$$m_i\,k_i\,n_i\;\le\;C\cdot M(i,S)\cdot\sqrt S.$$
+The absolute values in the definition drop out because $m_ik_in_i\ge 0$ and $M(i,S)\sqrt S\ge 0$.
+
+Quantifier order:
+1. The whole family ($\iota$, $m$, $k$, $n$, $W$, $E$, $I$, $O$, with (hM)) is fixed first.
+2. Then $C$ is chosen. It may depend on the family.
+3. The inequality then holds with that single $C$ at every $(i,S)\in D$. $C$ does not depend on $i$ or on $S$.
+
+**Edge cases.**
+- The filter is principal. The bound is therefore a single inequality required at every point of $D$, not an asymptotic statement as $S$ or the dimensions grow.
+- Points outside $D$ are not constrained. There $M$ takes the junk value $0$.
+- If $(i,0)\in D$, then $\sqrt0=0$ and the inequality asserts $m_ik_in_i=0$. The same holds at any point of $D$ where $M(i,S)=0$.
+- If $\iota$ is empty, or $D$ is empty, the statement is vacuous.
+- $m_i$, $k_i$ or $n_i$ may be $0$, in which case the left side is $0$. There is no hypothesis $k_i\ge 1$ or $S\ge 1$.
+- $C$ is not specified.
+- The hypothesis links nothing across different indices. The types $W_i$ and the dimensions may vary arbitrarily with $i$.
+
+### The Lean sent
+
+Module 1:
+
+```lean
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Data.Finset.Card
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Order.Lattice.Nat
+
+namespace MiscMath.Computability.RedBluePebbleGame
+
+variable {V : Type*} [DecidableEq V]
+
+inductive Step (E : V → V → Prop) (I : Finset V) :
+    Finset V × Finset V → ℕ → Finset V × Finset V → Prop
+  | load {R B : Finset V} {v : V} (hB : v ∈ B) (hR : v ∉ R) :
+      Step E I (R, B) 1 (insert v R, B)
+  | store {R B : Finset V} {v : V} (hR : v ∈ R) (hB : v ∉ B) :
+      Step E I (R, B) 1 (R, insert v B)
+  | compute {R B : Finset V} {v : V} (hI : v ∉ I) (hR : v ∉ R) (hpred : ∀ u, E u v → u ∈ R) :
+      Step E I (R, B) 0 (insert v R, B)
+  | deleteRed {R B : Finset V} {v : V} (hR : v ∈ R) :
+      Step E I (R, B) 0 (R.erase v, B)
+  | deleteBlue {R B : Finset V} {v : V} (hB : v ∈ B) :
+      Step E I (R, B) 0 (R, B.erase v)
+
+def HasCompleteCalculation (E : V → V → Prop) (I O : Finset V) (S q : ℕ) : Prop :=
+  ∃ (t : ℕ) (σ : Fin (t + 1) → Finset V × Finset V) (c : Fin t → ℕ),
+    σ 0 = (∅, I) ∧
+    σ (Fin.last t) = (∅, O) ∧
+    (∀ j, (σ j).1.card ≤ S) ∧
+    (∀ i : Fin t, Step E I (σ i.castSucc) (c i) (σ i.succ)) ∧
+    ∑ i, c i = q
+
+noncomputable def minIOTime (E : V → V → Prop) (I O : Finset V) (S : ℕ) : ℕ :=
+  sInf {q | HasCompleteCalculation E I O S q}
+
+omit [DecidableEq V] in
+structure IsComputationDAG (E : V → V → Prop) (I O : Finset V) : Prop where
+  acyclic : ∀ v, ¬ Relation.TransGen E v v
+  inputs_eq_sources : ∀ v, v ∈ I ↔ ∀ u, ¬ E u v
+  sinks_subset_outputs : ∀ v, (∀ w, ¬ E v w) → v ∈ O
+  disjoint : Disjoint I O
+
+omit [DecidableEq V] in
+structure IsMatMulLabelling {m k n : ℕ} (E : V → V → Prop) (I : Finset V)
+    (a : Fin m × Fin k → V) (b : Fin k × Fin n → V) (p : Fin m × Fin k × Fin n → V) : Prop where
+  injective_a : Function.Injective a
+  injective_b : Function.Injective b
+  injective_p : Function.Injective p
+  disjoint_ab : Disjoint (Set.range a) (Set.range b)
+  a_mem : ∀ x, a x ∈ I
+  b_mem : ∀ x, b x ∈ I
+  edge_a : ∀ i l j, E (a (i, l)) (p (i, l, j))
+  edge_b : ∀ i l j, E (b (l, j)) (p (i, l, j))
+  independent : ∀ i l j i' l' j' w, Relation.ReflTransGen E (p (i, l, j)) w →
+    Relation.ReflTransGen E (p (i', l', j')) w → i = i' ∧ j = j'
+
+omit [DecidableEq V] in
+def IsMatMulEvaluation (m k n : ℕ) (E : V → V → Prop) (I O : Finset V) : Prop :=
+  IsComputationDAG E I O ∧
+    ∃ (a : Fin m × Fin k → V) (b : Fin k × Fin n → V) (p : Fin m × Fin k × Fin n → V),
+      IsMatMulLabelling E I a b p
+
+end MiscMath.Computability.RedBluePebbleGame
+```
+
+Module 2:
+
+```lean
+import MiscMath.Computability.RedBluePebbleGame.Spec
+import Mathlib.Analysis.Asymptotics.Defs
+import Mathlib.Analysis.SpecialFunctions.Log.Base
+import Mathlib.Data.Fintype.Prod
+
+open Filter MiscMath.Computability.RedBluePebbleGame
+
+namespace Target.RedBluePebbleGame
+
+theorem matMul_io_lower_bound {V : Type*} [DecidableEq V] [Finite V]
+    {E : V → V → Prop} {I O : Finset V} {m k n S q : ℕ} (hM : IsMatMulEvaluation m k n E I O)
+    (hq : HasCompleteCalculation E I O S q) :
+    (m * k * n : ℝ) ≤ 2 * q * Real.sqrt S
+
+theorem matMul_io_bounds {V : Type*} [DecidableEq V] [Finite V]
+    {E : V → V → Prop} {I O : Finset V} {m k n S q : ℕ} (hk : 1 ≤ k) (hS : 1 ≤ S)
+    (hM : IsMatMulEvaluation m k n E I O) (hq : HasCompleteCalculation E I O S q) :
+    m * k + k * n + m * n ≤ q ∧ (m * k * n : ℝ) / Real.sqrt (2 * S) - S ≤ q
+
+theorem exists_isMatMulEvaluation {m k n : ℕ} (hm : 1 ≤ m) (hk : 1 ≤ k) (hn : 1 ≤ n) :
+    ∃ (V : Type) (_ : DecidableEq V) (_ : Finite V) (E : V → V → Prop) (I O : Finset V),
+      IsMatMulEvaluation m k n E I O ∧ ∀ S, (∃ q, HasCompleteCalculation E I O S q) ↔ 3 ≤ S
+
+theorem matMul_io_lower_bound_isBigO {ι : Type*} {m k n : ι → ℕ} {W : ι → Type*}
+    [∀ i, DecidableEq (W i)] [∀ i, Finite (W i)] {E : ∀ i, W i → W i → Prop}
+    {I O : ∀ i, Finset (W i)} (hM : ∀ i, IsMatMulEvaluation (m i) (k i) (n i) (E i) (I i) (O i)) :
+    (fun x : ι × ℕ => (m x.1 * k x.1 * n x.1 : ℝ))
+      =O[𝓟 {x | ∃ q, HasCompleteCalculation (E x.1) (I x.1) (O x.1) x.2 q}]
+      fun x => (minIOTime (E x.1) (I x.1) (O x.1) x.2 : ℝ) * Real.sqrt x.2
+
+end Target.RedBluePebbleGame
+```
+
+## Phase 3, round 1, 2026-09-27 (superseded for `IsMatMulEvaluation` and the four statements)
+
+Phase 3 adds Hong and Kung's Corollary 6.2, the I/O lower bound for multiplying matrices, over a
+class of computation graphs rather than one graph. The round renders the four new statements.
+The six definitions they are stated through were sent with them, two of them new.
+
+### What was sent
+
+- **Taken from:** an uncommitted draft on branch `hong-kung`, based on `016d53e`, on 2026-09-27.
+  Nothing containing an advertised statement is committed before its read, so the text is
+  identified by content. The SHA-256 of each stripped module exactly as sent is
+  - `a4f4f68bbe6ebc760a1db9c2738c970688303e7b2b77b6e6152ef881999bb9f1` for Module 1;
+  - `cb12dcdb20f0a7b5ffe6a8be1633268cd3a3613718a880d6066036fcdbae15f9` for Module 2.
+- **Declarations:** `Target.RedBluePebbleGame.matMul_io_lower_bound`, `.matMul_io_bounds`,
+  `.exists_isMatMulEvaluation` and `.matMul_io_lower_bound_isBigO`.
+- **Definitions they are stated through:** `MiscMath.Computability.RedBluePebbleGame.IsMatMulLabelling`
+  and `.IsMatMulEvaluation`, which are new, and `.Step`, `.HasCompleteCalculation`, `.minIOTime` and
+  `.IsComputationDAG` from Phases 1 and 2. These six, with the constructors of `Step`,
+  `IsComputationDAG` and `IsMatMulLabelling`, are the only project constants the four statement
+  types reach, transitively. This was checked by walking the elaborated statements.
+- **Module 1** is `Spec.lean`'s preamble and those six definitions, stripped; unlike Phase 2, the
+  definitions the statements do not reach were left out. **Module 2** is the target module's
+  preamble and the four new statements, stripped.
+- **The prompt** was Part 2 of `READBACK.md`, verbatim, followed by the two stripped modules
+  below as unlabelled Lean blocks. Unlike Phases 1 and 2, it had no opening line and the modules
+  were not labelled.
+
+### Who wrote it
+
+`claude-opus-5-5` (Claude Opus 5.5), as a fresh subagent with no prior context, on 2026-09-27. It
+made five tool calls, checked in its transcript:
+
+- three read definitions in Mathlib and in Lean's core library: big-O, the principal filter,
+  the infimum on ℕ, and the closures `TransGen` and `ReflTransGen`;
+- one elaborated the three numeric conclusions against Mathlib in a scratch file in the session's
+  scratch directory, running `lake env lean` from the repository root and printing
+  `lean-toolchain`;
+- one was the hand-back that delivered the rendering.
+
+It opened no other file of the repository: no module, docstring, plan or source. Its opening
+paragraph, which describes these checks, is part of the rendering and is kept. Its headings are
+demoted three levels to fit this file, and the rendering is otherwise verbatim.
+
+### What the comparison found
+
+The rendering agrees with the intended statements (the account written before it came back, in
+the maintainer's plan) clause by clause:
+
+- **`IsMatMulLabelling`** is rendered as exactly its nine conditions. The rendering also says
+  what it does not ask, all as intended:
+  - `O` does not appear;
+  - a product may have other predecessors, and an entry other successors;
+  - `I` may contain vertices that are not entries;
+  - the products differ from the entries only because the inputs are the sources, which is why
+    no field says so.
+- **`matMul_io_lower_bound`:** `mkn ≤ 2·q·√S` in ℝ, with no hypothesis on `S`. It holds for every
+  labelling and every achievable `q`, including the least.
+- **`matMul_io_bounds`:** (i) is in ℕ, and (ii) in ℝ with no division by zero, given `S ≥ 1`. (ii)
+  constrains `q` only when `mkn > S·√(2S)`.
+- **`exists_isMatMulEvaluation`:** `V` lives in `Type`, the red-pebble bound is the fixed number
+  3, and nothing is said about `q` beyond its existence.
+- **`matMul_io_lower_bound_isBigO`:** one constant `C`, chosen after the whole family, bounds
+  `m_i k_i n_i` by `C·T_i(S)·√S` at every point of `D`, where `D` is the set of pairs at which a
+  complete calculation exists. On `D`, `T_i(S)` is the least achievable cost, and `minIOTime`'s
+  empty-set value `0` occurs only off `D`.
+
+It surfaced four points that the intended account had left implicit. All are correct, and all
+were checked by hand:
+
+1. **The asymptotic statement does not degenerate on `D`.** Its right-hand side can vanish on
+   `D` only where `S = 0` or `T_i(S) = 0`, and either forces the `i`-th graph to be empty.
+2. **`D` is upward closed in `S`:** a calculation within `S` red pebbles is one within any
+   larger bound.
+3. **The class is weak at degenerate sizes.**
+   - If `k = 0`, or `m = n = 0`, the labelling condition holds for every graph.
+   - If `m = 0 < k, n`, it says only that `I` has at least `kn` elements; `n = 0` is symmetric.
+   - There `mkn = 0`, so nothing is claimed, and nothing is lost.
+4. **The constant may depend on the whole family.** This is as intended, since a family may
+   contain every graph of the class, so one constant then covers the class. The roof docstring
+   should say so.
+
+It also repeated three points known from earlier rounds:
+
+- no vertex is isolated, so a graph cannot have exactly one vertex;
+- `S = 0` or `q = 0` forces the graph to be empty;
+- a transition that is both a load and a computation may be charged either way.
+
+No error was found in the rendering.
+
+### The rendering, verbatim
+
+#### Read-back: `Target.RedBluePebbleGame`
+
+Written by claude-opus-5-5 on 2026-09-27. The only input was the Lean source I was given: the four theorem statements, the definitions they read and the preamble. I did not open any repository file except the toolchain pin. Two checks were made outside that source:
+- **Mathlib definitions.** I read Mathlib's own definitions of big-O, of the principal filter and of the infimum on ℕ.
+- **Cast placement.** I elaborated the three numeric conclusions against Mathlib in a scratch file outside the repository. This confirmed where every ℕ→ℝ cast falls. For example, the subtraction in the second conjunct of `matMul_io_bounds` is real subtraction.
+
+Each block below is self-contained, so the shared definitions are repeated in every block.
+
+---
+
+##### matMul_io_lower_bound
+
+**Binders** (all universally quantified, in this order)
+- $V$: a type, in an arbitrary universe. Every element of $V$ is a vertex; there is no separate vertex set.
+- A decidable-equality instance on $V$. It is used only to form $X \cup \{v\}$ and $X \setminus \{v\}$ below. Every such instance gives the same sets.
+- The assumption that $V$ is finite. $V$ may be empty.
+- $E$: a binary relation on $V$. Write $u \to v$, "an edge from $u$ to $v$", when $E(u,v)$ holds.
+- $I, O$: finite subsets of $V$.
+- $m, k, n, S, q$: natural numbers.
+
+**Hypotheses**
+
+(hG) All four of the following hold.
+- (G1) There are no directed cycles: no $v \in V$ has a path $v = x_0 \to x_1 \to \dots \to x_r = v$ with $r \ge 1$. In particular there is no edge $v \to v$.
+- (G2) For every $v \in V$: $v \in I$ if and only if no $u \in V$ has $u \to v$. So $I$ is exactly the set of vertices with no incoming edge.
+- (G3) Every $v \in V$ with no outgoing edge (no $w$ with $v \to w$) lies in $O$. $O$ may also contain vertices that do have outgoing edges.
+- (G4) $I \cap O = \emptyset$.
+
+Together, (G2)–(G4) rule out isolated vertices. A vertex with no incoming and no outgoing edge would have to lie in both $I$ and $O$. In particular, $V$ cannot have exactly one element.
+
+(hM) Write $[r] = \{0, 1, \dots, r-1\}$, which is empty when $r = 0$. There exist maps $a : [m]\times[k] \to V$, $b : [k]\times[n] \to V$ and $p : [m]\times[k]\times[n] \to V$ such that:
+- (M1) $a$, $b$ and $p$ are each injective;
+- (M2) no value of $a$ is also a value of $b$;
+- (M3) every $a(i,l)$ and every $b(l,j)$ lies in $I$;
+- (M4) for all $i \in [m]$, $l \in [k]$, $j \in [n]$: $a(i,l) \to p(i,l,j)$ and $b(l,j) \to p(i,l,j)$;
+- (M5) for all $i, i' \in [m]$, $l, l' \in [k]$, $j, j' \in [n]$ and every $w \in V$: suppose $w$ is reachable from $p(i,l,j)$ by a directed path of length $\ge 0$, where length $0$ means $w = p(i,l,j)$. Suppose $w$ is also reachable from $p(i',l',j')$ by such a path. Then $i = i'$ and $j = j'$.
+  - Nothing is concluded about $l$ and $l'$.
+  - Equivalently: whenever $(i,j) \ne (i',j')$, the vertices reachable in zero or more steps from $p(i,l,j)$ and those reachable from $p(i',l',j')$ form disjoint sets.
+
+(M1)–(M5) are the only requirements.
+- $O$ does not appear in them.
+- $p(i,l,j)$ may have incoming edges besides the two in (M4).
+- $a(i,l)$ and $b(l,j)$ may have other outgoing edges.
+- $I$ may contain vertices outside the ranges of $a$ and $b$.
+- (M1)–(M5) alone do not make the values of $p$ differ from those of $a$ and $b$. With (G2) they do differ: each $p(i,l,j)$ has an incoming edge, so it lies outside $I$.
+
+(hq) Definitions used by this hypothesis:
+- A *configuration* is a pair $(R, B)$ of finite subsets of $V$: the red and the blue vertices.
+- A *move* from $(R,B)$ is exactly one of the following five, with the cost shown. There are no other moves.
+  - load $v$: needs $v \in B$ and $v \notin R$; leads to $(R \cup \{v\}, B)$; cost 1.
+  - store $v$: needs $v \in R$ and $v \notin B$; leads to $(R, B \cup \{v\})$; cost 1.
+  - compute $v$: needs $v \notin I$, $v \notin R$, and $u \in R$ for every $u$ with $u \to v$; leads to $(R \cup \{v\}, B)$; cost 0.
+  - delete red $v$: needs $v \in R$; leads to $(R \setminus \{v\}, B)$; cost 0.
+  - delete blue $v$: needs $v \in B$; leads to $(R, B \setminus \{v\})$; cost 0.
+- Compute sets no condition on whether $v \in B$.
+- A single transition can count as either a load (cost 1) or a compute (cost 0). This happens when $v$ is blue, lies outside $I$, and all its in-neighbours are red: adding $v$ to $R$ is then both moves, and either cost may be recorded.
+- Moves set no limit on $|R|$ or $|B|$.
+
+The hypothesis says there exist $t \in \mathbb{N}$ ($t = 0$ allowed), configurations $(R_0,B_0), \dots, (R_t,B_t)$ and numbers $c_0, \dots, c_{t-1} \in \mathbb{N}$ such that:
+- $(R_0,B_0) = (\emptyset, I)$;
+- $(R_t,B_t) = (\emptyset, O)$, so the final blue set equals $O$ exactly and no red vertex remains;
+- $|R_j| \le S$ for every $j = 0, \dots, t$, including the first and last configurations;
+- for each $i = 0, \dots, t-1$ there is a move of cost $c_i$ from $(R_i,B_i)$ to $(R_{i+1},B_{i+1})$;
+- $c_0 + \dots + c_{t-1} = q$, which is the empty sum $0$ when $t = 0$.
+
+So $q$ is exactly the number of moves in the sequence that are recorded as loads or stores. The number of blue vertices is unlimited, and any vertex may be loaded, stored, computed or deleted any number of times.
+
+**Conclusion.** $m\,k\,n \le 2\,q\,\sqrt{S}$ as real numbers. Each of $m, k, n, q, S$ is cast from $\mathbb{N}$ to $\mathbb{R}$. The left side is the product of the cast factors, and $\sqrt{\cdot}$ is the nonnegative square root.
+
+**Quantifier order.** Every binder is universal, and the conclusion contains no quantifier. The maps $a, b, p$ and the calculation appear only as existentials inside hypotheses. So the inequality holds for every such labelling and every such calculation. In particular, it holds for every $q$ that is the cost of some calculation as in (hq) with this $S$, including the least such $q$.
+
+*Edge cases.*
+- **$m$, $k$ or $n$ is $0$.** The left side is $0$ and the conclusion holds trivially. (hM) is also weak here:
+  - if $k = 0$, or $m = n = 0$, all three index sets are empty and (hM) holds for every $E$ and $I$;
+  - if $m = 0 < k, n$, (hM) says only that $I$ has at least $kn$ elements;
+  - if $n = 0 < m, k$, it says only that $I$ has at least $mk$ elements.
+- **$S = 0$.** The right side is $0$, so the conclusion reads $mkn = 0$.
+  - With $S = 0$ no configuration may contain a red vertex, so only delete-blue moves can occur.
+  - (hq) then forces $O \subseteq I$, and (G4) gives $O = \emptyset$.
+  - By (G3), every vertex then has an outgoing edge. That is impossible in a finite nonempty $V$ satisfying (G1).
+  - So at $S = 0$ the hypotheses hold together only when $V = \emptyset$.
+- **$q = 0$.** The right side is again $0$.
+  - With no loads or stores, no vertex of $I$ can ever turn red.
+  - By (G2), every other vertex has an in-neighbour, and that in-neighbour must already be red before the vertex can be computed.
+  - So no vertex ever turns red. The argument for $S = 0$ then forces $V = \emptyset$.
+- **$V = \emptyset$.** This is allowed. Then $I = O = \emptyset$ and (hG) holds. (hq) holds exactly when $q = 0$, whatever $S$ is. (hM) holds exactly when $mk = 0$ and $kn = 0$.
+- **Junk values.** None arise. The casts are exact, and $\sqrt{\cdot}$ is only applied to nonnegative numbers.
+- **The hypotheses can hold together.**
+  - Take $m = k = n = 1$ and $V = \{x, y, z\}$, with exactly the edges $x \to z$ and $y \to z$.
+  - Take $I = \{x, y\}$, $O = \{z\}$, $a(0,0) = x$, $b(0,0) = y$ and $p(0,0,0) = z$.
+  - The sequence load $x$, load $y$, compute $z$, store $z$, delete red $x, y, z$, delete blue $x, y$ never has more than 3 red vertices and costs 3.
+  - So (hG), (hM) and (hq) all hold with $S = q = 3$.
+
+---
+
+##### matMul_io_bounds
+
+**Binders** (all universally quantified, in this order)
+- $V$: a type, in an arbitrary universe. Every element of $V$ is a vertex; there is no separate vertex set.
+- A decidable-equality instance on $V$. It is used only to form $X \cup \{v\}$ and $X \setminus \{v\}$ below. Every such instance gives the same sets.
+- The assumption that $V$ is finite. $V$ may be empty.
+- $E$: a binary relation on $V$. Write $u \to v$ when $E(u,v)$ holds.
+- $I, O$: finite subsets of $V$.
+- $m, k, n, S, q$: natural numbers.
+
+**Hypotheses** (in this order)
+
+(hk) $1 \le k$.
+
+(hS) $1 \le S$.
+
+(hG) All four of the following hold.
+- (G1) No $v \in V$ has a directed path $v = x_0 \to x_1 \to \dots \to x_r = v$ with $r \ge 1$. In particular there is no edge $v \to v$.
+- (G2) For every $v \in V$: $v \in I$ if and only if no $u$ has $u \to v$. So $I$ is exactly the set of vertices with no incoming edge.
+- (G3) Every $v$ with no outgoing edge lies in $O$. $O$ may also contain vertices that have outgoing edges.
+- (G4) $I \cap O = \emptyset$.
+
+Consequently no vertex is isolated, and $V$ cannot have exactly one element.
+
+(hM) With $[r] = \{0, \dots, r-1\}$, there exist maps $a : [m]\times[k] \to V$, $b : [k]\times[n] \to V$ and $p : [m]\times[k]\times[n] \to V$ such that:
+- (M1) $a$, $b$ and $p$ are each injective;
+- (M2) no value of $a$ is a value of $b$;
+- (M3) every $a(i,l)$ and every $b(l,j)$ lies in $I$;
+- (M4) $a(i,l) \to p(i,l,j)$ and $b(l,j) \to p(i,l,j)$ for all $i, l, j$;
+- (M5) for all $i, i', l, l', j, j'$ and $w \in V$: if $w$ is reachable by a directed path of length $\ge 0$ both from $p(i,l,j)$ and from $p(i',l',j')$, then $i = i'$ and $j = j'$.
+  - Nothing is concluded about $l$ and $l'$.
+  - Equivalently: for $(i,j) \ne (i',j')$, the sets of vertices reachable in zero or more steps from the two $p$-vertices are disjoint.
+
+(M1)–(M5) are the only requirements.
+- $O$ does not appear in them.
+- $p$-vertices may have other incoming edges.
+- $a$- and $b$-vertices may have other outgoing edges.
+- $I$ may contain other vertices.
+- Values of $p$ differ from values of $a$ and $b$ only because of (G2): each $p(i,l,j)$ has an incoming edge.
+
+(hq) A configuration is a pair $(R, B)$ of finite subsets of $V$: red and blue. The moves, and there are no others, are:
+- load $v$: needs $v \in B$ and $v \notin R$; gives $(R\cup\{v\}, B)$; cost 1.
+- store $v$: needs $v \in R$ and $v \notin B$; gives $(R, B\cup\{v\})$; cost 1.
+- compute $v$: needs $v \notin I$, $v \notin R$, and every $u$ with $u \to v$ in $R$; gives $(R\cup\{v\}, B)$; cost 0.
+- delete red $v$: needs $v \in R$; gives $(R\setminus\{v\}, B)$; cost 0.
+- delete blue $v$: needs $v \in B$; gives $(R, B\setminus\{v\})$; cost 0.
+
+Compute ignores whether $v \in B$. A transition that is both a load and a compute may be recorded at either cost. Moves set no limit on $|R|$ or $|B|$.
+
+The hypothesis says there exist $t \in \mathbb{N}$ ($t = 0$ allowed), configurations $(R_0,B_0), \dots, (R_t,B_t)$ and costs $c_0, \dots, c_{t-1} \in \mathbb{N}$ such that:
+- $(R_0,B_0) = (\emptyset, I)$;
+- $(R_t,B_t) = (\emptyset, O)$ exactly;
+- $|R_j| \le S$ for all $j = 0, \dots, t$;
+- each consecutive pair is joined by a move of the recorded cost $c_i$;
+- $\sum_i c_i = q$.
+
+So $q$ is exactly the number of moves recorded as loads or stores. Blue vertices are unlimited, and repetition is allowed.
+
+**Conclusion.** Both of the following hold.
+- (i) $mk + kn + mn \le q$. This is an inequality between natural numbers and contains no subtraction.
+- (ii) $\dfrac{mkn}{\sqrt{2S}} - S \le q$. This is an inequality between real numbers.
+  - $m, k, n, S, q$ are cast to $\mathbb{R}$.
+  - $2S$ means $2$ times the cast of $S$.
+  - Division and subtraction are real, so nothing truncates.
+  - $\sqrt{2S} \ge \sqrt{2} > 0$ by (hS), so there is no division by zero.
+
+**Quantifier order.** Every binder is universal. The labelling and the calculation are existentials inside hypotheses, so both conjuncts hold for every labelling and for every achievable cost $q$ at this $S$, including the least one.
+
+*Edge cases.*
+- **Excluded cases.** (hk) and (hS) exclude $k = 0$ and $S = 0$.
+- **$m = 0$ (with $k \ge 1$).**
+  - (i) reads $kn \le q$.
+  - (ii) reads $-S \le q$, which always holds.
+  - (hM) then says only that $I$ has at least $kn$ elements, or nothing at all if $n = 0$ as well.
+  - The case $n = 0$ is symmetric: (i) reads $mk \le q$.
+- **When (ii) is trivial.** Since $q \ge 0$, (ii) holds automatically whenever $mkn/\sqrt{2S} \le S$, that is, whenever $mkn \le S\sqrt{2S}$. It constrains $q$ only when $mkn > S\sqrt{2S}$.
+- **$V = \emptyset$.** This is allowed. With $k \ge 1$, (hM) then forces $m = n = 0$, (hq) forces $q = 0$, and both conjuncts hold trivially.
+- **Junk values.** None arise.
+- **The hypotheses can hold together.**
+  - Take $m = k = n = 1$ and $V = \{x, y, z\}$, with exactly the edges $x \to z$ and $y \to z$.
+  - Take $I = \{x, y\}$, $O = \{z\}$, $a(0,0) = x$, $b(0,0) = y$ and $p(0,0,0) = z$.
+  - The sequence load $x$, load $y$, compute $z$, store $z$, delete red $x, y, z$, delete blue $x, y$ never has more than 3 red vertices and costs 3.
+  - This satisfies every hypothesis with $S = q = 3$.
+
+---
+
+##### exists_isMatMulEvaluation
+
+**Binders**: natural numbers $m, k, n$, universally quantified.
+
+**Hypotheses**: (hm) $1 \le m$; (hk) $1 \le k$; (hn) $1 \le n$.
+
+**Conclusion.** There exist the following, all chosen after $m, k, n$ and allowed to depend on them:
+- a type $V$ in the lowest universe of types, $\mathsf{Type}$ (not an arbitrary universe);
+- a decidable-equality instance on $V$, used only to form $X\cup\{v\}$ and $X\setminus\{v\}$; every such instance gives the same sets;
+- the fact that $V$ is finite (a proposition, not extra data);
+- a binary relation $E$ on $V$, written $u \to v$;
+- finite subsets $I, O \subseteq V$;
+- a natural number $q$.
+
+These are chosen so that (A), (B) and (C) all hold.
+
+(A) All four of the following hold.
+- (G1) No $v \in V$ has a directed path $v = x_0 \to \dots \to x_r = v$ with $r \ge 1$.
+- (G2) For every $v$: $v \in I$ if and only if no $u$ has $u \to v$.
+- (G3) Every $v$ with no outgoing edge lies in $O$.
+- (G4) $I \cap O = \emptyset$.
+
+(B) With $[r] = \{0, \dots, r-1\}$, there exist maps $a : [m]\times[k] \to V$, $b : [k]\times[n] \to V$ and $p : [m]\times[k]\times[n] \to V$ such that:
+- (M1) $a$, $b$ and $p$ are each injective;
+- (M2) the ranges of $a$ and $b$ are disjoint;
+- (M3) all $a(i,l)$ and $b(l,j)$ lie in $I$;
+- (M4) $a(i,l) \to p(i,l,j)$ and $b(l,j) \to p(i,l,j)$ for all $i, l, j$;
+- (M5) if some $w$ is reachable by a directed path of length $\ge 0$ both from $p(i,l,j)$ and from $p(i',l',j')$, then $i = i'$ and $j = j'$. Nothing is concluded about $l$ and $l'$.
+
+There are no other requirements, and $O$ does not appear in them.
+
+(C) There is a sequence of configurations of this kind:
+- Each configuration $(R_j, B_j)$ is a pair of finite subsets of $V$.
+- It starts at $(\emptyset, I)$ and ends at exactly $(\emptyset, O)$.
+- $|R_j| \le 3$ at every step, first and last included.
+- Consecutive configurations are joined by moves. The moves are load $v$, store $v$, compute $v$, delete red $v$ and delete blue $v$, with the conditions and results given below.
+- The recorded costs sum to exactly $q$.
+
+The moves, and there are no others:
+- load $v$: needs $v \in B$ and $v \notin R$; adds $v$ to $R$; cost 1.
+- store $v$: needs $v \in R$ and $v \notin B$; adds $v$ to $B$; cost 1.
+- compute $v$: needs $v \notin I$, $v \notin R$, and every $u$ with $u \to v$ in $R$; adds $v$ to $R$; cost 0.
+- delete red $v$: needs $v \in R$; removes $v$ from $R$; cost 0.
+- delete blue $v$: needs $v \in B$; removes $v$ from $B$; cost 0.
+
+A transition that is both a load and a compute may be recorded at either cost. The length $t \ge 0$ of the sequence is also existentially chosen. Because $q$ is itself existential, (C) says no more than that some such sequence exists with at most 3 red vertices throughout, at any cost.
+
+*Edge cases.*
+- $m$, $k$ or $n$ equal to $0$ is excluded.
+- The bound on red vertices is the fixed number $3$, the same for all $m, k, n$.
+- Nothing is asserted about $q$ beyond its existence: there is no bound, no minimality and no relation to $m$, $k$ or $n$.
+- $V$ is asserted to exist only in the lowest universe $\mathsf{Type}$.
+- No numerical junk values occur.
+
+---
+
+##### matMul_io_lower_bound_isBigO
+
+**Binders** (all universally quantified, in this order)
+- $\iota$: a type in an arbitrary universe. It may be empty.
+- $m, k, n : \iota \to \mathbb{N}$, written $m_i$, $k_i$, $n_i$.
+- $W$: a family of types $W_i$ for $i \in \iota$, all in one common arbitrary universe. This universe may differ from that of $\iota$. Every element of $W_i$ is a vertex of the $i$-th graph.
+- For each $i$, a decidable-equality instance on $W_i$. It is used only to form $X\cup\{v\}$ and $X\setminus\{v\}$, so the choice does not matter.
+- For each $i$, the assumption that $W_i$ is finite. $W_i$ may be empty.
+- $E$: for each $i$, a binary relation $E_i$ on $W_i$. Write $u \to_i v$ when $E_i(u,v)$ holds.
+- $I, O$: for each $i$, finite subsets $I_i, O_i \subseteq W_i$.
+
+**Hypotheses**
+
+(hG) For every $i \in \iota$, all four of the following hold.
+- (G1) No $v \in W_i$ has a path $v = x_0 \to_i x_1 \to_i \dots \to_i x_r = v$ with $r \ge 1$.
+- (G2) For every $v \in W_i$: $v \in I_i$ if and only if no $u \in W_i$ has $u \to_i v$.
+- (G3) Every $v \in W_i$ with no outgoing $\to_i$-edge lies in $O_i$. $O_i$ may contain other vertices too.
+- (G4) $I_i \cap O_i = \emptyset$.
+
+Consequently no vertex of any $W_i$ is isolated.
+
+(hM) For every $i \in \iota$, there exist maps $a : [m_i]\times[k_i] \to W_i$, $b : [k_i]\times[n_i] \to W_i$ and $p : [m_i]\times[k_i]\times[n_i] \to W_i$, where $[r] = \{0, \dots, r-1\}$. The maps may depend on $i$, and they satisfy:
+- (M1) $a$, $b$ and $p$ are each injective;
+- (M2) no value of $a$ is a value of $b$;
+- (M3) all $a(x)$ and $b(y)$ lie in $I_i$;
+- (M4) $a(i',l) \to_i p(i',l,j)$ and $b(l,j) \to_i p(i',l,j)$ for all $i' \in [m_i]$, $l \in [k_i]$, $j \in [n_i]$;
+- (M5) if some $w \in W_i$ is reachable along $\to_i$ in zero or more steps both from $p(i',l,j)$ and from $p(i'',l',j')$, then $i' = i''$ and $j = j'$. Nothing is concluded about $l$ and $l'$.
+
+There are no other requirements, and $O_i$ does not appear in them. There is no hypothesis linking different indices, and none requiring $k_i \ge 1$.
+
+**Conclusion.** Three auxiliary notions are needed.
+
+*Complete calculations.* For $i \in \iota$ and $S, q \in \mathbb{N}$, call a *complete calculation for $i$ with bound $S$ and cost $q$* the following:
+- a number $t \in \mathbb{N}$, which may be $0$;
+- configurations $(R_0,B_0), \dots, (R_t,B_t)$, each a pair of finite subsets of $W_i$ (red and blue);
+- costs $c_0, \dots, c_{t-1} \in \mathbb{N}$;
+
+such that:
+- $(R_0,B_0) = (\emptyset, I_i)$;
+- $(R_t,B_t) = (\emptyset, O_i)$, with the blue set exactly $O_i$;
+- $|R_j| \le S$ for all $j = 0, \dots, t$;
+- each $(R_{j+1},B_{j+1})$ arises from $(R_j,B_j)$ by one of the moves below, recorded at the cost $c_j$ shown;
+- $c_0 + \dots + c_{t-1} = q$.
+
+The moves are exactly these:
+- load $v$: needs $v \in B$ and $v \notin R$; adds $v$ to $R$; cost 1.
+- store $v$: needs $v \in R$ and $v \notin B$; adds $v$ to $B$; cost 1.
+- compute $v$: needs $v \notin I_i$, $v \notin R$, and every $u$ with $u \to_i v$ in $R$; adds $v$ to $R$; cost 0.
+- delete red $v$: needs $v \in R$; removes $v$ from $R$; cost 0.
+- delete blue $v$: needs $v \in B$; removes $v$ from $B$; cost 0.
+
+A transition that is both a load and a compute may be recorded at either cost. There is no limit on blue vertices, and repetition is allowed. So $q$ counts the moves recorded as loads and stores.
+
+*The set $D$.* $D \subseteq \iota \times \mathbb{N}$ is the set of pairs $(i, S)$ for which some $q \in \mathbb{N}$ admits a complete calculation for $i$ with bound $S$ and cost $q$.
+
+*The value $T_i(S)$.* This is the statement's `minIOTime`: Mathlib's infimum in $\mathbb{N}$ of the set of $q$ that admit a complete calculation for $i$ with bound $S$ and cost $q$. By Mathlib's definition, it is the least such $q$ when the set is nonempty, and $0$ when it is empty.
+
+*The functions compared.* Both are real-valued functions on $\iota \times \mathbb{N}$:
+- $f(i, S) = m_i k_i n_i$, the product of the real casts. It does not depend on $S$.
+- $g(i, S) = T_i(S)\cdot\sqrt{S}$, where $T_i(S)$ and $S$ are cast to $\mathbb{R}$ and $\sqrt{\cdot}$ is the nonnegative square root.
+
+The conclusion is Mathlib's big-O relation "$f = O(g)$ along the principal filter of $D$". Unfolding Mathlib's definitions of big-O and of the principal filter, it says: there is a real number $C$ such that for every $(i, S) \in D$,
+$$|m_i k_i n_i| \le C\,\bigl|T_i(S)\sqrt{S}\bigr|.$$
+Both quantities inside the absolute values are nonnegative, so this is $m_i k_i n_i \le C \cdot T_i(S)\cdot\sqrt{S}$.
+
+**Quantifier order.**
+1. The whole family is fixed first: $\iota$, $m$, $k$, $n$, $W$, the instances, $E$, $I$ and $O$.
+2. Then $C$ is chosen. $C$ may depend on the entire family.
+3. Then the bound holds for every $(i, S) \in D$ with that single $C$. $C$ does not depend on $i$ or $S$, so it is uniform over all indices and all admissible $S$.
+
+Because the filter is principal, this is a bound at every point of $D$. It is not an eventual or limiting statement as $S$ or the sizes grow. The value of $C$ is not specified.
+
+*Edge cases.*
+- **$T_i(S)$ on $D$.** On $D$ the set defining $T_i(S)$ is nonempty, so $T_i(S)$ there is the least achievable cost. The junk value $0$ of an empty infimum occurs only off $D$, where nothing is claimed.
+- **$D$ grows with $S$.** If $(i, S) \in D$ then $(i, S') \in D$ for every $S' \ge S$, since a larger bound only relaxes the requirement.
+- **Points where $g = 0$.** $g$ vanishes at points of $D$ with $S = 0$ or with $T_i(S) = 0$. At those points the conclusion forces $m_i k_i n_i = 0$. Both kinds of point occur only for indices with $W_i = \emptyset$:
+  - With $S = 0$ only delete-blue moves are possible, so $(i, 0) \in D$ exactly when $O_i \subseteq I_i$. By (G4) that means $O_i = \emptyset$, and by (G1), (G3) and finiteness it means $W_i = \emptyset$.
+  - A calculation of cost $0$ never makes a vertex red. Inputs turn red only by loading, and by (G2) every other vertex needs an already-red in-neighbour before it can be computed. The same chain of reasoning then gives $W_i = \emptyset$.
+- **Empty cases.** If $\iota$ is empty or $D$ is empty, the statement is trivially true.
+- **Degenerate indices.**
+  - If $k_i = 0$, or $m_i = n_i = 0$, (hM) at $i$ holds vacuously and $f(i, \cdot) = 0$.
+  - If $m_i = 0 < k_i, n_i$, (hM) at $i$ says only that $I_i$ has at least $k_i n_i$ elements, and $f(i, \cdot) = 0$.
+  - $n_i = 0 < m_i, k_i$ is symmetric.
+- **No positivity hypotheses.** Nothing requires $k_i \ge 1$ or $S \ge 1$.
+- **The hypotheses can hold together.**
+  - Take $\iota$ to be a one-point type, with $m = k = n = 1$.
+  - Take $W = \{x, y, z\}$ with exactly the edges $x \to z$ and $y \to z$.
+  - Take $I = \{x, y\}$, $O = \{z\}$, $a(0,0) = x$, $b(0,0) = y$ and $p(0,0,0) = z$.
+  - This satisfies (hG) and (hM). A calculation with bound 3 and cost 3 exists: load $x$, load $y$, compute $z$, store $z$, then delete everything except blue $z$. So $D$ is nonempty.
+
+### The Lean sent
+
+Module 1:
+
+```lean
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Data.Finset.Card
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Order.Lattice.Nat
+
+namespace MiscMath.Computability.RedBluePebbleGame
+
+variable {V : Type*} [DecidableEq V]
+
+inductive Step (E : V → V → Prop) (I : Finset V) :
+    Finset V × Finset V → ℕ → Finset V × Finset V → Prop
+  | load {R B : Finset V} {v : V} (hB : v ∈ B) (hR : v ∉ R) :
+      Step E I (R, B) 1 (insert v R, B)
+  | store {R B : Finset V} {v : V} (hR : v ∈ R) (hB : v ∉ B) :
+      Step E I (R, B) 1 (R, insert v B)
+  | compute {R B : Finset V} {v : V} (hI : v ∉ I) (hR : v ∉ R) (hpred : ∀ u, E u v → u ∈ R) :
+      Step E I (R, B) 0 (insert v R, B)
+  | deleteRed {R B : Finset V} {v : V} (hR : v ∈ R) :
+      Step E I (R, B) 0 (R.erase v, B)
+  | deleteBlue {R B : Finset V} {v : V} (hB : v ∈ B) :
+      Step E I (R, B) 0 (R, B.erase v)
+
+def HasCompleteCalculation (E : V → V → Prop) (I O : Finset V) (S q : ℕ) : Prop :=
+  ∃ (t : ℕ) (σ : Fin (t + 1) → Finset V × Finset V) (c : Fin t → ℕ),
+    σ 0 = (∅, I) ∧
+    σ (Fin.last t) = (∅, O) ∧
+    (∀ j, (σ j).1.card ≤ S) ∧
+    (∀ i : Fin t, Step E I (σ i.castSucc) (c i) (σ i.succ)) ∧
+    ∑ i, c i = q
+
+noncomputable def minIOTime (E : V → V → Prop) (I O : Finset V) (S : ℕ) : ℕ :=
+  sInf {q | HasCompleteCalculation E I O S q}
+
+omit [DecidableEq V] in
+structure IsComputationDAG (E : V → V → Prop) (I O : Finset V) : Prop where
+  acyclic : ∀ v, ¬ Relation.TransGen E v v
+  inputs_eq_sources : ∀ v, v ∈ I ↔ ∀ u, ¬ E u v
+  sinks_subset_outputs : ∀ v, (∀ w, ¬ E v w) → v ∈ O
+  disjoint : Disjoint I O
+
+omit [DecidableEq V] in
+structure IsMatMulLabelling {m k n : ℕ} (E : V → V → Prop) (I : Finset V)
+    (a : Fin m × Fin k → V) (b : Fin k × Fin n → V) (p : Fin m × Fin k × Fin n → V) : Prop where
+  injective_a : Function.Injective a
+  injective_b : Function.Injective b
+  injective_p : Function.Injective p
+  disjoint_ab : Disjoint (Set.range a) (Set.range b)
+  a_mem : ∀ x, a x ∈ I
+  b_mem : ∀ x, b x ∈ I
+  edge_a : ∀ i l j, E (a (i, l)) (p (i, l, j))
+  edge_b : ∀ i l j, E (b (l, j)) (p (i, l, j))
+  independent : ∀ i l j i' l' j' w, Relation.ReflTransGen E (p (i, l, j)) w →
+    Relation.ReflTransGen E (p (i', l', j')) w → i = i' ∧ j = j'
+
+omit [DecidableEq V] in
+def IsMatMulEvaluation (m k n : ℕ) (E : V → V → Prop) (I : Finset V) : Prop :=
+  ∃ (a : Fin m × Fin k → V) (b : Fin k × Fin n → V) (p : Fin m × Fin k × Fin n → V),
+    IsMatMulLabelling E I a b p
+
+end MiscMath.Computability.RedBluePebbleGame
+```
+
+Module 2:
+
+```lean
+import MiscMath.Computability.RedBluePebbleGame.Spec
+import Mathlib.Analysis.Asymptotics.Defs
+import Mathlib.Analysis.SpecialFunctions.Log.Base
+import Mathlib.Data.Fintype.Prod
+
+open Filter MiscMath.Computability.RedBluePebbleGame
+
+namespace Target.RedBluePebbleGame
+
+theorem matMul_io_lower_bound {V : Type*} [DecidableEq V] [Finite V]
+    {E : V → V → Prop} {I O : Finset V} {m k n S q : ℕ} (hG : IsComputationDAG E I O)
+    (hM : IsMatMulEvaluation m k n E I) (hq : HasCompleteCalculation E I O S q) :
+    (m * k * n : ℝ) ≤ 2 * q * Real.sqrt S
+
+theorem matMul_io_bounds {V : Type*} [DecidableEq V] [Finite V]
+    {E : V → V → Prop} {I O : Finset V} {m k n S q : ℕ} (hk : 1 ≤ k) (hS : 1 ≤ S)
+    (hG : IsComputationDAG E I O) (hM : IsMatMulEvaluation m k n E I)
+    (hq : HasCompleteCalculation E I O S q) :
+    m * k + k * n + m * n ≤ q ∧ (m * k * n : ℝ) / Real.sqrt (2 * S) - S ≤ q
+
+theorem exists_isMatMulEvaluation {m k n : ℕ} (hm : 1 ≤ m) (hk : 1 ≤ k) (hn : 1 ≤ n) :
+    ∃ (V : Type) (_ : DecidableEq V) (_ : Finite V) (E : V → V → Prop) (I O : Finset V) (q : ℕ),
+      IsComputationDAG E I O ∧ IsMatMulEvaluation m k n E I ∧
+        HasCompleteCalculation E I O 3 q
+
+theorem matMul_io_lower_bound_isBigO {ι : Type*} {m k n : ι → ℕ} {W : ι → Type*}
+    [∀ i, DecidableEq (W i)] [∀ i, Finite (W i)] {E : ∀ i, W i → W i → Prop}
+    {I O : ∀ i, Finset (W i)} (hG : ∀ i, IsComputationDAG (E i) (I i) (O i))
+    (hM : ∀ i, IsMatMulEvaluation (m i) (k i) (n i) (E i) (I i)) :
+    (fun x : ι × ℕ => (m x.1 * k x.1 * n x.1 : ℝ))
+      =O[𝓟 {x | ∃ q, HasCompleteCalculation (E x.1) (I x.1) (O x.1) x.2 q}]
+      fun x => (minIOTime (E x.1) (I x.1) (O x.1) x.2 : ℝ) * Real.sqrt x.2
+
+end Target.RedBluePebbleGame
+```
 
 ## Phase 2, round 2 (current for Phase 2), 2026-09-27
 

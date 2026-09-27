@@ -31,6 +31,14 @@ The source's key lemma, and its partitions:
 * `minParts` and `minDominatorParts` — the least number of sets in either, the source's `P(S)`
   and `P_D(S)`.
 
+Matrix multiplication (the source's §6):
+
+* `IsMatMulLabelling` — which vertices are the entries of two matrices and which the products of
+  the ordinary algorithm for their product, in a graph that keeps the work for different entries
+  of the result apart;
+* `IsMatMulEvaluation` — a computation DAG (`IsComputationDAG`) some labelling of whose vertices
+  is one: the graphs the matrix-multiplication bounds are about.
+
 Nothing is proved here. The proof machinery lives in the other modules of this directory,
 which import this one; this one imports none of them.
 -/
@@ -189,5 +197,49 @@ value means nothing, so a statement about `minDominatorParts` should only be mad
 `S`-dominator partition exists. -/
 noncomputable def minDominatorParts (E : V → V → Prop) (I : Finset V) (S : ℕ) : ℕ :=
   sInf {h | ∃ P : Fin h → Finset V, IsDominatorPartition E I S P}
+
+omit [DecidableEq V] in
+/-- `IsMatMulLabelling E I a b p`: in the graph with edge relation `E` and inputs `I`, the
+vertices `a (i, l)`, `b (l, j)` and `p (i, l, j)` are the entries `A i l` of an `m × k` matrix `A`,
+the entries `B l j` of a `k × n` matrix `B`, and the `m k n` products `A i l * B l j` of the
+ordinary algorithm for `A * B`. That is: the entries are distinct inputs; each product is a vertex
+of its own, with an edge from each of its two factors; and no vertex depends on products for two
+different entries of `A * B`.
+
+Nothing else is asked. How the products for an entry are combined, and what else the graph
+computes, are free. -/
+structure IsMatMulLabelling {m k n : ℕ} (E : V → V → Prop) (I : Finset V)
+    (a : Fin m × Fin k → V) (b : Fin k × Fin n → V) (p : Fin m × Fin k × Fin n → V) : Prop where
+  /-- The entries of `A` are distinct vertices. -/
+  injective_a : Function.Injective a
+  /-- The entries of `B` are distinct vertices. -/
+  injective_b : Function.Injective b
+  /-- The products are distinct vertices. -/
+  injective_p : Function.Injective p
+  /-- No entry of `A` is an entry of `B`. -/
+  disjoint_ab : Disjoint (Set.range a) (Set.range b)
+  /-- Every entry of `A` is an input. -/
+  a_mem : ∀ x, a x ∈ I
+  /-- Every entry of `B` is an input. -/
+  b_mem : ∀ x, b x ∈ I
+  /-- The product `p (i, l, j)` has an edge from its factor `a (i, l)`. -/
+  edge_a : ∀ i l j, E (a (i, l)) (p (i, l, j))
+  /-- The product `p (i, l, j)` has an edge from its factor `b (l, j)`. -/
+  edge_b : ∀ i l j, E (b (l, j)) (p (i, l, j))
+  /-- A vertex that can be reached, by a path of length `0` or more, from a product for the entry
+  `(i, j)` of `A * B` cannot be reached from any product for another entry. -/
+  independent : ∀ i l j i' l' j' w, Relation.ReflTransGen E (p (i, l, j)) w →
+    Relation.ReflTransGen E (p (i', l', j')) w → i = i' ∧ j = j'
+
+omit [DecidableEq V] in
+/-- `IsMatMulEvaluation m k n E I O`: the graph with edge relation `E`, inputs `I` and outputs `O`
+satisfies the source's standing assumptions (`IsComputationDAG`), computes the products of the
+ordinary algorithm for multiplying an `m × k` matrix by a `k × n` matrix, and keeps what it
+computes from them for different entries of the result apart: some labelling of its vertices is
+an `IsMatMulLabelling`. -/
+def IsMatMulEvaluation (m k n : ℕ) (E : V → V → Prop) (I O : Finset V) : Prop :=
+  IsComputationDAG E I O ∧
+    ∃ (a : Fin m × Fin k → V) (b : Fin k × Fin n → V) (p : Fin m × Fin k × Fin n → V),
+      IsMatMulLabelling E I a b p
 
 end MiscMath.Computability.RedBluePebbleGame

@@ -81,4 +81,29 @@ theorem fft_parts_lower_bound_isBigO :
       fun p => (minDominatorParts (fftEdge p.1) (Finset.univ.filter (·.1 = 0)) p.2 : ℝ) := by
   sorry
 
+theorem matMul_io_lower_bound {V : Type*} [DecidableEq V] [Finite V]
+    {E : V → V → Prop} {I O : Finset V} {m k n S q : ℕ} (hM : IsMatMulEvaluation m k n E I O)
+    (hq : HasCompleteCalculation E I O S q) :
+    (m * k * n : ℝ) ≤ 2 * q * Real.sqrt S := by
+  sorry
+
+theorem matMul_io_bounds {V : Type*} [DecidableEq V] [Finite V]
+    {E : V → V → Prop} {I O : Finset V} {m k n S q : ℕ} (hk : 1 ≤ k) (hS : 1 ≤ S)
+    (hM : IsMatMulEvaluation m k n E I O) (hq : HasCompleteCalculation E I O S q) :
+    m * k + k * n + m * n ≤ q ∧ (m * k * n : ℝ) / Real.sqrt (2 * S) - S ≤ q := by
+  sorry
+
+theorem exists_isMatMulEvaluation {m k n : ℕ} (hm : 1 ≤ m) (hk : 1 ≤ k) (hn : 1 ≤ n) :
+    ∃ (V : Type) (_ : DecidableEq V) (_ : Finite V) (E : V → V → Prop) (I O : Finset V),
+      IsMatMulEvaluation m k n E I O ∧ ∀ S, (∃ q, HasCompleteCalculation E I O S q) ↔ 3 ≤ S := by
+  sorry
+
+theorem matMul_io_lower_bound_isBigO {ι : Type*} {m k n : ι → ℕ} {W : ι → Type*}
+    [∀ i, DecidableEq (W i)] [∀ i, Finite (W i)] {E : ∀ i, W i → W i → Prop}
+    {I O : ∀ i, Finset (W i)} (hM : ∀ i, IsMatMulEvaluation (m i) (k i) (n i) (E i) (I i) (O i)) :
+    (fun x : ι × ℕ => (m x.1 * k x.1 * n x.1 : ℝ))
+      =O[𝓟 {x | ∃ q, HasCompleteCalculation (E x.1) (I x.1) (O x.1) x.2 q}]
+      fun x => (minIOTime (E x.1) (I x.1) (O x.1) x.2 : ℝ) * Real.sqrt x.2 := by
+  sorry
+
 end Target.RedBluePebbleGame
