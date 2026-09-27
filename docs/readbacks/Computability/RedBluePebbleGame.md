@@ -5,8 +5,9 @@ The blind read-backs of the red-blue pebble game's advertised statements, produc
 back before it was read and frozen:
 
 - **Phase 2, the key lemma (Hong and Kung's §3 and Theorem 4.1).** Two rounds:
-  - **Round 2 is current for Phase 2.** It renders the six Phase 2 statements, and every
-    definition they are stated through, as they now stand.
+  - **Round 2 is current for Phase 2.** It renders the Phase 2 statements, and every definition
+    they are stated through, as they now stand. One of the six it renders,
+    `io_lower_bound_of_dominated_card`, was dropped after George's read and is not advertised.
   - **Round 1 is kept** for what it surfaced. Its renderings of the four general statements
     describe versions that took the graph hypotheses separately; those versions no longer exist.
 - **Phase 1, the FFT statements (Corollary 4.1).** Two rounds:
@@ -16,6 +17,14 @@ back before it was read and frozen:
     of `fft_io_bounds` describes a version of that statement that no longer exists.
 
 ## Phase 2, round 2 (current for Phase 2), 2026-09-27
+
+**Dropped after this round:** `io_lower_bound_of_dominated_card`, the bridge from a bound on
+dominated sets to an I/O bound, at George's decision on 2026-09-27. It is not in the paper, and
+§6 of the paper bounds each part using the minimum-set condition as well, so the right general
+form is better designed with the matrix-multiplication work. The other five statements are
+byte-identical to the text sent. With the bridge removed, Module 2 strips to SHA-256
+`04dcef48fc5169c83f45efb899b7a6fcef130a55dd1a40047df58ffee553d13b`; Module 1 is unchanged. The
+rendering below still includes the bridge, as the record of what was sent.
 
 ### What changed since round 1
 

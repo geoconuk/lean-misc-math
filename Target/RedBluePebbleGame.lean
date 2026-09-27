@@ -69,13 +69,6 @@ theorem minIOTime_lower_bound {V : Type*} [DecidableEq V] [Finite V]
     (S : ℤ) * (minParts E I (2 * S) - 1) ≤ minIOTime E I O S := by
   sorry
 
-theorem io_lower_bound_of_dominated_card {V : Type*} [DecidableEq V] [Finite V]
-    {E : V → V → Prop} {I O : Finset V} {S q U : ℕ} (hG : IsComputationDAG E I O)
-    (hU : ∀ D W : Finset V, D.card ≤ 2 * S → Dominates E I D W → W.card ≤ U)
-    (hq : HasCompleteCalculation E I O S q) :
-    S * Nat.card V ≤ (q + S) * U := by
-  sorry
-
 theorem fft_parts_lower_bound {k S h : ℕ} (hS : 1 ≤ S)
     {P : Fin h → Finset (Fin (k + 1) × Fin (2 ^ k))}
     (hP : IsDominatorPartition (fftEdge k) (Finset.univ.filter (·.1 = 0)) S P) :
