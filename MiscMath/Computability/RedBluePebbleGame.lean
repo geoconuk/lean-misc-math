@@ -81,8 +81,8 @@ its vertices can be labelled so that:
 * each product `A i l · B l j` is a vertex of its own, with an edge from each of its two factors;
 * no vertex can be reached from the products of two different entries of the result.
 
-How the products are then combined, in what order, and what else the graph computes, are left
-free. For such graphs:
+How the products are then combined, and in what order, are left free, as is anything else the
+graph computes, subject to the third condition. For such graphs:
 
 10. **Feasibility, and non-vacuity** (`exists_isMatMulEvaluation`). For all `m, k, n ≥ 1`, some
     such graph has a complete calculation exactly when `S ≥ 3`.
@@ -201,16 +201,20 @@ The FFT's inputs and outputs are written inline, as `Finset.univ.filter (·.1 = 
   - So is a chain of fused multiply-adds `s ← s + a · b`, each `s` standing for its product: a
     product may have predecessors besides its two factors.
   - An entry of `A` or `B` may have other successors, there may be inputs besides the entries, and
-    the graph may compute other things too. `O` is constrained only by `IsComputationDAG`.
+    the graph may compute other things too, within the limit below. `O` is constrained only by
+    `IsComputationDAG`.
 * **What the class leaves out.** The class is about the shape of the graph, which vertices feed
   which, and not about the operations at its vertices.
-  - It leaves out work shared between entries of the result, such as a partial sum used by two of
-    them: `independent` forbids it.
+  - It leaves out any vertex reached from the products of two different entries of the result,
+    such as a partial sum used by both: `independent` forbids it. Work before the products may
+    still be shared: a vertex computed from `B 0 0` and `B 0 1` may feed the products of two
+    entries.
   - It leaves out Strassen's `2 × 2` algorithm: a brute-force search over its graph finds no
     labelling at all.
-* **The class is weak at degenerate sizes, where nothing is claimed.** If `k = 0`, or `m = n = 0`,
-  every computation DAG is in it. If `m = 0 < k, n`, the labelling asks only for `k n` distinct
-  inputs, and `n = 0` is symmetric. In all these cases `m k n = 0`.
+* **The class is weak at degenerate sizes.** If `k = 0`, or `m = n = 0`, every computation DAG is
+  in it. If `m = 0 < k, n`, the labelling asks only for `k n` distinct inputs, and `n = 0` is
+  symmetric. In all these cases `m k n = 0`, so the bounds on `m k n` say nothing; the first bound
+  of `matMul_io_bounds` still says `q ≥ k n` when `m = 0 < k, n`.
   - So `k ≥ 1` in `matMul_io_bounds` carries weight. Its first bound counts the `m n` outputs that
     the products reach, and with `k = 0` there are no products. The sanity checks show the bound
     failing at `k = 0`.
@@ -258,9 +262,20 @@ doi:10.1145/800076.802486; a scan is on H. T. Kung's page,
 
 Later restatements of the model, for comparison:
 
-* J. Elango, F. Rastello, L.-N. Pouchet, J. Ramanujam and P. Sadayappan (2014), arXiv:1404.4767:
+* V. Elango, F. Rastello, L.-N. Pouchet, J. Ramanujam and P. Sadayappan, *On characterizing the
+  data movement complexity of computational DAGs for parallel execution* (2014), arXiv:1404.4767:
   the inputs are exactly the sources, and inputs cannot be computed, as here;
-* P. A. Papp and R. Wattenhofer (2020), arXiv:2005.08609: sources can be computed for free.
+* P. A. Papp and R. Wattenhofer, *On the hardness of red-blue pebble games* (2020),
+  arXiv:2005.08609: sources can be computed for free.
+
+Later work on these bounds, for comparison:
+
+* D. Irony, S. Toledo and A. Tiskin, *Communication lower bounds for distributed-memory matrix
+  multiplication*, J. Parallel Distrib. Comput. 64 (2004), 1017–1026;
+* G. Ballard, J. Demmel, O. Holtz and O. Schwartz, *Minimizing communication in numerical linear
+  algebra*, SIAM J. Matrix Anal. Appl. 32 (2011), 866–901, arXiv:0905.2485;
+* G. Bilardi and L. De Stefani, *The DAG visit approach for pebbling and I/O lower bounds*,
+  FSTTCS 2022, extended version arXiv:2210.01897.
 
 ## Relation to Mathlib
 
@@ -317,9 +332,6 @@ Prove2Me's Formalpedia (searched 2026-09-25).
 * **Convention: P4 is an ordering of the sets.** See above; nothing changes.
 * **Convention: no move is a no-op.** A load onto a vertex already red is not a move, and nor are
   the like. This loses nothing: deleting a no-op from a calculation leaves one no dearer.
-* **Convention: the end is exact.** A calculation ends with blue pebbles on exactly the outputs and
-  no red pebble. The paper asks only for blue pebbles on the outputs. Deletions are free, so the
-  minimum cost is the same.
 * **Convention: a computed pebble is placed, not slid.** Computing a vertex leaves its predecessors'
   red pebbles where they are. With sliding, two red pebbles would do for the FFT graph.
 * **Two routes to Corollary 4.1.**
@@ -383,7 +395,9 @@ three phases as `Target/RedBluePebbleGame.lean`:
 * matrix multiplication in commit `0049cbf`.
 
 `Target/RedBluePebbleGame/TypeCheck.lean` ascribes each frozen type to the theorem proved here, so
-the two cannot drift apart.
+the two cannot differ while it builds; it is built by hand, with
+`lake build RedBluePebbleGameTypeCheck`, not by `lake build`. Both read the definitions in
+`Spec.lean`, which were frozen with the statements and have not changed since.
 
 Before George's read, the advertised statements were read back blind. An agent was given them,
 and the definitions they are stated through, and nothing else — no informal statement, no source,
@@ -403,7 +417,7 @@ statements. Each phase had two rounds:
 * **Phase 3, round 1** surfaced four points about the matrix-multiplication statements:
   - the asymptotic statement does not degenerate on its filter;
   - the filter is upward closed in `S`;
-  - the class is weak at degenerate sizes, where nothing is claimed;
+  - the class is weak at degenerate sizes, where the bounds on `m k n` say nothing;
   - the constant may depend on the whole collection, which may hold the whole class.
 * **Phase 3, round 2** followed the folding of `IsComputationDAG` into `IsMatMulEvaluation`, and
   the restatement of `exists_isMatMulEvaluation` as an equivalence. It surfaced nothing new.

@@ -15,8 +15,9 @@ The advertised statements of `MiscMath.Computability.RedBluePebbleGame`, stated 
 are proved and frozen once read. The `sorry`s are deliberate: this module is the target the
 proofs are held to, not a result. It reads only the definitions of
 `MiscMath.Computability.RedBluePebbleGame.Spec`. Once proved, the library's theorems are
-ascribed to these types, so a statement cannot drift from what was read without a build
-failing.
+ascribed to these types by `Target/RedBluePebbleGame/TypeCheck.lean`, which fails to build if a
+theorem's type differs from its target's. Both read the current `Spec.lean`, so a change to a
+definition there would change both alike, and that check would not see it.
 
 The module is deliberately outside `MiscMath/`, and its library is not in `defaultTargets`,
 so it reaches neither `lake build`, `MiscMath/Audit.lean`, nor the three checks in `scripts/`,

@@ -12,16 +12,18 @@ import MiscMath.Computability.RedBluePebbleGame
 `Target/RedBluePebbleGame.lean` states the advertised theorems of
 `MiscMath.Computability.RedBluePebbleGame` as they were read and frozen, with `sorry`. Each
 `example` below ascribes a target's type, read off the target by `type_of%`, to the theorem the
-library proves. So a library statement that drifts from what was read fails to build here: the
+library proves. So a library statement that differs from its target fails to build here: the
 two types must agree up to definitional unfolding, which fixes every binder, hypothesis and
-conclusion.
+conclusion. The definitions both read are the current ones in `Spec.lean`, so a change to a
+definition would change both alike and pass here.
 
 The library's statements are also textually the targets' statements, so that the read covers
 them. This module checks the types, not the text.
 
-This module is deliberately outside `MiscMath/` and outside `defaultTargets`, as the target is.
-It asserts real theorems and contains no `sorry` of its own; the targets it reads are the only
-declarations it sees that do. Build it with `lake build RedBluePebbleGameTypeCheck`.
+This module is deliberately outside `MiscMath/` and outside `defaultTargets`, as the target is,
+so neither `lake build` nor CI builds it. It asserts real theorems and contains no `sorry` of its
+own; the targets it reads are the only declarations it sees that do. Build it with
+`lake build RedBluePebbleGameTypeCheck`.
 -/
 
 example : type_of% @Target.RedBluePebbleGame.fft_io_lower_bound :=
