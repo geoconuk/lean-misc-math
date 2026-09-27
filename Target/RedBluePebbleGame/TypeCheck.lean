@@ -35,3 +35,18 @@ example : type_of% @Target.RedBluePebbleGame.fft_complete_iff :=
 
 example : type_of% @Target.RedBluePebbleGame.fft_io_lower_bound_isBigO :=
   @MiscMath.Computability.fft_io_lower_bound_isBigO
+
+example : type_of% @Target.RedBluePebbleGame.exists_partition_of_hasCompleteCalculation :=
+  @MiscMath.Computability.exists_partition_of_hasCompleteCalculation
+
+example : type_of% @Target.RedBluePebbleGame.io_lower_bound_of_parts :=
+  @MiscMath.Computability.io_lower_bound_of_parts
+
+example : type_of% @Target.RedBluePebbleGame.minIOTime_lower_bound :=
+  @MiscMath.Computability.minIOTime_lower_bound
+
+example : type_of% @Target.RedBluePebbleGame.fft_parts_lower_bound :=
+  @MiscMath.Computability.fft_parts_lower_bound
+
+example : type_of% @Target.RedBluePebbleGame.fft_parts_lower_bound_isBigO :=
+  @MiscMath.Computability.fft_parts_lower_bound_isBigO
