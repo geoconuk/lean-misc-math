@@ -136,14 +136,14 @@ Add to your `lakefile.toml`:
 [[require]]
 name = "MiscMath"
 git = "https://github.com/geoconuk/lean-misc-math"
-rev = "v0.3.0"
+rev = "v0.4.0"
 ```
 
 Then `import MiscMath` for everything, or import individual modules
 (`import MiscMath.Analysis.KolmogorovArnold`) to keep your build light.
 
 Pin to a tag rather than to `main`: statements here may be strengthened, corrected or
-withdrawn, and you want a fixed target. `v0.3.0` is current, and each tag records the
+withdrawn, and you want a fixed target. `v0.4.0` is current, and each tag records the
 Mathlib version it was built against. `main` tracks whatever Mathlib the repository
 currently builds against and will move under you.
 
@@ -164,7 +164,7 @@ that contribution visible.
   author  = {Constantinides, George A.},
   title   = {{lean-misc-math}: miscellaneous mathematical results formalised in {Lean 4}},
   year    = {2026},
-  version = {0.3.0},
+  version = {0.4.0},
   url     = {https://github.com/geoconuk/lean-misc-math},
   doi     = {10.5281/zenodo.22648192},
   license = {Apache-2.0},

@@ -37,6 +37,42 @@
       "identifier": "10.1214/aoms/1177728178",
       "scheme": "doi",
       "resource_type": "publication-article"
+    },
+    {
+      "relation": "references",
+      "identifier": "10.1090/trans2/028/04",
+      "scheme": "doi",
+      "resource_type": "publication-article"
+    },
+    {
+      "relation": "references",
+      "identifier": "10.1080/00029890.1962.11989915",
+      "scheme": "doi",
+      "resource_type": "publication-article"
+    },
+    {
+      "relation": "references",
+      "identifier": "10.1090/S0002-9947-1965-0210852-X",
+      "scheme": "doi",
+      "resource_type": "publication-article"
+    },
+    {
+      "relation": "references",
+      "identifier": "10.1007/BFb0058976",
+      "scheme": "doi",
+      "resource_type": "publication-book"
+    },
+    {
+      "relation": "references",
+      "identifier": "10.1016/0021-9045(75)90035-0",
+      "scheme": "doi",
+      "resource_type": "publication-article"
+    },
+    {
+      "relation": "references",
+      "identifier": "10.1145/800076.802486",
+      "scheme": "doi",
+      "resource_type": "publication-conferencepaper"
     }
   ]
 }
