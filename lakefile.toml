@@ -85,3 +85,21 @@ roots = ["Palomar.KolmogorovArnold.Challenge"]
 [[lean_lib]]
 name = "PalomarKolmogorovArnoldTypeCheck"
 roots = ["Palomar.KolmogorovArnold.TypeCheck"]
+
+# The frozen target statements of the red-blue pebble game (`MiscMath.Computability.
+# RedBluePebbleGame`): its advertised theorems, stated with `sorry` before they are proved and
+# frozen once read, so that the proofs can be held to them. On the same footing as the
+# Palomar Challenges above: not in `defaultTargets`, so it reaches neither `lake build`,
+# `MiscMath/Audit.lean`, nor the three checks in `scripts/`. Build it with
+# `lake build RedBluePebbleGameTarget`.
+[[lean_lib]]
+name = "RedBluePebbleGameTarget"
+roots = ["Target.RedBluePebbleGame"]
+
+# Holds the red-blue pebble game's proved theorems to the frozen targets above, by ascribing each
+# target's type to the theorem `MiscMath` ships. No `sorry` of its own, but outside
+# `defaultTargets` for the same reason as the Palomar TypeChecks. Build it with
+# `lake build RedBluePebbleGameTypeCheck`.
+[[lean_lib]]
+name = "RedBluePebbleGameTypeCheck"
+roots = ["Target.RedBluePebbleGame.TypeCheck"]
