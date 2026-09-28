@@ -47,8 +47,9 @@ Concretely, when generating a result, spend the care on:
    statement; investigate before working around it.
 4. Add a `public import` line to `MiscMath.lean` and an `import all` line to
    `MiscMath/Audit.lean`, alphabetically in both. Every Lean file here uses the module
-   system, which Palomar requires of every file in a submitted repository; the template
-   shows the header, and `scripts/check-conventions.sh` fails on a file without it.
+   system, which Palomar requires of every Lean file in a submitted repository but a
+   `lakefile.lean`; the template shows the header, and `scripts/check-conventions.sh`
+   fails on a file without it.
 5. Run the checks (below). All three must pass.
 6. Get a **read-back** of the advertised statements before they go for their best-effort
    read, following [`docs/READBACK.md`](docs/READBACK.md). Send them — as Lean source with

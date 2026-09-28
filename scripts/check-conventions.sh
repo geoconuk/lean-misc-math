@@ -119,15 +119,25 @@ done
 
 # --- The module system, repository-wide -----------------------------------
 # Palomar accepts a submission only if every Lean file in the repository -- not only the
-# library, but Target/, Palomar/ and docs/ too -- begins with the `module` header and has at
-# most 10,000 lines, and it checks this before building anything. The test below is the one
-# Palomar applies (PalomarSubmission, scripts/source_requirements.py): after whitespace,
-# `--` comments and ordinary `/- -/` comments, but not doc comments, the next token must be
-# `module`. Tracked files only, as a submission sees them.
+# library, but Target/, Palomar/ and docs/ too -- has at most 10,000 lines and, unless it is a
+# `lakefile.lean`, begins with the `module` header, and it checks this before building anything.
+# The test below is the one Palomar applies (PalomarSubmission, scripts/source_requirements.py):
+# after whitespace, `--` comments and ordinary `/- -/` comments, but not doc comments, the next
+# token must be `module`, not followed by a character that would continue it into an identifier.
+# Like Palomar, it reads each file as bytes, so that a bare carriage return is not a line break,
+# and refuses a symbolic link or a file that is not UTF-8. Tracked files only, as a submission
+# sees them.
 module_check="$(git ls-files -z '*.lean' | python3 -c '
-import re, sys
+import os, re, sys
 MARK = re.compile(r"/-|-/")
-CONT = re.compile(r"[A-Za-z0-9_\x27!?\u00c0-\u024f\u0370-\u03ff\u1f00-\u1fff\u2080-\u209c\u2100-\u214f]|\.[A-Za-z_]")
+# The characters that continue a Lean identifier, from isLetterLike, isSubScriptAlnum and
+# isIdRest in Lean core (Init/Meta/Defs.lean); a dot continues one before the start of a name.
+LETTER_LIKE = ("\u03b1-\u03ba\u03bc-\u03c9\u0391-\u039f\u03a1-\u03a2\u03a4-\u03a9\u03ca-\u03fb"
+               "\u1f00-\u1ffe\u2100-\u214f\U0001d49c-\U0001d59f"
+               "\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u017f")
+ID_FIRST = "A-Za-z_" + LETTER_LIKE
+ID_REST = ID_FIRST + "0-9\x27!?\u2080-\u2089\u2090-\u209c\u1d62-\u1d6a\u2c7c"
+CONT = re.compile("[" + ID_REST + "]|[.][" + ID_FIRST + "\u00ab]")
 def has_module_header(t):
     i = 0
     while i < len(t):
@@ -149,11 +159,19 @@ def has_module_header(t):
             return t.startswith("module", i) and CONT.match(t, i + 6) is None
     return False
 for path in sys.stdin.read().split("\0"):
-    if not path or path.endswith("lakefile.lean"):
+    if not path:
         continue
-    text = open(path, encoding="utf-8").read()
+    if os.path.islink(path):
+        print(f"{path} is a symbolic link; Palomar accepts only regular Lean files")
+        continue
+    try:
+        text = open(path, "rb").read().decode("utf-8")
+    except UnicodeDecodeError:
+        print(f"{path} is not valid UTF-8")
+        continue
     lines = text.count("\n") + (1 if text and not text.endswith("\n") else 0)
-    if not has_module_header(text):
+    # Lake configuration is exempt from the header, but not from the cap.
+    if os.path.basename(path) != "lakefile.lean" and not has_module_header(text):
         print(f"{path} does not begin with the module header (ordinary comments may precede it)")
     if lines > 10000:
         print(f"{path} has {lines} lines; Palomar accepts at most 10,000")
@@ -165,7 +183,7 @@ if [[ -n "$module_check" ]]; then
 fi
 
 if [[ $status -eq 0 ]]; then
-  echo "convention check passed: ${#files[@]} file(s), ${#result_files[@]} of them result module(s);" \
-    "every tracked Lean file uses the module system"
+  echo "convention check passed: ${#files[@]} file(s), ${#result_files[@]} of them result" \
+    "module(s); every tracked Lean file meets Palomar's source requirements"
 fi
 exit $status

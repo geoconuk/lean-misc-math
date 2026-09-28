@@ -9,10 +9,11 @@ Authors: George A. Constantinides (selection, specification), Claude (formalisat
 -- adds an `import all` line for each of them too: the audit sees a module's private
 -- declarations only through an `import all` that names it.
 --
--- Every Lean file here uses the module system, as Palomar requires of every file in a
--- submitted repository: `module` comes first after these comments, imports are
--- `public import`, and `@[expose] public section` after the module docstring makes the
--- declarations public and keeps definition bodies visible to the modules that import them.
+-- Every Lean file here uses the module system, as Palomar requires of every Lean file in a
+-- submitted repository but a `lakefile.lean`: `module` comes first after these comments,
+-- imports are `public import`, and `@[expose] public section` after the module docstring
+-- makes the declarations public and keeps definition bodies visible to the modules that
+-- import them.
 --
 -- Keep the `Authors:` line above as it is: Mathlib's header linter (active here via
 -- `weak.linter.mathlibStandardSet` in `lakefile.toml`) requires one on every module that
