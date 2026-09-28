@@ -1,0 +1,21 @@
+{
+  "challenge_module": "Palomar.RedBluePebbleGame.Challenge",
+  "solution_module": "MiscMath.Computability.RedBluePebbleGame",
+  "theorem_names": [
+    "MiscMath.Computability.exists_partition_of_hasCompleteCalculation",
+    "MiscMath.Computability.io_lower_bound_of_parts",
+    "MiscMath.Computability.minIOTime_lower_bound",
+    "MiscMath.Computability.fft_parts_lower_bound",
+    "MiscMath.Computability.fft_parts_lower_bound_isBigO",
+    "MiscMath.Computability.fft_complete_iff",
+    "MiscMath.Computability.fft_io_bounds",
+    "MiscMath.Computability.fft_io_lower_bound",
+    "MiscMath.Computability.fft_io_lower_bound_isBigO",
+    "MiscMath.Computability.exists_isMatMulEvaluation",
+    "MiscMath.Computability.matMul_io_bounds",
+    "MiscMath.Computability.matMul_io_lower_bound",
+    "MiscMath.Computability.matMul_io_lower_bound_isBigO"
+  ],
+  "definition_names": [],
+  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"]
+}

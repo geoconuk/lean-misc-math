@@ -146,10 +146,13 @@ not a reason to submit.
 
 One consequence for how results are written. A Palomar Challenge — the statement file a
 reader is expected to audit — may import only Lean core, Mathlib, Tau Ceti and CSLib.
-Nothing from this repository may appear in its transitive imports, so a result whose
-statement cannot be restated in Mathlib's vocabulary alone cannot be registered, whatever
-its proof depends on. The Solution, which carries the proof, may depend on this repository
-freely.
+Nothing from this repository may appear in its transitive imports, so every definition of
+this repository's that a registered statement reads must be restated in the Challenge, where
+it becomes part of what the reader audits. Palomar asks for a short Challenge and prefers
+theorem statements to new definitions, so a statement in Mathlib's vocabulary alone is the
+easiest to register. The red-blue pebble game's Challenge restates twelve definitions, and
+[Palomar/README.md](Palomar/README.md#a-challenge-that-restates-definitions) says what that
+takes. The Solution, which carries the proof, may depend on this repository freely.
 
 The binding rules live in
 [PalomarPolicy](https://github.com/PalomarRegistry/PalomarPolicy), not on the registry

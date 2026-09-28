@@ -89,6 +89,21 @@ roots = ["Palomar.KolmogorovArnold.Challenge"]
 name = "PalomarKolmogorovArnoldTypeCheck"
 roots = ["Palomar.KolmogorovArnold.TypeCheck"]
 
+# The Palomar submission for Hong and Kung's red-blue pebble game, on the same footing as the
+# three pairs above. Its Challenge also restates the twelve definitions the statements are read
+# through, copied from `MiscMath/Computability/RedBluePebbleGame/Spec.lean`, since a Challenge may
+# import only Mathlib; Comparator requires each to be the same declaration as the library's.
+# Neither library is in `defaultTargets`. Build them with
+# `lake build PalomarRedBluePebbleGameChallenge` and `lake build PalomarRedBluePebbleGameTypeCheck`.
+# See `Palomar/README.md`.
+[[lean_lib]]
+name = "PalomarRedBluePebbleGameChallenge"
+roots = ["Palomar.RedBluePebbleGame.Challenge"]
+
+[[lean_lib]]
+name = "PalomarRedBluePebbleGameTypeCheck"
+roots = ["Palomar.RedBluePebbleGame.TypeCheck"]
+
 # The frozen target statements of the red-blue pebble game (`MiscMath.Computability.
 # RedBluePebbleGame`): its advertised theorems, stated with `sorry` before they are proved and
 # frozen once read, so that the proofs can be held to them. On the same footing as the

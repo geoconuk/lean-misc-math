@@ -39,15 +39,16 @@ jobs:
 
       # The type checks hold shipped theorems to statements fixed elsewhere: the
       # red-blue pebble game's to the targets frozen in `Target/` before any proof
-      # existed, and each Palomar-registered result's to a copy of its Challenge's
+      # existed, and each Palomar submission's to a copy of its Challenge's
       # statements in `Palomar/`. None is in `defaultTargets`, so `lake build` above
       # does not build them. The red-blue check imports its targets, which state the
       # theorems with `sorry`, so this step prints thirteen deliberate
       # `declaration uses 'sorry'` warnings; any error fails it.
-      - name: Build the type checks against frozen and registered statements
+      - name: Build the type checks against frozen and Palomar statements
         run: >-
           lake build RedBluePebbleGameTypeCheck PalomarWynerTypeCheck
           PalomarHoeffdingTypeCheck PalomarKolmogorovArnoldTypeCheck
+          PalomarRedBluePebbleGameTypeCheck
 
       # `homepage` is load-bearing. The action decides whether to build a Jekyll
       # landing page with a literal `[ -d <homepage> ]`, and the input defaults to

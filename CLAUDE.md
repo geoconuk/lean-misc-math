@@ -21,8 +21,9 @@ Concretely, when generating a result, spend the care on:
   worth very little. If a new definition is unavoidable, ship a characterisation lemma
   tying it back to Mathlib's and say why under `## Relation to Mathlib`. This is not only
   style: a Palomar Challenge may import nothing but Lean core, Mathlib, Tau Ceti and
-  CSLib, so a statement that cannot be expressed in Mathlib's vocabulary alone cannot be
-  registered at all (step 7 below).
+  CSLib, so every definition of ours that a registered statement reads has to be restated
+  in the Challenge, which Palomar asks to be short, preferring theorem statements to new
+  definitions (step 7 below).
 - **Truncated `Nat` subtraction and junk values** (`x / 0 = 0`, `Real.rpow` at bad
   arguments, degenerate empty cases). These make statements that are true and useless.
   Restate to avoid them where possible.
@@ -109,8 +110,9 @@ Split when the file stops being navigable or its rebuild stops being quick, not 
 count. Do not split a single theorem away from the definitions its statement reads.
 
 One further consequence: a Palomar Challenge may not import a support module either, so
-registering a result that has grown a directory means restating its theorems from Mathlib
-alone in the Challenge and letting the Solution depend on this repository.
+registering a result that has grown a directory means restating its theorems, and any
+definitions they read, from Mathlib alone in the Challenge, and letting the Solution depend on
+this repository.
 
 ## Checks
 

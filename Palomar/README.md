@@ -64,12 +64,36 @@ It is kept honest structurally rather than by promise:
 lake build PalomarWynerChallenge            && lake build PalomarWynerTypeCheck
 lake build PalomarHoeffdingChallenge        && lake build PalomarHoeffdingTypeCheck
 lake build PalomarKolmogorovArnoldChallenge && lake build PalomarKolmogorovArnoldTypeCheck
+lake build PalomarRedBluePebbleGameChallenge && lake build PalomarRedBluePebbleGameTypeCheck
 ```
 
 Each Challenge elaborates the statement surface and reports one `declaration uses 'sorry'`
 warning per compared theorem — five for Wyner, five for Hoeffding, three for
-Kolmogorov–Arnold. Any other warning or error is a problem. Each TypeCheck reports nothing
-if the Challenge still matches the library.
+Kolmogorov–Arnold, thirteen for the red-blue pebble game. Any other warning or error is a
+problem. Each TypeCheck reports nothing if the Challenge still matches the library.
+
+## A Challenge that restates definitions
+
+The first three Challenges state their theorems in Mathlib's vocabulary alone. The red-blue
+pebble game's cannot: Mathlib has no pebble games, and a Challenge may import nothing but Lean
+core, Mathlib, Tau Ceti and CSLib. So its Challenge restates the twelve definitions its
+statements are read through, copied byte for byte from
+`MiscMath/Computability/RedBluePebbleGame/Spec.lean` and declared under the library's own names.
+They are not holes, and `definition_names` in its `comparator.json` is empty.
+
+Comparator asks more of such a copy than a reader does. It checks that every declaration a
+compared statement uses is the *same* declaration in the Challenge and in the Solution — the same
+elaborated term, not merely a definitionally equal one — and instance resolution depends on what
+is imported. With `Spec.lean`'s original, shorter import list, `Disjoint` in `IsMatMulLabelling`
+elaborated through a different instance path in the library than in the Challenge, whose imports
+include the analysis the statements need, and Comparator would have rejected the submission. So
+`Spec.lean` now carries exactly the Challenge's import list, in the same order, with a comment
+saying why. Keep the two identical: a change to the definitions or the imports of either must be
+made to the other.
+
+`TypeCheck.lean` cannot see any of this. It cannot import the Challenge's definitions beside the
+library's, which have the same names, and a type ascription holds only up to definitional
+unfolding. A Comparator run is what checks it, as Palomar's mechanical verification does.
 
 ## Submissions
 
@@ -78,6 +102,7 @@ if the Challenge still matches the library.
 | [Wyner's spherical covering exponent](Wyner/Challenge.lean) | `Palomar.Wyner.Challenge` | `MiscMath.Geometry.SphereCoveringExponent` | registered, `PALOMAR-2026-08-23-000001` |
 | [Hoeffding's extrema at a fixed mean](Hoeffding/Challenge.lean) | `Palomar.Hoeffding.Challenge` | `MiscMath.Probability.PoissonTrialsFixedMean` | registered, `PALOMAR-2026-09-07-000011` |
 | [The Kolmogorov–Arnold representation theorem](KolmogorovArnold/Challenge.lean) | `Palomar.KolmogorovArnold.Challenge` | `MiscMath.Analysis.KolmogorovArnold` | registered, `PALOMAR-2026-09-11-000002` |
+| [Hong and Kung's red-blue pebble game](RedBluePebbleGame/Challenge.lean) | `Palomar.RedBluePebbleGame.Challenge` | `MiscMath.Computability.RedBluePebbleGame` | prepared, not submitted |
 
 ## Where this work lives
 
@@ -167,6 +192,41 @@ gh api "repos/leanprover-community/mathlib4/compare/master...<sha>" --jq '.statu
 ```
 
 `behind` or `identical` is fine; `diverged` is not.
+
+## Two requirements Palomar added in September 2026
+
+Two requirements Palomar added in September 2026 apply to every new submission and every new
+version of an existing entry, though not to versions already registered:
+
+- **The toolchain.** Since 2026-09-23 the submitted `lean-toolchain` must be
+  `leanprover/lean4:v4.35.0-rc2` or later (`toolchains.json` in
+  [PalomarSubmission](https://github.com/PalomarRegistry/PalomarSubmission)): from that release
+  the toolchain itself ships the Comparator, exporter and independent kernels that judge a
+  submission. This repository moved from `v4.33.0` to `v4.35.0-rc3` on 2026-09-28 to meet it.
+- **The module system.** Since 2026-09-28 every `.lean` file in the submitted repository must
+  have at most 10,000 lines and, unless it is a `lakefile.lean`, begin with the `module` header —
+  every file, not only the Challenge and the Solution, so `Target/`, `docs/` and the other
+  Challenges too. This repository was ported the same day. `scripts/check-conventions.sh` applies
+  the same test as Palomar's `scripts/source_requirements.py` to every tracked Lean file, so that
+  a file failing it fails here before it fails there.
+
+The port was not mechanical for the axiom audit. Under the module system a module does not see
+another module's private declarations unless it imports that module with `import all`, which is
+not transitive, so importing the root would have silently dropped every private declaration from
+the audit. `MiscMath/Audit.lean` names every module with `import all`, `scripts/check-imports.sh`
+fails if one is missing, and the audit self-test plants a private `sorry` to show that the audit
+sees it.
+
+The same toolchain ships `lake comparator`, the Comparator Palomar runs. It needs the `bwrap`
+sandbox, which exists only on Linux; on macOS, and for code that is this repository's own, it can
+be run without it:
+
+```bash
+lake comparator --config Palomar/<Result>/comparator.json --paranoid --inadvisably-no-sandbox
+```
+
+`--paranoid` also runs every external checker the toolchain bundles — `leanchecker-paranoid`,
+`lean4lean`, NanoDa, con-leche and con-ron — where Palomar runs NanoDa and con-ron.
 
 ## Submitting
 

@@ -407,7 +407,11 @@ three phases as `Target/RedBluePebbleGame.lean`:
 `Target/RedBluePebbleGame/TypeCheck.lean` ascribes each frozen type to the theorem proved here, so
 the two cannot differ while it builds; it is built by CI and by
 `lake build RedBluePebbleGameTypeCheck`, not by `lake build`. Both read the definitions in
-`Spec.lean`, which were frozen with the statements and have not changed since.
+`Spec.lean`, which were frozen with the statements; their text has not changed since. The
+module's imports were extended afterwards, for the Palomar submission: its Challenge restates the
+definitions, and Comparator requires both copies to elaborate to the same terms. That changed one
+instance argument in `IsMatMulLabelling` to a definitionally equal one, and no definition's
+meaning.
 
 Before George's read, the advertised statements were read back blind. An agent was given them,
 and the definitions they are stated through, and nothing else — no informal statement, no source,

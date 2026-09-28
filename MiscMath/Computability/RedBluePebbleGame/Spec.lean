@@ -9,6 +9,15 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Order.Lattice.Nat
+-- The definitions below need none of the next three imports: the advertised statements do. The
+-- Palomar Challenge (`Palomar/RedBluePebbleGame/Challenge.lean`) restates these definitions
+-- verbatim under exactly this import list, and Comparator requires each copy to elaborate to the
+-- same term as the library's. With fewer imports here the two differ: `Disjoint` in
+-- `IsMatMulLabelling` finds a different, definitionally equal, instance path. Keep the two lists
+-- identical, in the same order.
+public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Analysis.SpecialFunctions.Log.Base
+public import Mathlib.Data.Fintype.Prod
 
 /-!
 # The red-blue pebble game: the definitions its statements are read through
