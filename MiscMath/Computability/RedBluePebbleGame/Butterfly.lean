@@ -226,9 +226,9 @@ theorem card_le_bfly_of_inBlock (D : Finset (Fin (k + 1) × Fin (2 ^ k))) :
       by_cases hl : (w.1 : ℕ) = L + 1
       · exact Or.inr ⟨hw, hl⟩
       · by_cases hb : (w.2 : ℕ).testBit L
-        · rw [if_pos hb] at h3
+        · rw [ite_eq_left hb] at h3
           exact Or.inl (Or.inr ⟨hw, by omega, by omega⟩)
-        · rw [if_neg hb] at h3
+        · rw [ite_eq_right hb] at h3
           exact Or.inl (Or.inl ⟨hw, by omega, by omega⟩)
     -- The dominator splits the same way.
     have hDsum : A.card + B.card + C.card ≤ (D.filter (InBlock (L + 1) β)).card := by
@@ -264,7 +264,7 @@ theorem card_le_bfly_of_inBlock (D : Finset (Fin (k + 1) × Fin (2 ^ k))) :
         fun w hw => hdom w (Finset.mem_filter.1 (Finset.mem_filter.1 hw).1).1
       have hescA := card_escaping_le D _ L β hLk false hesc hdom'
       have hescB := card_escaping_le D _ L β hLk true hesc hdom'
-      simp only [Bool.false_eq_true, if_false, add_zero, if_true] at hescA hescB
+      simp only [Bool.false_eq_true, ite_false, add_zero, ite_true] at hescA hescB
       have : (WC.filter (· ∉ D)).card ≤ 2 * min A.card B.card := by
         rcases le_total A.card B.card with h | h
         · rw [min_eq_left h]; exact hescA

@@ -491,7 +491,7 @@ lemma tailLe_eq_zero_of_lt {s : Finset ι} {q : ι → 𝕜} {O : Finset ι} {k 
   rw [tailLe, bernExp_drop_ones O s hOs hO]
   have hz : (fun r : ℕ => (if r + O.card ≤ k then (1 : 𝕜) else 0)) = fun _ => (0 : 𝕜) := by
     funext r
-    rw [if_neg (by omega)]
+    rw [ite_eq_right (by omega)]
   rw [hz, bernExp_zero_fun]
 
 end Tail

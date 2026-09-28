@@ -170,7 +170,7 @@ theorem HasCompleteCalculation.exists_trace {O : Finset V} {S q : ℕ}
       Fin.ext (by simp; omega)
     have e₂ : (⟨min (i + 1) t, by omega⟩ : Fin (t + 1)) = (⟨i, hi⟩ : Fin t).succ :=
       Fin.ext (by simp; omega)
-    simp only [dif_pos hi, e₁, e₂]
+    simp only [dite_eq_left hi, e₁, e₂]
     exact hs _
   · simpa using h0
   · simp only [min_self]
@@ -265,14 +265,14 @@ theorem card_add_card_le {O : Finset V} (h0 : T.σ 0 = (∅, I)) (ht : (T.σ T.t
     rw [Finset.mem_coe, Finset.mem_filter, Finset.mem_range]
     by_cases hvI : v ∈ I
     · obtain ⟨hlt, h₁, h₂⟩ := hgI v hvI
-      simp only [g, if_pos hvI]
+      simp only [g, ite_eq_left hvI]
       refine ⟨hlt, ?_⟩
       obtain ⟨-, (⟨hc, -⟩ | ⟨-, hvI', -⟩)⟩ := (T.step _ hlt).new_red h₁ h₂
       · exact hc
       · exact absurd hvI hvI'
     · have hvO : v ∈ O := hv.resolve_left hvI
       obtain ⟨hlt, h₁, h₂⟩ := hgO v hvO
-      simp only [g, if_neg hvI]
+      simp only [g, ite_eq_right hvI]
       exact ⟨hlt, ((T.step _ hlt).new_blue h₁ h₂).2.1⟩
   have hinj : Set.InjOn g ↑(I ∪ O) := by
     intro v hv w hw hvw
@@ -280,22 +280,22 @@ theorem card_add_card_le {O : Finset V} (h0 : T.σ 0 = (∅, I)) (ht : (T.σ T.t
     by_cases hvI : v ∈ I <;> by_cases hwI : w ∈ I
     · obtain ⟨hlt, h₁, h₂⟩ := hgI v hvI
       obtain ⟨-, h₃, h₄⟩ := hgI w hwI
-      simp only [g, if_pos hvI, if_pos hwI] at hvw
+      simp only [g, ite_eq_left hvI, ite_eq_left hwI] at hvw
       rw [← hvw] at h₃ h₄
       exact (T.step _ hlt).eq_of_new_red h₁ h₂ h₃ h₄
     · obtain ⟨hlt, h₁, h₂⟩ := hgI v hvI
       obtain ⟨-, h₃, h₄⟩ := hgO w (hw.resolve_left hwI)
-      simp only [g, if_pos hvI, if_neg hwI] at hvw
+      simp only [g, ite_eq_left hvI, ite_eq_right hwI] at hvw
       rw [← hvw] at h₃ h₄
       exact ((T.step _ hlt).not_new_red_and_blue h₁ h₂ h₃ h₄).elim
     · obtain ⟨hlt, h₁, h₂⟩ := hgO v (hv.resolve_left hvI)
       obtain ⟨-, h₃, h₄⟩ := hgI w hwI
-      simp only [g, if_neg hvI, if_pos hwI] at hvw
+      simp only [g, ite_eq_right hvI, ite_eq_left hwI] at hvw
       rw [← hvw] at h₃ h₄
       exact ((T.step _ hlt).not_new_red_and_blue h₃ h₄ h₁ h₂).elim
     · obtain ⟨hlt, h₁, h₂⟩ := hgO v (hv.resolve_left hvI)
       obtain ⟨-, h₃, h₄⟩ := hgO w (hw.resolve_left hwI)
-      simp only [g, if_neg hvI, if_neg hwI] at hvw
+      simp only [g, ite_eq_right hvI, ite_eq_right hwI] at hvw
       rw [← hvw] at h₃ h₄
       exact (T.step _ hlt).eq_of_new_blue h₁ h₂ h₃ h₄
   calc I.card + O.card = (I ∪ O).card := (Finset.card_union_of_disjoint hIO).symm

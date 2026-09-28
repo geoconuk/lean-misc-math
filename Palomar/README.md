@@ -156,7 +156,9 @@ one. Its subject line is the tell: minor releases and candidates end in a PR num
 patch releases do not.
 
 This cost submission `eic7zf34a9x8` on 2026-09-07, which was pinned to `v4.33.1` after a
-bump to the newest stable tag. The pin is back on `v4.33.0`, and `lakefile.toml` says why.
+bump to the newest stable tag. The pin went back to `v4.33.0`; since 2026-09-28 it has been on
+the release candidate `v4.35.0-rc3`, because Palomar now requires Lean v4.35.0-rc2 or later,
+and `lakefile.toml` says why.
 To check a candidate pin before relying on it:
 
 ```bash

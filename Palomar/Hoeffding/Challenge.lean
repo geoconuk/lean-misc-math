@@ -9,7 +9,7 @@ public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.Data.Finset.Powerset
 public import Mathlib.Data.Nat.Choose.Basic
-public import Mathlib.Data.Real.Basic
+public import Mathlib.Basic.Real.Basic
 
 /-!
 # Hoeffding's extrema of the number of successes at a fixed mean — advertised statement
@@ -130,7 +130,8 @@ parameter over a set. The *heterogeneous* product is available too, but by const
 rather than as an API: `MeasureTheory.Measure.pi` applied to a family of
 `ProbabilityTheory.bernoulliMeasure`s is exactly it. What is missing is everything built on
 it — no law of the number of successes under that product, no binomial tail or cumulative
-distribution function, and, at the pinned revision, nothing from Hoeffding's 1956 paper. (The `Hoeffding` that does appear in Mathlib, in
+distribution function, and, at the pinned revision, nothing from Hoeffding's 1956 paper.
+(The `Hoeffding` that does appear in Mathlib, in
 `Mathlib/Probability/Moments/SubGaussian.lean`, is the unrelated 1963 concentration
 inequality.)
 

@@ -752,7 +752,7 @@ private theorem preimage_mk_capConeProd_eq_closedBall_of_lt_cos (n : ℕ) {a u :
     Prod.mk u ⁻¹' capConeProd n a =
       Metric.closedBall (0 : EuclideanSpace ℝ (Fin n)) (u * Real.tan a) := by
   ext y
-  rw [preimage_mk_capConeProd n ha0 hapi u, if_pos hu, Metric.mem_closedBall, dist_eq_norm,
+  rw [preimage_mk_capConeProd n ha0 hapi u, ite_eq_left hu, Metric.mem_closedBall, dist_eq_norm,
     sub_zero]
   constructor
   · intro hy
@@ -771,7 +771,7 @@ private theorem preimage_mk_capConeProd_eq_ball_of_cos_le (n : ℕ) {a u : ℝ}
     Prod.mk u ⁻¹' capConeProd n a =
       Metric.ball (0 : EuclideanSpace ℝ (Fin n)) (Real.sqrt (1 - u ^ 2)) := by
   ext y
-  rw [preimage_mk_capConeProd n ha0 hapi u, if_pos hu, Metric.mem_ball, dist_eq_norm, sub_zero]
+  rw [preimage_mk_capConeProd n ha0 hapi u, ite_eq_left hu, Metric.mem_ball, dist_eq_norm, sub_zero]
   constructor
   · intro hy
     have hsub_nonneg : 0 ≤ 1 - u ^ 2 := by
@@ -805,13 +805,13 @@ private theorem volume_fiber_eq_piecewise_ball (n : ℕ) (hn : 0 < n) {a u : ℝ
   have : Nonempty (Fin n) := Fin.pos_iff_nonempty.mp hn
   by_cases hu : 0 < u
   · by_cases hu_lt : u < Real.cos a
-    · rw [if_pos hu, if_pos hu_lt]
+    · rw [ite_eq_left hu, ite_eq_left hu_lt]
       rw [preimage_mk_capConeProd_eq_closedBall_of_lt_cos n ha0 hapi hu hu_lt]
       rw [EuclideanSpace.volume_closedBall, EuclideanSpace.volume_ball]
-    · rw [if_pos hu, if_neg hu_lt]
+    · rw [ite_eq_left hu, ite_eq_right hu_lt]
       rw [preimage_mk_capConeProd_eq_ball_of_cos_le n ha0 hapi hu (le_of_not_gt hu_lt)]
-  · rw [if_neg hu]
-    rw [preimage_mk_capConeProd n ha0 hapi u, if_neg hu, measure_empty]
+  · rw [ite_eq_right hu]
+    rw [preimage_mk_capConeProd n ha0 hapi u, ite_eq_right hu, measure_empty]
 
 private theorem measurableSet_capConeProd (n : ℕ) {a : ℝ}
     (ha0 : 0 ≤ a) (hapi : a < Real.pi / 2) :
@@ -883,7 +883,7 @@ private theorem volume_fiber_eq_piecewise_pow (n : ℕ) (hn : 0 < n) {a u : ℝ}
   rw [volume_fiber_eq_piecewise_ball n hn ha0 hapi]
   by_cases hu : 0 < u
   · by_cases hu_lt : u < Real.cos a
-    · rw [if_pos hu, if_pos hu_lt]
+    · rw [ite_eq_left hu, ite_eq_left hu_lt]
       have htan_nonneg : 0 ≤ u * Real.tan a := by
         have htan_nonneg : 0 ≤ Real.tan a :=
           Real.tan_nonneg_of_nonneg_of_le_pi_div_two ha0 hapi.le
@@ -891,7 +891,7 @@ private theorem volume_fiber_eq_piecewise_pow (n : ℕ) (hn : 0 < n) {a u : ℝ}
       rw [Measure.addHaar_ball (μ := (volume : Measure (EuclideanSpace ℝ (Fin n))))
         (x := (0 : EuclideanSpace ℝ (Fin n))) (hr := htan_nonneg)]
       simp [hu, hu_lt]
-    · rw [if_pos hu, if_neg hu_lt]
+    · rw [ite_eq_left hu, ite_eq_right hu_lt]
       rw [Measure.addHaar_ball (μ := (volume : Measure (EuclideanSpace ℝ (Fin n))))
         (x := (0 : EuclideanSpace ℝ (Fin n))) (hr := Real.sqrt_nonneg _)]
       simp [hu, hu_lt]
@@ -1098,7 +1098,7 @@ private theorem lintegral_capConeFiberPow_ge (m : ℕ)
     by_cases hu : u ∈ Set.Ioo (0 : ℝ) (Real.cos a)
     · rw [Set.indicator_of_mem hu]
       unfold capConeFiberPowIntegrand
-      rw [if_pos hu.1, if_pos hu.2]
+      rw [ite_eq_left hu.1, ite_eq_left hu.2]
     · rw [Set.indicator_of_notMem hu]
       exact zero_le
   have hint : ∫⁻ u, (Set.Ioo (0 : ℝ) (Real.cos a)).indicator

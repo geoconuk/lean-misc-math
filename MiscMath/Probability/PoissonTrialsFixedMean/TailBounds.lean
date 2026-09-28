@@ -755,8 +755,8 @@ theorem tailLe_add_tailLe_compl {s : Finset ι} (p : ι → 𝕜) {k j : ℕ}
     refine Finset.sum_congr rfl fun A hA => ?_
     have hcard : A.card ≤ s.card := Finset.card_le_card (Finset.mem_powerset.mp hA)
     by_cases hk : A.card ≤ k
-    · rw [if_pos hk, if_neg (by omega)]; ring
-    · rw [if_neg hk, if_pos (by omega)]; ring
+    · rw [ite_eq_left hk, ite_eq_right (by omega)]; ring
+    · rw [ite_eq_right hk, ite_eq_left (by omega)]; ring
   rw [tailLe, bernExp, h2, ← Finset.sum_add_distrib, key, sum_bernWt]
 
 end Duality
@@ -855,9 +855,9 @@ theorem exists_inBox_tailLe_eq_one {s : Finset ι} {lam : ℝ} (h0 : 0 ≤ lam)
       intro i _; split_ifs <;> norm_num
     have hpsum : ∑ i ∈ s, (if i ∈ O then (1 : ℝ) else 0) = lam := by
       have hA : ∑ i ∈ s \ O, (if i ∈ O then (1 : ℝ) else 0) = 0 :=
-        Finset.sum_eq_zero fun i hi => if_neg (Finset.mem_sdiff.mp hi).2
+        Finset.sum_eq_zero fun i hi => ite_eq_right (Finset.mem_sdiff.mp hi).2
       have hB : ∑ i ∈ O, (if i ∈ O then (1 : ℝ) else 0) = (O.card : ℝ) := by
-        rw [Finset.sum_congr rfl (fun i hi => if_pos hi), Finset.sum_const, nsmul_eq_mul,
+        rw [Finset.sum_congr rfl (fun i hi => ite_eq_left hi), Finset.sum_const, nsmul_eq_mul,
           mul_one]
       rw [← Finset.sum_sdiff hOs, hA, hB, hOcard, zero_add]
       exact hx.symm
@@ -867,7 +867,7 @@ theorem exists_inBox_tailLe_eq_one {s : Finset ι} {lam : ℝ} (h0 : 0 ≤ lam)
       exact absurd hi (Finset.notMem_empty i)
     have htail : tailLe s (fun i => if i ∈ O then (1 : ℝ) else 0) k = 1 := by
       rw [tailLe_shape_eval (O := O) (Z := s \ O) (x := 0) hOs Finset.Subset.rfl
-        (fun i hi => if_pos hi) (fun i hi => if_neg (Finset.mem_sdiff.mp hi).2) hI
+        (fun i hi => ite_eq_left hi) (fun i hi => ite_eq_right (Finset.mem_sdiff.mp hi).2) hI
         (by rw [hOcard]; exact hak), Finset.sdiff_self, Finset.card_empty]
       exact binTail_eq_one _ (Nat.zero_le _)
     exact ⟨fun i => if i ∈ O then 1 else 0, ⟨hp0, hp1, hpsum⟩, htail⟩
@@ -895,7 +895,7 @@ theorem exists_inBox_tailLe_eq_one {s : Finset ι} {lam : ℝ} (h0 : 0 ≤ lam)
       fun _ => rfl
     have hpi₀ : (if i₀ ∈ O then (1 : ℝ) else
         if i₀ = i₀ then lam - ((⌊lam⌋₊ : ℕ) : ℝ) else 0) = lam - ((⌊lam⌋₊ : ℕ) : ℝ) := by
-      rw [if_neg hi₀O, if_pos rfl]
+      rw [ite_eq_right hi₀O, ite_eq_left rfl]
     have hp0 : ∀ i ∈ s, (0 : ℝ) ≤ (if i ∈ O then (1 : ℝ) else
         if i = i₀ then lam - ((⌊lam⌋₊ : ℕ) : ℝ) else 0) := by
       intro i _
@@ -914,13 +914,13 @@ theorem exists_inBox_tailLe_eq_one {s : Finset ι} {lam : ℝ} (h0 : 0 ≤ lam)
         if i = i₀ then lam - ((⌊lam⌋₊ : ℕ) : ℝ) else 0) = lam := by
       have hB : ∑ i ∈ O, (if i ∈ O then (1 : ℝ) else
           if i = i₀ then lam - ((⌊lam⌋₊ : ℕ) : ℝ) else 0) = (O.card : ℝ) := by
-        rw [Finset.sum_congr rfl (fun i hi => if_pos hi), Finset.sum_const, nsmul_eq_mul,
+        rw [Finset.sum_congr rfl (fun i hi => ite_eq_left hi), Finset.sum_const, nsmul_eq_mul,
           mul_one]
       have hA : ∑ i ∈ s \ O, (if i ∈ O then (1 : ℝ) else
           if i = i₀ then lam - ((⌊lam⌋₊ : ℕ) : ℝ) else 0) = lam - ((⌊lam⌋₊ : ℕ) : ℝ) := by
         refine (Finset.sum_eq_single i₀ ?_ ?_).trans hpi₀
         · intro b hb hbne
-          rw [if_neg (Finset.mem_sdiff.mp hb).2, if_neg hbne]
+          rw [ite_eq_right (Finset.mem_sdiff.mp hb).2, ite_eq_right hbne]
         · intro hcon; exact absurd hi₀ hcon
       rw [← Finset.sum_sdiff hOs, hA, hB, hOcard]
       ring
@@ -929,7 +929,7 @@ theorem exists_inBox_tailLe_eq_one {s : Finset ι} {lam : ℝ} (h0 : 0 ≤ lam)
         if i = i₀ then lam - ((⌊lam⌋₊ : ℕ) : ℝ) else 0) = 0 := by
       intro i hi
       rw [Finset.mem_erase] at hi
-      rw [if_neg (Finset.mem_sdiff.mp hi.2).2, if_neg hi.1]
+      rw [ite_eq_right (Finset.mem_sdiff.mp hi.2).2, ite_eq_right hi.1]
     have hIval : ∀ i ∈ (s \ O) \ ((s \ O).erase i₀), (if i ∈ O then (1 : ℝ) else
         if i = i₀ then lam - ((⌊lam⌋₊ : ℕ) : ℝ) else 0) = lam - ((⌊lam⌋₊ : ℕ) : ℝ) := by
       intro i hi
@@ -939,7 +939,7 @@ theorem exists_inBox_tailLe_eq_one {s : Finset ι} {lam : ℝ} (h0 : 0 ≤ lam)
         if i = i₀ then lam - ((⌊lam⌋₊ : ℕ) : ℝ) else 0) k = 1 := by
       rw [tailLe_shape_eval (O := O) (Z := (s \ O).erase i₀)
         (x := lam - ((⌊lam⌋₊ : ℕ) : ℝ)) hOs (Finset.erase_subset _ _)
-        (fun i hi => if_pos hi) hZval hIval (by rw [hOcard]; omega),
+        (fun i hi => ite_eq_left hi) hZval hIval (by rw [hOcard]; omega),
         hIeq, Finset.card_singleton]
       exact binTail_eq_one _ (by rw [hOcard]; omega)
     exact ⟨_, ⟨hp0, hp1, hpsum⟩, htail⟩
@@ -979,12 +979,13 @@ theorem exists_inBox_tailLe_eq_zero {s : Finset ι} {lam : ℝ} (h1 : lam ≤ (s
       (lam - (O.card : ℝ)) / ((s.card : ℝ) - (O.card : ℝ))) = lam := by
     have hB : ∑ i ∈ O, (if i ∈ O then (1 : ℝ) else
         (lam - (O.card : ℝ)) / ((s.card : ℝ) - (O.card : ℝ))) = (O.card : ℝ) := by
-      rw [Finset.sum_congr rfl (fun i hi => if_pos hi), Finset.sum_const, nsmul_eq_mul, mul_one]
+      rw [Finset.sum_congr rfl (fun i hi => ite_eq_left hi), Finset.sum_const, nsmul_eq_mul,
+        mul_one]
     have hA : ∑ i ∈ s \ O, (if i ∈ O then (1 : ℝ) else
         (lam - (O.card : ℝ)) / ((s.card : ℝ) - (O.card : ℝ)))
         = ((s.card : ℝ) - (O.card : ℝ))
             * ((lam - (O.card : ℝ)) / ((s.card : ℝ) - (O.card : ℝ))) := by
-      rw [Finset.sum_congr rfl (fun i hi => if_neg (Finset.mem_sdiff.mp hi).2),
+      rw [Finset.sum_congr rfl (fun i hi => ite_eq_right (Finset.mem_sdiff.mp hi).2),
         Finset.sum_const, nsmul_eq_mul, Finset.card_sdiff_of_subset hOs,
         Nat.cast_sub (Finset.card_le_card hOs)]
     rw [← Finset.sum_sdiff hOs, hA, hB]
@@ -995,7 +996,7 @@ theorem exists_inBox_tailLe_eq_zero {s : Finset ι} {lam : ℝ} (h1 : lam ≤ (s
       field_simp
       ring
   refine ⟨_, ⟨hp0, hp1, hpsum⟩, ?_⟩
-  refine tailLe_eq_zero_of_lt hOs (fun i hi => if_pos hi) ?_
+  refine tailLe_eq_zero_of_lt hOs (fun i hi => ite_eq_left hi) ?_
   rw [hOcard]
   omega
 

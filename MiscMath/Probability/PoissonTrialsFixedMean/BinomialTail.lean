@@ -154,7 +154,7 @@ lemma binTail_deriv_telescope (m k : ℕ) (t : ℝ) :
   have key : ∀ j : ℕ, ((m + 1).choose j : ℝ) * binShapeD j (m + 1) t = tel j - tel (j + 1) := by
     intro j
     rcases Nat.eq_zero_or_pos j with rfl | hj
-    · simp only [htel, if_pos rfl, if_neg (Nat.succ_ne_zero 0), binShapeD, binShape,
+    · simp only [htel, ite_eq_left rfl, ite_eq_right (Nat.succ_ne_zero 0), binShapeD, binShape,
         Nat.choose_zero_right, Nat.cast_one, Nat.cast_zero, Nat.zero_sub, Nat.sub_zero,
         Nat.add_sub_cancel]
       push_cast
@@ -173,7 +173,7 @@ lemma binTail_deriv_telescope (m k : ℕ) (t : ℝ) :
           = ((m : ℝ) + 1) * (m.choose i : ℝ) := by exact_mod_cast c1
       have c2' : (((m + 1).choose (i + 1) : ℝ)) * ((m - i : ℕ) : ℝ)
           = ((m : ℝ) + 1) * (m.choose (i + 1) : ℝ) := by exact_mod_cast c2
-      simp only [htel, if_neg (Nat.succ_ne_zero i), if_neg (Nat.succ_ne_zero (i + 1)),
+      simp only [htel, ite_eq_right (Nat.succ_ne_zero i), ite_eq_right (Nat.succ_ne_zero (i + 1)),
         binShapeD, binShape, e1, e3, Nat.add_sub_cancel, Nat.cast_add, Nat.cast_one]
       linear_combination (t ^ i * (1 - t) ^ (m - i)) * c1'
         - (t ^ (i + 1) * (1 - t) ^ (m - i - 1)) * c2'
@@ -181,7 +181,7 @@ lemma binTail_deriv_telescope (m k : ℕ) (t : ℝ) :
       = ∑ j ∈ range (k + 1), (tel j - tel (j + 1)) := Finset.sum_congr rfl fun j _ => key j
     _ = tel 0 - tel (k + 1) := Finset.sum_range_sub' tel (k + 1)
     _ = -(((m : ℝ) + 1) * ((m.choose k : ℝ) * binShape k m t)) := by
-        simp only [htel, if_pos rfl, if_neg (Nat.succ_ne_zero k), Nat.add_sub_cancel]
+        simp only [htel, ite_eq_left rfl, ite_eq_right (Nat.succ_ne_zero k), Nat.add_sub_cancel]
         ring
 
 /-- **The derivative of a binomial tail in the success probability.**

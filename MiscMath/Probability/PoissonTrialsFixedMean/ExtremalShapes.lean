@@ -427,7 +427,7 @@ lemma trunc_mem_suppBox {s : Finset ι} {lam : ℝ} {p : ι → ℝ} (hp : InBox
   constructor
   · intro i _
     by_cases h : i ∈ s
-    · simp only [trunc, h, if_true]
+    · simp only [trunc, h, ite_true]
       exact ⟨h0 i h, h1 i h⟩
     · simp [trunc, h]
   · change ∑ i ∈ s, trunc s p i = lam
@@ -438,8 +438,8 @@ lemma inBox_of_mem_suppBox {s : Finset ι} {lam : ℝ} {q : ι → ℝ}
     (hq : q ∈ suppBox s ∩ {r : ι → ℝ | ∑ i ∈ s, r i = lam}) : InBox s lam q := by
   obtain ⟨hb, hs⟩ := hq
   refine ⟨fun i hi => ?_, fun i hi => ?_, hs⟩
-  · have := hb i (Set.mem_univ i); simp only [if_pos hi] at this; exact this.1
-  · have := hb i (Set.mem_univ i); simp only [if_pos hi] at this; exact this.2
+  · have := hb i (Set.mem_univ i); simp only [ite_eq_left hi] at this; exact this.1
+  · have := hb i (Set.mem_univ i); simp only [ite_eq_left hi] at this; exact this.2
 
 /-- **Existence of a maximiser over `ℝ`**, as soon as the box is nonempty. Only
 the *supported* box is compact, which is why `bernExp_congr` is needed. -/

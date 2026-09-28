@@ -7,7 +7,7 @@ module
 
 public import MiscMath.Computability.RedBluePebbleGame.Calculation
 public import Mathlib.Algebra.BigOperators.Intervals
-public import Mathlib.Data.Real.Basic
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.Positivity
 

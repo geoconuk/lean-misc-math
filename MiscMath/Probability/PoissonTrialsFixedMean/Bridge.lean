@@ -65,9 +65,9 @@ theorem binTail_eq_binomial_real_Iic (n k : ℕ) (P : unitInterval) :
       = Set.indicator (Set.Iic k) (1 : ℕ → ℝ) := by
     funext r
     by_cases hr : r ≤ k
-    · rw [if_pos hr, Set.indicator_of_mem (Set.mem_Iic.mpr hr)]
+    · rw [ite_eq_left hr, Set.indicator_of_mem (Set.mem_Iic.mpr hr)]
       rfl
-    · rw [if_neg hr, Set.indicator_of_notMem (by simpa using hr)]
+    · rw [ite_eq_right hr, Set.indicator_of_notMem (by simpa using hr)]
   rw [← ht, tailLe, hb, hfun, MeasureTheory.integral_indicator_one measurableSet_Iic]
 
 variable {ι : Type*} [DecidableEq ι]
@@ -152,11 +152,11 @@ theorem bernExp_eq_integral_pi_bernoulliMeasure {s : Finset ι} {p : ι → ℝ}
       intro z
       by_cases hz : z.1 ∈ A
       · have hb : toBoolFun s A z = true := by simp [toBoolFun, hz]
-        rw [hb, if_pos hz, ← measureReal_def,
+        rw [hb, ite_eq_left hz, ← measureReal_def,
           ProbabilityTheory.bernoulliMeasure_real_apply_of_mem_of_notMem (q z)
             (MeasurableSet.singleton true) rfl (by simp)]
       · have hb : toBoolFun s A z = false := by simp [toBoolFun, hz]
-        rw [hb, if_neg hz, ← measureReal_def,
+        rw [hb, ite_eq_right hz, ← measureReal_def,
           ProbabilityTheory.bernoulliMeasure_real_apply_of_notMem_of_mem (q z)
             (MeasurableSet.singleton false) (by simp) rfl]
     rw [Finset.prod_congr rfl fun z _ => hterm z, Finset.prod_coe_sort s
