@@ -7,8 +7,8 @@
 # proven, in Lean, to accept only environments that have a set-theoretic model — so it
 # cannot accept a proof of `False`, and it admits no axiom beyond `propext`,
 # `Classical.choice` and `Quot.sound`. Every declaration the axiom audit covers is
-# exported with lean4export together with its whole dependency cone into Mathlib and
-# Lean core, and the cone is handed to con-leche. Acceptance is a second, independent
+# exported, together with its whole dependency cone into Mathlib and Lean core, and the
+# cone is handed to con-leche. Acceptance is a second, independent
 # verdict on the proofs and on the axiom set.
 #
 # What this does not check: statements. con-leche confirms that every accepted theorem
@@ -17,39 +17,38 @@
 # that gap; see README.md, "What this repository guarantees".
 #
 # This is a release gate, not a per-commit check: run it before tagging, and paste the
-# summary line it prints into the release notes. It is kept out of CI because the first
-# run clones and builds two tools, con-leche's proof included, and every run writes an
-# export of a few hundred megabytes; warm, it takes a few minutes, most of it the export.
+# summary line it prints into the release notes. It is kept out of CI because every run writes
+# an export of a few hundred megabytes and checks it, which takes minutes.
 #
-# Two revisions are pinned. lean4export reads this repository's compiled .olean files,
-# so it must be built from the tag matching `lean-toolchain`; that tag is derived from
-# the file and moves with it. con-leche is pinned to a commit below and need not share
-# our toolchain — it embeds the `Nat` definitions of several toolchains (its `pins/`
-# directory) — but it must carry the pin for ours; if it declines (exit 2) naming the
-# toolchain, move the commit forward to one that has it. Neither tool is a Lake
-# dependency of the library: both live under `.lake/conleche/`, which is gitignored.
+# Both tools come with the Lean toolchain. From v4.35 the toolchain ships con-leche and the
+# exporter `leanexport` (lean4export, upstreamed) beside `lean`; Palomar's verification runs the
+# same binaries. The gate uses those of the toolchain `lean-toolchain` names, so nothing is
+# fetched or built and the export format always matches the compiler that wrote the .olean
+# files. Until 2026-09-28 the gate fetched con-leche at a pinned commit instead, built its
+# consistency proof and printed the axioms of its two main theorems before trusting the binary;
+# the pinned commit carried no toolchain pin for v4.35, and the toolchain ships the checker
+# without its proof. So what the gate now takes on trust is that the bundled binary is built from
+# con-leche's proven checker, as it trusts the rest of the toolchain; con-leche's theorem is
+# `ConLeche.no_proof_of_False`, in its repository. The summary line records the toolchain and the
+# SHA-256 of the binary that ran, so that a verdict names exactly what gave it.
 #
 # The check ends with a negative control, in the spirit of self-test-audit.sh: a copy of
 # the export with one of this library's theorems retargeted to `False` must be rejected.
 # A checker that accepts everything is worse than none.
-#
-# con-leche's theorem is only worth anything if it is really proven, so the first run
-# at a given pin builds con-leche's whole proof (about fifteen minutes; Lake caches it)
-# and confirms that the two theorems its README names rest on the three standard axioms
-# alone — in particular not on `sorryAx`. What remains on trust is the same as for any
-# verified checker: the Lean compiler and runtime that built it (its `Nat` arithmetic
-# included), lean4export's faithfulness, and the unproven link from its `main` to the
-# checked `checkDecls` that its README invites you to read; and that Lean's own kernel
-# checked con-leche's proof.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-con_leche_repo="https://github.com/leanprover/con-leche"
-con_leche_rev="c431b1ca1b7a93486dd3e0440d3ee82abe90ccd0"   # master, 2026-09-14
-lean4export_repo="https://github.com/leanprover/lean4export"
-
-toolchain="$(tr -d '[:space:]' < lean-toolchain)"   # leanprover/lean4:v4.33.0
-lean4export_rev="${toolchain#*:}"                    # v4.33.0
+toolchain="$(tr -d '[:space:]' < lean-toolchain)"
+prefix="$(lake env lean --print-prefix)"
+leanexport="$prefix/bin/leanexport"
+con_leche="$prefix/bin/con-leche"
+for tool in "$leanexport" "$con_leche"; do
+  if [[ ! -x "$tool" ]]; then
+    echo "check-conleche FAILED: $toolchain does not bundle $(basename "$tool"); Lean v4.35 and later do"
+    exit 1
+  fi
+done
+con_leche_sha="$(shasum -a 256 "$con_leche" | cut -c1-16)"
 
 tools=".lake/conleche"
 list="$tools/declarations.txt"
@@ -60,75 +59,23 @@ mkdir -p "$tools"
 cleanup() { rm -f "$tampered"; }
 trap cleanup EXIT
 
-# Fetch one commit or tag of a repository into a directory and build the given targets
-# there (none means the package's defaults). A marker file records the revision checked
-# out, so a repeat run only asks Lake to rebuild, which is a no-op. Each tool builds with
-# its own `lean-toolchain`, which elan honours per directory, so con-leche's toolchain may
-# differ from ours.
-fetch_and_build() {
-  local dir="$1" repo="$2" rev="$3"
-  shift 3
-  if [[ ! -f "$dir/.rev" || "$(cat "$dir/.rev")" != "$rev" ]]; then
-    echo "check-conleche: fetching $repo at $rev"
-    if [[ ! -d "$dir/.git" ]]; then
-      git init -q "$dir"
-      git -C "$dir" remote add origin "$repo"
-    fi
-    git -C "$dir" fetch -q --depth 1 origin "$rev"
-    git -C "$dir" checkout -q --detach FETCH_HEAD
-    printf '%s\n' "$rev" > "$dir/.rev"
-  fi
-  (cd "$dir" && lake build "$@")
-}
-
-# con-leche's default targets are its checker, its consistency proof and the capstone
-# module `ConLeche.MainTheorem` that states the two theorems its README names. Building
-# them is Lean checking that proof; this then confirms the theorems rest on the three
-# standard axioms alone, once per pinned revision.
-verify_con_leche_proof() {
-  local dir="$1"
-  if [[ -f "$dir/.proof-checked" && "$(cat "$dir/.proof-checked")" == "$con_leche_rev" ]]; then
-    return
-  fi
-  echo "check-conleche: printing the axioms of con-leche's main theorems"
-  cat > "$dir/Axioms.lean" <<'LEAN'
--- Written by scripts/check-conleche.sh (of lean-misc-math). Not part of con-leche.
-import ConLeche.MainTheorem
-#print axioms ConLeche.no_False_declaration
-#print axioms ConLeche.model_exists
-LEAN
-  local expected="'ConLeche.no_False_declaration' depends on axioms: [propext, Classical.choice, Quot.sound]
-'ConLeche.model_exists' depends on axioms: [propext, Classical.choice, Quot.sound]"
-  local actual
-  actual="$(cd "$dir" && lake env lean Axioms.lean)"
-  rm -f "$dir/Axioms.lean"
-  printf '%s\n' "$actual"
-  if [[ "$actual" != "$expected" ]]; then
-    echo "check-conleche FAILED: con-leche's main theorems do not rest on the three standard axioms alone"
-    exit 1
-  fi
-  printf '%s\n' "$con_leche_rev" > "$dir/.proof-checked"
-}
-
-fetch_and_build "$tools/lean4export" "$lean4export_repo" "$lean4export_rev" lean4export
-fetch_and_build "$tools/con-leche" "$con_leche_repo" "$con_leche_rev"
-verify_con_leche_proof "$tools/con-leche"
-lean4export="$tools/lean4export/.lake/build/bin/lean4export"
-con_leche="$tools/con-leche/.lake/build/bin/con-leche"
-
 # The export must be of a green build: the same oleans the audit ran over.
 lake build
 
 # 1. The declarations to check: exactly the set `#audit_axioms` iterates, by the same
-#    module predicate, from the same imports as MiscMath/Audit.lean. The list is
-#    written by Lean itself so that names come out in the escaped spelling lean4export
-#    reads back. The same pass picks the theorem for the negative control below: the
-#    first theorem of this library, in module order, whose name is plain ASCII
-#    components, so that step 4 can find its record without parsing JSON.
-cat > "$tools/ListDeclarations.lean" <<LEAN
--- Written by scripts/check-conleche.sh. Not part of the library.
-import MiscMath
-import MiscMath.Meta.AxiomAudit
+#    module predicate, from the same imports as MiscMath/Audit.lean — which are copied from
+#    it: under the module system the audit sees a module's private declarations only through
+#    an `import all` naming it, and so must this list. The list is written by Lean itself so
+#    that names come out in the escaped spelling the exporter reads back. The same pass picks
+#    the theorem for the negative control below: the first theorem of this library, in module
+#    order, whose name is plain ASCII components, so that step 4 can find its record without
+#    parsing JSON.
+{
+  echo "-- Written by scripts/check-conleche.sh. Not part of the library."
+  echo "module"
+  grep -E '^import all MiscMath' MiscMath/Audit.lean
+  echo "meta import Lean"
+  cat <<LEAN
 open Lean Elab Command in
 run_cmd do
   let env ← getEnv
@@ -153,6 +100,7 @@ run_cmd do
   | some n => IO.FS.writeFile "$control_name_file" (toString n ++ "\n")
   | none => throwError "no plain-named theorem found for the negative control"
 LEAN
+} > "$tools/ListDeclarations.lean"
 lake env lean "$tools/ListDeclarations.lean"
 declarations=()
 while IFS= read -r name; do
@@ -161,21 +109,24 @@ done < "$list"
 control_name="$(tr -d '[:space:]' < "$control_name_file")"
 echo "check-conleche: ${#declarations[@]} declarations in MiscMath modules"
 
-# 2. Export them with their dependency cone. lean4export emits each dependency before
-#    the declaration that uses it, so the cone is closed. The names travel on the
+# 2. Export them with their dependency cone. The exporter emits each dependency before
+#    the declaration that uses it, so the cone is closed. It reads private declarations too,
+#    through the modules named. The names travel on the
 #    command line, which macOS caps at 1 MiB — room for well over ten thousand; if the
 #    library ever outgrows that, drop the `--` list and export the whole environment.
 #    A missing constant is a panic that the compiled exporter prints and then ignores,
 #    so its stderr is inspected rather than trusted.
 echo "check-conleche: exporting the dependency cone"
-lake env "$lean4export" MiscMath MiscMath.Meta.AxiomAudit -- "${declarations[@]}" \
+lake env "$leanexport" MiscMath MiscMath.Meta.AxiomAudit -- "${declarations[@]}" \
   > "$export_file" 2> "$export_file.stderr"
 if grep -q -i -E 'panic|not found|error' "$export_file.stderr"; then
-  echo "check-conleche FAILED: lean4export reported a problem:"
+  echo "check-conleche FAILED: the exporter reported a problem:"
   cat "$export_file.stderr"
   exit 1
 fi
-records="$(grep -c -E '^\{"(thm|def|axiom|opaque|quot|inductive)"' "$export_file" || true)"
+# con-leche counts one accepted declaration per def, theorem, opaque, axiom and inductive
+# record, not the quotient records, which its own prelude installs; this counts the same.
+records="$(grep -c -E '^\{"(thm|def|axiom|opaque|inductive)"' "$export_file" || true)"
 axioms="$(grep -c -E '^\{"axiom"' "$export_file" || true)"
 echo "check-conleche: $records declaration records in the export ($axioms axioms)"
 
@@ -246,7 +197,6 @@ if [[ $status -ne 1 ]]; then
   exit 1
 fi
 
-con_leche_short="$(git -C "$tools/con-leche" rev-parse --short HEAD)"
 echo "con-leche check passed: accepted $accepted declarations — ${#declarations[@]} in MiscMath" \
-  "modules with their dependency cone, $axioms axioms — con-leche $con_leche_short," \
-  "lean4export $lean4export_rev, toolchain $toolchain, ${elapsed}s"
+  "modules with their dependency cone, $axioms axioms — the con-leche and exporter of" \
+  "$toolchain (con-leche sha256 $con_leche_sha…), ${elapsed}s"

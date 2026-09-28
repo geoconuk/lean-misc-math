@@ -153,12 +153,10 @@ an external checker proven in Lean to accept only environments with a set-theore
 it then confirms the checker rejects a copy with one of our theorems retargeted to `False`.
 It is a release gate and not a per-result check, by George's decision: it re-checks proofs,
 the part the kernel already guarantees, and says nothing about statements. It is not in CI:
-the first run at a given pin clones and builds the two tools under `.lake/conleche/`,
-con-leche's consistency proof included (about fifteen minutes, then cached), and prints the
-axioms of its two main theorems to confirm they rest on the standard three; after that a run
-takes a few minutes. Paste the summary line it prints into the release notes. The two pinned
-revisions are explained at the head of the script; the con-leche pin must move forward if a
-toolchain bump outruns its `pins/`.
+a run writes an export of a few hundred megabytes and checks it, which takes a few minutes.
+Paste the summary line it prints into the release notes. The exporter and con-leche are the
+binaries the Lean toolchain ships (from v4.35), so a toolchain bump moves them with it and
+nothing is pinned separately; the head of the script says what that takes on trust.
 
 ## Never
 
