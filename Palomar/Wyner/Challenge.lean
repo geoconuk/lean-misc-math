@@ -3,10 +3,12 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
-import Mathlib.Topology.MetricSpace.CoveringNumbers
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
+public import Mathlib.Topology.MetricSpace.CoveringNumbers
 
 /-!
 # Wyner's spherical covering exponent — advertised statement
@@ -93,6 +95,8 @@ auxiliary notions needed for the proof — the normalised surface measure of a c
 radial cone over a cap — are `private` to the Solution module and appear in no compared
 statement.
 -/
+
+public section
 
 noncomputable section
 

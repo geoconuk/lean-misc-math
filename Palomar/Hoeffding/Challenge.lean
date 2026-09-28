@@ -3,11 +3,13 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Data.Finset.Powerset
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Data.Real.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Data.Finset.Powerset
+public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Data.Real.Basic
 
 /-!
 # Hoeffding's extrema of the number of successes at a fixed mean — advertised statement
@@ -137,6 +139,8 @@ The Solution module introduces four definitions — `bernWt`, `bernExp`, `tailLe
 appears below: every compared statement is expanded into `Finset` operations from Mathlib
 alone, which is why this Challenge imports nothing but Mathlib.
 -/
+
+public section
 
 open Finset
 

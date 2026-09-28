@@ -3,8 +3,10 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import MiscMath.Analysis.KolmogorovArnold.Cells
-import MiscMath.Analysis.KolmogorovArnold.InnerSpace
+module
+
+public import MiscMath.Analysis.KolmogorovArnold.Cells
+public import MiscMath.Analysis.KolmogorovArnold.InnerSpace
 
 /-!
 # Staircase functions
@@ -29,6 +31,8 @@ of continuous, respectively monotone, functions with non-negative coefficients â
 this form over an `Int.floor`-based case split. `stairInner` packages `t â†¦ stair q c J (N t)`
 as an element of the inner-function space `Inner`.
 -/
+
+@[expose] public section
 
 open Finset unitInterval
 

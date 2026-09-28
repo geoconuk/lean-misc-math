@@ -3,9 +3,11 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import MiscMath.Computability.RedBluePebbleGame.Parts
-import Mathlib.Analysis.Real.Sqrt
-import Mathlib.Combinatorics.Enumerative.DoubleCounting
+module
+
+public import MiscMath.Computability.RedBluePebbleGame.Parts
+public import Mathlib.Analysis.Real.Sqrt
+public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 
 /-!
 # The red-blue pebble game: the I/O bounds for matrix multiplication
@@ -31,6 +33,8 @@ it: every input is loaded and every output stored, so `q ≥ m k + k n + m n`
 (`add_le_of_isMatMulLabelling`), and a calculation needs three red pebbles as soon as there is a
 product (`IsMatMulLabelling.three_le`).
 -/
+
+@[expose] public section
 
 namespace MiscMath.Computability.RedBluePebbleGame
 

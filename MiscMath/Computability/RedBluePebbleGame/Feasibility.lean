@@ -3,9 +3,11 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import MiscMath.Computability.RedBluePebbleGame.Calculation
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Tactic
+module
+
+public import MiscMath.Computability.RedBluePebbleGame.Calculation
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Tactic
 
 /-!
 # The red-blue pebble game: when the FFT graph can be pebbled at all
@@ -20,6 +22,8 @@ computes an output has its two predecessors red and places a third pebble
 (`three_le_of_fft_hasCompleteCalculation`). A computed pebble is placed, not slid from a
 predecessor; with sliding, two would do.
 -/
+
+@[expose] public section
 
 namespace MiscMath.Computability.RedBluePebbleGame
 

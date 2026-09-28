@@ -3,10 +3,12 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import MiscMath.Analysis.KolmogorovArnold.Generic
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Analysis.Normed.Group.InfiniteSum
-import Mathlib.Topology.Algebra.InfiniteSum.Module
+module
+
+public import MiscMath.Analysis.KolmogorovArnold.Generic
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Analysis.Normed.Group.InfiniteSum
+public import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
 # Iteration to an exact representation
@@ -59,6 +61,8 @@ Uses `Summable.of_norm_bounded` with the geometric series, `ContinuousLinearMap.
 `Summable.hasSum_iff_tendsto_nat` and the telescoping sum `Finset.sum_range_sub'`. Nothing
 about superpositions is in Mathlib.
 -/
+
+@[expose] public section
 
 open unitInterval BoundedContinuousFunction Filter Topology
 

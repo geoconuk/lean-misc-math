@@ -51,7 +51,8 @@ while IFS= read -r m; do
   if [[ -f "$f" ]]; then
     result_files+=("$f")
   fi
-done < <(grep -oE '^import[[:space:]]+MiscMath\.[A-Za-z0-9_.]+' MiscMath.lean | awk '{print $2}')
+done < <(grep -oE '^(public[[:space:]]+)?import[[:space:]]+MiscMath\.[A-Za-z0-9_.]+' MiscMath.lean \
+  | awk '{print $NF}')
 
 is_result() {
   local f
@@ -116,7 +117,55 @@ for file in ${files[@]+"${files[@]}"}; do
   fi
 done
 
+# --- The module system, repository-wide -----------------------------------
+# Palomar accepts a submission only if every Lean file in the repository -- not only the
+# library, but Target/, Palomar/ and docs/ too -- begins with the `module` header and has at
+# most 10,000 lines, and it checks this before building anything. The test below is the one
+# Palomar applies (PalomarSubmission, scripts/source_requirements.py): after whitespace,
+# `--` comments and ordinary `/- -/` comments, but not doc comments, the next token must be
+# `module`. Tracked files only, as a submission sees them.
+module_check="$(git ls-files -z '*.lean' | python3 -c '
+import re, sys
+MARK = re.compile(r"/-|-/")
+CONT = re.compile(r"[A-Za-z0-9_\x27!?\u00c0-\u024f\u0370-\u03ff\u1f00-\u1fff\u2080-\u209c\u2100-\u214f]|\.[A-Za-z_]")
+def has_module_header(t):
+    i = 0
+    while i < len(t):
+        if t[i] in " \r\n":
+            i += 1
+        elif t.startswith("--", i):
+            j = t.find("\n", i + 2)
+            i = len(t) if j < 0 else j + 1
+        elif t.startswith("/-", i) and not t.startswith(("/--", "/-!"), i):
+            i += 3
+            depth = 1
+            while depth:
+                m = MARK.search(t, i)
+                if m is None:
+                    return False
+                depth += 1 if m.group() == "/-" else -1
+                i = m.end()
+        else:
+            return t.startswith("module", i) and CONT.match(t, i + 6) is None
+    return False
+for path in sys.stdin.read().split("\0"):
+    if not path or path.endswith("lakefile.lean"):
+        continue
+    text = open(path, encoding="utf-8").read()
+    lines = text.count("\n") + (1 if text and not text.endswith("\n") else 0)
+    if not has_module_header(text):
+        print(f"{path} does not begin with the module header (ordinary comments may precede it)")
+    if lines > 10000:
+        print(f"{path} has {lines} lines; Palomar accepts at most 10,000")
+')"
+if [[ -n "$module_check" ]]; then
+  while IFS= read -r line; do
+    fail "$line"
+  done <<<"$module_check"
+fi
+
 if [[ $status -eq 0 ]]; then
-  echo "convention check passed: ${#files[@]} file(s), ${#result_files[@]} of them result module(s)"
+  echo "convention check passed: ${#files[@]} file(s), ${#result_files[@]} of them result module(s);" \
+    "every tracked Lean file uses the module system"
 fi
 exit $status

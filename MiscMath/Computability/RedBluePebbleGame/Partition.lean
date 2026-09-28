@@ -3,8 +3,10 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import MiscMath.Computability.RedBluePebbleGame.Domination
-import Mathlib.Data.Fintype.Card
+module
+
+public import MiscMath.Computability.RedBluePebbleGame.Domination
+public import Mathlib.Data.Fintype.Card
 
 /-!
 # The red-blue pebble game: the partition a calculation defines
@@ -32,6 +34,8 @@ It also records the facts about the graph that the argument needs: under `IsComp
 vertex reaches an output (`IsComputationDAG.exists_output`), and a calculation with no red pebbles
 exists only on the empty graph (`IsComputationDAG.isEmpty_of_hasCompleteCalculation_zero`).
 -/
+
+@[expose] public section
 
 namespace MiscMath.Computability.RedBluePebbleGame
 

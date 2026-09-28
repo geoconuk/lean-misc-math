@@ -3,8 +3,9 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
+module
 
-import MiscMath.Probability.PoissonTrialsFixedMean.Model
+public import MiscMath.Probability.PoissonTrialsFixedMean.Model
 
 /-!
 # Hoeffding's Theorem 3
@@ -13,6 +14,8 @@ Part of `MiscMath.Probability.PoissonTrialsFixedMean`, whose module docstring st
 result, its source and its scope, and where the reader should start. This file proves it:
 the binomial maximises `E[g S]` at a fixed mean, for `g` convex on the integer grid.
 -/
+
+@[expose] public section
 
 namespace MiscMath.Probability
 

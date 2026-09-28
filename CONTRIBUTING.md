@@ -44,7 +44,10 @@ convention, and they are worth more than new results.
    necessary.
 4. Write the sanity checks. If the theorem has hypotheses, a satisfiability witness is
    mandatory — see below.
-5. Add the `import` line to `MiscMath.lean`, alphabetically.
+5. Add a `public import` line to `MiscMath.lean` and an `import all` line to
+   `MiscMath/Audit.lean`, alphabetically in both — and an `import all` line for each support
+   module of a result that has them. Every Lean file here uses the module system; the
+   template shows the header.
 6. Run the checks:
 
 ```bash

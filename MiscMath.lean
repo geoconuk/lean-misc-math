@@ -2,10 +2,12 @@
 Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
-import MiscMath.Analysis.KolmogorovArnold
-import MiscMath.Computability.RedBluePebbleGame
-import MiscMath.Geometry.SphereCoveringExponent
-import MiscMath.Probability.PoissonTrialsFixedMean
+module
+
+public import MiscMath.Analysis.KolmogorovArnold
+public import MiscMath.Computability.RedBluePebbleGame
+public import MiscMath.Geometry.SphereCoveringExponent
+public import MiscMath.Probability.PoissonTrialsFixedMean
 
 /-!
 # lean-misc-math

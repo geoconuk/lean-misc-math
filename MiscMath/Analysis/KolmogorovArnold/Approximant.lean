@@ -3,8 +3,10 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import MiscMath.Analysis.KolmogorovArnold.Staircase
-import MiscMath.Analysis.KolmogorovArnold.Levels
+module
+
+public import MiscMath.Analysis.KolmogorovArnold.Staircase
+public import MiscMath.Analysis.KolmogorovArnold.Levels
 
 /-!
 # The approximating tuple of inner functions
@@ -22,6 +24,8 @@ the content of this module — **uniformly within `ε` of `φ_q`** once `N` exce
 continuity of the `φ_q` and `M` is large in terms of `N` (`abs_approximant_sub_lt`,
 `dist_approximant_lt`). The value taken on a cell is `approximant_apply_of_mem_cell`.
 -/
+
+@[expose] public section
 
 open unitInterval Finset
 

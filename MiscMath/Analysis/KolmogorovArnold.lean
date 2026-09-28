@@ -3,12 +3,14 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import MiscMath.Analysis.KolmogorovArnold.Extend
-import MiscMath.Analysis.KolmogorovArnold.Representation
-import Mathlib.Topology.Instances.Real.Lemmas
-import Mathlib.Topology.Order.ProjIcc
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Data.Fin.VecNotation
+module
+
+public import MiscMath.Analysis.KolmogorovArnold.Extend
+public import MiscMath.Analysis.KolmogorovArnold.Representation
+public import Mathlib.Topology.Instances.Real.Lemmas
+public import Mathlib.Topology.Order.ProjIcc
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Data.Fin.VecNotation
 
 /-!
 # The Kolmogorov–Arnold representation theorem
@@ -222,6 +224,8 @@ Palomar Challenge can restate them from Mathlib alone. The only other public Lea
 known to us is the statement, without proof, of the weaker `∀ f, ∃ g φ` form in
 `leanprover/lean-eval`.
 -/
+
+@[expose] public section
 
 open Set unitInterval
 

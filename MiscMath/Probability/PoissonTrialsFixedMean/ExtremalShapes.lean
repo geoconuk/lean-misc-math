@@ -3,10 +3,11 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
+module
 
-import MiscMath.Probability.PoissonTrialsFixedMean.ConvexExtremum
-import Mathlib.Topology.Instances.Real.Lemmas
-import Mathlib.Topology.Order.Compact
+public import MiscMath.Probability.PoissonTrialsFixedMean.ConvexExtremum
+public import Mathlib.Topology.Instances.Real.Lemmas
+public import Mathlib.Topology.Order.Compact
 
 /-!
 # Hoeffding's Corollary 2.1
@@ -16,6 +17,8 @@ result, its source and its scope, and where the reader should start. This file p
 the extrema of `E[g S]` over the fixed-mean box are attained where the coordinates take at
 most one interior *value*.
 -/
+
+@[expose] public section
 
 namespace MiscMath.Probability
 

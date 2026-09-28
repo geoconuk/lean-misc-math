@@ -3,10 +3,12 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import MiscMath.Analysis.KolmogorovArnold.Approximant
-import MiscMath.Analysis.KolmogorovArnold.RationalIndependence
-import MiscMath.Analysis.KolmogorovArnold.Superposition
-import Mathlib.Topology.TietzeExtension
+module
+
+public import MiscMath.Analysis.KolmogorovArnold.Approximant
+public import MiscMath.Analysis.KolmogorovArnold.RationalIndependence
+public import MiscMath.Analysis.KolmogorovArnold.Superposition
+public import Mathlib.Topology.TietzeExtension
 
 /-!
 # Density of the approximation sets
@@ -82,6 +84,8 @@ uniform continuity on compact spaces
 (`CompactSpace.uniformContinuous_of_continuous`), and `Fintype.linearIndependent_iff` through
 `Levels.lean`. Nothing about superpositions is in Mathlib.
 -/
+
+@[expose] public section
 
 open unitInterval Finset BoundedContinuousFunction Topology
 

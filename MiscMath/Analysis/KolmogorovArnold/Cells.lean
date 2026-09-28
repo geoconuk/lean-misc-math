@@ -3,9 +3,11 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import Mathlib.Algebra.Order.Floor.Semiring
-import Mathlib.Algebra.Order.Archimedean.Real.Basic
-import Mathlib.Data.Fintype.BigOperators
+module
+
+public import Mathlib.Algebra.Order.Floor.Semiring
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
+public import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # The cell system
@@ -35,6 +37,8 @@ and the deleted intervals are the **gaps** of rank `q`. Two facts carry the whol
 Also here: the index of a cell meeting `[0, N]` is at most `N`, which bounds the finite sums in
 the staircase construction, and the diameter bound for a cell.
 -/
+
+@[expose] public section
 
 open Finset
 

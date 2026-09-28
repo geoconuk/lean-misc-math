@@ -3,11 +3,13 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import MiscMath.Computability.RedBluePebbleGame.Calculation
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Data.Real.Basic
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Positivity
+module
+
+public import MiscMath.Computability.RedBluePebbleGame.Calculation
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Positivity
 
 /-!
 # The red-blue pebble game: windows of a calculation, and what dominates them
@@ -26,6 +28,8 @@ calculation charged `q` gives red pebbles to at most `(q + S) U / S` vertices
 Domination is read with paths of length `0` included: an input is dominated only by a set
 containing it.
 -/
+
+@[expose] public section
 
 namespace MiscMath.Computability.RedBluePebbleGame
 

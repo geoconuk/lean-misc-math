@@ -3,9 +3,11 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import MiscMath.Analysis.KolmogorovArnold.InnerSpace
-import Mathlib.Topology.ContinuousMap.Bounded.Normed
-import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
+module
+
+public import MiscMath.Analysis.KolmogorovArnold.InnerSpace
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
+public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 
 /-!
 # The superposition operator and the approximation sets
@@ -77,6 +79,8 @@ The operator is a `ContinuousLinearMap` between Mathlib's Banach spaces `ℝ →
 compact `K` is the compact-open topology. Nothing about superpositions of this shape is in
 Mathlib.
 -/
+
+@[expose] public section
 
 open unitInterval BoundedContinuousFunction
 

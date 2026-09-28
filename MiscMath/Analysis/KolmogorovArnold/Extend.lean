@@ -3,9 +3,11 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import MiscMath.Analysis.KolmogorovArnold.InnerSpace
-import Mathlib.Topology.Instances.Real.Lemmas
-import Mathlib.Topology.Order.ProjIcc
+module
+
+public import MiscMath.Analysis.KolmogorovArnold.InnerSpace
+public import Mathlib.Topology.Instances.Real.Lemmas
+public import Mathlib.Topology.Order.ProjIcc
 
 /-!
 # Extending inner functions from `[0, 1]` to `ℝ`
@@ -23,6 +25,8 @@ where `clamp` is Mathlib's `Set.projIcc 0 1`. It agrees with `φ` on `I` (`exten
 continuous (`continuous_extend`), and is strictly increasing whenever `φ` is
 (`extend_strictMono`): off `I` the second term increases strictly, and on `I` the first does.
 -/
+
+@[expose] public section
 
 open Set unitInterval
 

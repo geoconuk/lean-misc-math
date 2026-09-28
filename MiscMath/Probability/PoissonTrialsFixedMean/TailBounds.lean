@@ -3,9 +3,10 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
+module
 
-import MiscMath.Probability.PoissonTrialsFixedMean.ExtremalShapes
-import Mathlib.Analysis.Calculus.Deriv.MeanValue
+public import MiscMath.Probability.PoissonTrialsFixedMean.ExtremalShapes
+public import Mathlib.Analysis.Calculus.Deriv.MeanValue
 
 /-!
 # Hoeffding's Theorem 4, in its two extreme regimes
@@ -16,6 +17,8 @@ where the reader should start. This file proves the two extreme regimes of Theor
 trivial bounds and the complement duality that accompany them, the attainment of all four
 bounds, and the size of the regime that is left out.
 -/
+
+@[expose] public section
 
 namespace MiscMath.Probability
 

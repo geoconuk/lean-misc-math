@@ -3,9 +3,11 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import MiscMath.Analysis.KolmogorovArnold.Density
-import MiscMath.Analysis.KolmogorovArnold.StrictlyIncreasing
-import Mathlib.Topology.ContinuousMap.SecondCountableSpace
+module
+
+public import MiscMath.Analysis.KolmogorovArnold.Density
+public import MiscMath.Analysis.KolmogorovArnold.StrictlyIncreasing
+public import Mathlib.Topology.ContinuousMap.SecondCountableSpace
 
 /-!
 # The Baire step: a generic tuple approximates every function in one step
@@ -64,6 +66,8 @@ Uses `BaireSpace` for the complete metric space of tuples (through `dense_biInte
 `Dense.inter_of_Gδ`, and `ContinuousMap.instSecondCountableTopology` for separability of
 `C(Iⁿ, ℝ)`. Nothing about superpositions is in Mathlib.
 -/
+
+@[expose] public section
 
 open unitInterval Set Topology BoundedContinuousFunction
 

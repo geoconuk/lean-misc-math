@@ -3,9 +3,11 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import MiscMath.Computability.RedBluePebbleGame.Butterfly
-import MiscMath.Computability.RedBluePebbleGame.Partition
-import Mathlib.Logic.Equiv.Fin.Basic
+module
+
+public import MiscMath.Computability.RedBluePebbleGame.Butterfly
+public import MiscMath.Computability.RedBluePebbleGame.Partition
+public import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
 # The red-blue pebble game: how many parts a dominator partition of the FFT graph needs
@@ -20,6 +22,8 @@ vertices (`fft_card_le_mul_bfly`). The single vertices, taken level by level, ar
 `S`-dominator partition for every `S ≥ 1` (`fft_exists_isDominatorPartition`), so the least number
 of parts is attained there.
 -/
+
+@[expose] public section
 
 namespace MiscMath.Computability.RedBluePebbleGame
 

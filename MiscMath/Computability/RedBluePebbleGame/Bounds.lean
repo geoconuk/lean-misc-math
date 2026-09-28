@@ -3,7 +3,9 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import MiscMath.Computability.RedBluePebbleGame.Butterfly
+module
+
+public import MiscMath.Computability.RedBluePebbleGame.Butterfly
 
 /-!
 # The red-blue pebble game: the two I/O bounds for the FFT graph
@@ -21,6 +23,8 @@ it, and computing a vertex needs its predecessors red. Two bounds follow:
   bound for the FFT graph (`card_le_bfly_of_dominated`) gives
   `S · (k + 1) 2^k ≤ (q + S) · 2S log₂ (4S)`.
 -/
+
+@[expose] public section
 
 namespace MiscMath.Computability.RedBluePebbleGame
 

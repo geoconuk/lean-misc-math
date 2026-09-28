@@ -3,9 +3,11 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import MiscMath.Computability.RedBluePebbleGame.Spec
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
+module
+
+public import MiscMath.Computability.RedBluePebbleGame.Spec
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # The red-blue pebble game: calculations as sequences indexed by `ℕ`
@@ -26,6 +28,8 @@ is the right shape for reading and the wrong one for proving. This file supplies
 * the count behind the trivial I/O bound: every input loaded and every output stored at least
   once costs at least `|I| + |O|`.
 -/
+
+@[expose] public section
 
 namespace MiscMath.Computability.RedBluePebbleGame
 

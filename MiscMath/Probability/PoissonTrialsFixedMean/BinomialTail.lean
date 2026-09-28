@@ -3,13 +3,14 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
+module
 
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Analysis.Calculus.Deriv.Add
-import Mathlib.Analysis.Calculus.Deriv.Mul
-import Mathlib.Analysis.Calculus.Deriv.Pow
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Tactic.LinearCombination
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Analysis.Calculus.Deriv.Add
+public import Mathlib.Analysis.Calculus.Deriv.Mul
+public import Mathlib.Analysis.Calculus.Deriv.Pow
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # The binomial tail, and its derivative in the success probability
@@ -20,6 +21,8 @@ supplies the elementary object `binTail` and the one calculus fact about it that
 for Hoeffding's Theorem 4 needs. `PoissonTrialsFixedMean.Bridge` identifies `binTail` with
 Mathlib's `ProbabilityTheory.binomial`.
 -/
+
+@[expose] public section
 
 namespace MiscMath.Probability
 

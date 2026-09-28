@@ -3,10 +3,12 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Order.Lattice.Nat
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Order.Lattice.Nat
 
 /-!
 # The red-blue pebble game: the definitions its statements are read through
@@ -42,6 +44,8 @@ Matrix multiplication (the source's §6):
 Nothing is proved here. The proof machinery lives in the other modules of this directory,
 which import this one; this one imports none of them.
 -/
+
+@[expose] public section
 
 namespace MiscMath.Computability.RedBluePebbleGame
 

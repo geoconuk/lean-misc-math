@@ -2,7 +2,9 @@
 Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
-import Lean
+module
+
+public meta import Lean
 
 /-!
 # Axiom audit
@@ -25,6 +27,13 @@ shows up as `sorryAx`; a bespoke `axiom` declaration shows up under its own name
 `native_decide` shows up as `Lean.ofReduceBool` / `Lean.trustCompiler`. All of them
 fail the audit.
 
+The command walks the `MiscMath.*` declarations of the environment it runs in, so what it
+covers depends on how the invoking module imports the library. Under Lean's module system a
+module's private declarations are in that environment only if the module is imported with
+`import all`, which does not reach through it to the modules it imports. That is why
+`MiscMath/Audit.lean` names every module of the library with `import all`, and why
+`scripts/check-imports.sh` fails if one is missing.
+
 It is deliberately *semantic* rather than textual: it inspects the elaborated proof
 terms, so it cannot be evaded by comments, macros, or clever formatting.
 
@@ -36,6 +45,8 @@ result advertises get a best-effort read from the author and why every result fi
 carries an informal statement, a citation, and concrete sanity checks. None of that is a
 review; see `README.md` for exactly what is and is not guaranteed.
 -/
+
+public meta section
 
 open Lean Elab Command
 

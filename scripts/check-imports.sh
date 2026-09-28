@@ -1,10 +1,17 @@
 #!/usr/bin/env bash
-# Every module under MiscMath/ must be reachable from the root MiscMath.lean.
+# Every module under MiscMath/ must be reachable from the root MiscMath.lean, and named by
+# an `import all` in MiscMath/Audit.lean.
 #
-# The axiom audit in MiscMath/Audit.lean can only see declarations that are
-# transitively imported. A file that nobody imports would still be compiled (the
-# lean_lib globs everything) but would escape the audit entirely. This script closes
-# that gap, and also flags imports left behind by a deleted file.
+# The axiom audit in MiscMath/Audit.lean can only see declarations that are imported. A
+# file that nobody imports would still be compiled (the lean_lib globs everything) but
+# would escape the audit entirely. This script closes that gap, and also flags imports left
+# behind by a deleted file.
+#
+# Under Lean's module system reachability is not enough for the audit. A plain import shows
+# only a module's public declarations, and `import all` shows its private ones as well, but
+# only for the module it names: it does not reach through that module to what it imports.
+# So the audit names every module with `import all`, and the second check below fails if a
+# module is missing from that list.
 #
 # Reachability is transitive, not direct. A result may be split across several modules
 # — a roof module carrying the statements and its supporting modules underneath — and
@@ -17,9 +24,17 @@ cd "$(dirname "$0")/.."
 root="MiscMath.lean"
 status=0
 
-# The MiscMath modules a given file imports.
+# The MiscMath modules a given file imports, whatever the import's visibility: `import`,
+# `public import`, `meta import`, `import all` and their combinations.
 imports_of() {
-  grep -oE '^import[[:space:]]+MiscMath\.[A-Za-z0-9_.]+' "$1" | awk '{print $2}' || true
+  grep -oE '^(public[[:space:]]+)?(meta[[:space:]]+)?import[[:space:]]+(all[[:space:]]+)?MiscMath(\.[A-Za-z0-9_]+)*([[:space:]]|$)' "$1" \
+    | awk '{print $NF}' || true
+}
+
+# The MiscMath modules a given file imports with `import all`.
+all_imports_of() {
+  grep -oE '^(public[[:space:]]+)?(meta[[:space:]]+)?import[[:space:]]+all[[:space:]]+MiscMath(\.[A-Za-z0-9_]+)*([[:space:]]|$)' "$1" \
+    | awk '{print $NF}' || true
 }
 
 # Modules that are infrastructure, not library content, and so are not expected to be
@@ -80,7 +95,25 @@ for module in $reachable; do
   fi
 done
 
+# Every module the audit must cover is named by an `import all` in the audit module:
+# the root, the infrastructure, and every result and support module.
+audit="MiscMath/Audit.lean"
+audited="$(all_imports_of "$audit" | sort -u)"
+while IFS= read -r file; do
+  module="$(printf '%s' "${file%.lean}" | tr '/' '.')"
+  if [[ "$module" == "MiscMath.Audit" ]]; then
+    continue
+  fi
+  if ! grep -qxF "$module" <<<"$audited"; then
+    echo "error: $module is not named by an \`import all\` in $audit"
+    echo "    add \`import all $module\` there: the audit sees a module's private declarations"
+    echo "    only through an \`import all\` that names it"
+    status=1
+  fi
+done < <({ echo MiscMath.lean; find MiscMath -name '*.lean'; } | sort)
+
 if [[ $status -eq 0 ]]; then
-  echo "import check passed: every module under MiscMath/ is reachable from $root"
+  echo "import check passed: every module under MiscMath/ is reachable from $root" \
+    "and named by an \`import all\` in $audit"
 fi
 exit $status

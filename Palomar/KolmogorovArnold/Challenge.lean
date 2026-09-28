@@ -3,8 +3,10 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import Mathlib.Topology.Instances.Real.Lemmas
-import Mathlib.Algebra.BigOperators.Fin
+module
+
+public import Mathlib.Topology.Instances.Real.Lemmas
+public import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # The Kolmogorov–Arnold representation theorem — advertised statements
@@ -161,6 +163,8 @@ development, anything in Tau Ceti. The statements use only `Continuous`, `Contin
 Challenge imports nothing but Mathlib. The only other public Lean artefact known to us is
 the statement, without proof, of the weaker `∀ f, ∃ g φ` form in `leanprover/lean-eval`.
 -/
+
+public section
 
 open Set
 

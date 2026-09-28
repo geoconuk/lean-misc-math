@@ -191,9 +191,9 @@ concept DOI if you mean the library as a whole.
 | `lake build` succeeds | Any incorrect proof — the Lean kernel accepts nothing else | CI |
 | Axiom audit | `sorry`, locally declared `axiom`s, `native_decide`. Every declaration depends only on `propext`, `Classical.choice`, `Quot.sound` — exactly what an ordinary Mathlib proof uses | [`MiscMath/Meta/AxiomAudit.lean`](MiscMath/Meta/AxiomAudit.lean) |
 | `autoImplicit false` | Silently turning a mistyped identifier into a fresh universally quantified variable, quietly changing a statement | [`lakefile.toml`](lakefile.toml) |
-| Convention check | `unsafe`, `@[implemented_by]`, per-file re-enabling of `autoImplicit`, and results shipped without an informal statement, source, or sanity checks | [`scripts/check-conventions.sh`](scripts/check-conventions.sh) |
-| Import check | A result file that escapes the axiom audit by not being imported anywhere | [`scripts/check-imports.sh`](scripts/check-imports.sh) |
-| Audit self-test | The audit silently becoming a no-op. Plants a `sorry` and fails if the audit does not reject it — an audit that passes everything is worse than none | [`scripts/self-test-audit.sh`](scripts/self-test-audit.sh) |
+| Convention check | `unsafe`, `@[implemented_by]`, per-file re-enabling of `autoImplicit`, results shipped without an informal statement, source, or sanity checks, and any Lean file in the repository that does not use Lean's module system, which Palomar requires of every file | [`scripts/check-conventions.sh`](scripts/check-conventions.sh) |
+| Import check | A result file that escapes the axiom audit by not being imported anywhere, and a module whose private declarations escape it because the audit does not import that module with `import all` | [`scripts/check-imports.sh`](scripts/check-imports.sh) |
+| Audit self-test | The audit silently becoming a no-op. Plants a `sorry` in a public theorem and another in a private one, and fails unless the audit rejects both — an audit that passes everything is worse than none | [`scripts/self-test-audit.sh`](scripts/self-test-audit.sh) |
 | Non-vacuity witnesses | The largest failure mode for machine-generated statements: hypotheses that cannot be simultaneously satisfied make a theorem vacuously true and worthless. Every result with hypotheses ships an `example` exhibiting values that satisfy them | each result file |
 
 **Checked by hand before each release (tags after `v0.3.0`):**

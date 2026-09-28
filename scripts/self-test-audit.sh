@@ -8,6 +8,11 @@
 #
 # This script plants a deliberately unsound module, builds an audit over it, and fails
 # if the audit does *not* reject it.
+#
+# The planted module has two holes, a public theorem and a private one. Under Lean's module
+# system an importer sees a module's private declarations only through `import all`, which
+# MiscMath/Audit.lean therefore uses for every module; the private hole checks that the
+# audit, so imported, still sees them.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -19,12 +24,16 @@ mkdir -p "$dir"
 
 cat > "$dir/Planted.lean" <<'LEAN'
 -- Planted by scripts/self-test-audit.sh. Deleted when it finishes.
+module
+public section
 theorem planted_sorry : 2 + 2 = 5 := by sorry
+private theorem planted_private_sorry : 2 + 2 = 6 := by sorry
 LEAN
 
 cat > "$dir/Audit.lean" <<'LEAN'
 -- Planted by scripts/self-test-audit.sh. Deleted when it finishes.
-import MiscMath.SelfTest.Planted
+module
+import all MiscMath.SelfTest.Planted
 import MiscMath.Meta.AxiomAudit
 #audit_axioms
 LEAN
@@ -33,11 +42,13 @@ echo "self-test: building an audit over a module containing 'sorry' (expected to
 output="$(lake build MiscMath.SelfTest.Audit 2>&1 || true)"
 
 if grep -q "axiom audit FAILED" <<<"$output"; then
-  if grep -q "sorryAx" <<<"$output"; then
-    echo "self-test passed: the audit rejected the planted sorry"
+  if grep -q "planted_sorry depends on \[sorryAx\]" <<<"$output" \
+      && grep -q "planted_private_sorry depends on \[sorryAx\]" <<<"$output"; then
+    echo "self-test passed: the audit rejected both planted sorries, the private one included"
     exit 0
   fi
-  echo "self-test FAILED: the audit rejected the module but did not name sorryAx"
+  echo "self-test FAILED: the audit rejected the module but did not name sorryAx in both"
+  echo "planted theorems; if the private one is missing, it no longer sees private declarations"
 else
   echo "self-test FAILED: the audit did not reject a module containing 'sorry'."
   echo "The audit may have silently stopped inspecting declarations. Do not trust a"

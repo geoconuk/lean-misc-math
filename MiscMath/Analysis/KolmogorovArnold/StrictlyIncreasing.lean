@@ -3,8 +3,10 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import MiscMath.Analysis.KolmogorovArnold.InnerSpace
-import Mathlib.Topology.Baire.Lemmas
+module
+
+public import MiscMath.Analysis.KolmogorovArnold.InnerSpace
+public import Mathlib.Topology.Baire.Lemmas
 
 /-!
 # Quasi-every monotone function is strictly increasing
@@ -66,6 +68,8 @@ Uses `IsGδ.biInter_of_isOpen`, `dense_biInter_of_isOpen` (Baire), `dense_pi`, `
 and `TopologicalSpace.exists_countable_dense` on `I`. Mathlib has nothing about generic
 properties of monotone functions in `C(I, ℝ)`.
 -/
+
+@[expose] public section
 
 open unitInterval Set Topology
 

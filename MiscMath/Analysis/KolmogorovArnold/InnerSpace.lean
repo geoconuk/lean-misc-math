@@ -3,9 +3,11 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import Mathlib.Topology.ContinuousMap.Compact
-import Mathlib.Topology.UnitInterval
-import Mathlib.Topology.Baire.CompleteMetrizable
+module
+
+public import Mathlib.Topology.ContinuousMap.Compact
+public import Mathlib.Topology.UnitInterval
+public import Mathlib.Topology.Baire.CompleteMetrizable
 
 /-!
 # The inner-function space
@@ -29,6 +31,8 @@ Everything past the closedness proof is an instance Mathlib already supplies. He
 Mathlib's `unitInterval`, so an inner function is a function on `[0, 1]`; extending to `ℝ` is
 the last layer's business.
 -/
+
+@[expose] public section
 
 open unitInterval
 

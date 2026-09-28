@@ -3,9 +3,11 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import MiscMath.Computability.RedBluePebbleGame.Domination
-import MiscMath.Computability.RedBluePebbleGame.LogBound
-import Mathlib.Data.Fintype.Prod
+module
+
+public import MiscMath.Computability.RedBluePebbleGame.Domination
+public import MiscMath.Computability.RedBluePebbleGame.LogBound
+public import Mathlib.Data.Fintype.Prod
 
 /-!
 # The red-blue pebble game: how much of the FFT graph `d` vertices can dominate
@@ -26,6 +28,8 @@ paths through `A` of vertices in distinct lanes of `A` are disjoint, and at most
 `C` share a lane of `A`. So at most `2|D ∩ A|` of them, and likewise at most `2|D ∩ B|`, escape
 the dominator.
 -/
+
+@[expose] public section
 
 namespace MiscMath.Computability.RedBluePebbleGame
 

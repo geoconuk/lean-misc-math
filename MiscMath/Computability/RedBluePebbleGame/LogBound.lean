@@ -3,10 +3,12 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.Base
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Analysis.Convex.SpecificFunctions.Basic
-import Mathlib.Tactic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.Base
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
+public import Mathlib.Tactic
 
 /-!
 # The red-blue pebble game: the function `d · log₂ (2d)`
@@ -20,6 +22,8 @@ where a single vertex dominates itself, and their induction applies it there. Th
 the inequalities that induction needs, the step being `bfly_combine`, from `log₂ (1 + t) ≥ t` on
 `[0, 1]`, which is concavity of `log` (the paper's lemma `H(p) ≥ 2p` on `[0, ½]` in another form).
 -/
+
+@[expose] public section
 
 namespace MiscMath.Computability.RedBluePebbleGame
 

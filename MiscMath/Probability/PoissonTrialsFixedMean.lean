@@ -3,10 +3,10 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
+module
 
-import MiscMath.Probability.PoissonTrialsFixedMean.Bridge
-import MiscMath.Probability.PoissonTrialsFixedMean.TailBounds
-
+public import MiscMath.Probability.PoissonTrialsFixedMean.Bridge
+public import MiscMath.Probability.PoissonTrialsFixedMean.TailBounds
 
 /-!
 # The extremes of the number of successes in independent trials, at a fixed mean
@@ -205,6 +205,8 @@ statement says what you need before relying on it.
 This file is a refactoring of an earlier, unpublished formalisation of the same paper by
 the same author.
 -/
+
+@[expose] public section
 
 
 namespace MiscMath.Probability

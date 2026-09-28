@@ -4,7 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
 -- Skeleton for a new result. Copy to `MiscMath/<Area>/<Result>.lean`, fill in, and add
--- the corresponding `import` line to `MiscMath.lean` (alphabetical order).
+-- the corresponding `public import` line to `MiscMath.lean` and an `import all` line to
+-- `MiscMath/Audit.lean` (alphabetical order in both). A result that grows support modules
+-- adds an `import all` line for each of them too: the audit sees a module's private
+-- declarations only through an `import all` that names it.
+--
+-- Every Lean file here uses the module system, as Palomar requires of every file in a
+-- submitted repository: `module` comes first after these comments, imports are
+-- `public import`, and `@[expose] public section` after the module docstring makes the
+-- declarations public and keeps definition bodies visible to the modules that import them.
 --
 -- Keep the `Authors:` line above as it is: Mathlib's header linter (active here via
 -- `weak.linter.mathlibStandardSet` in `lakefile.toml`) requires one on every module that
@@ -16,7 +24,9 @@ Authors: George A. Constantinides (selection, specification), Claude (formalisat
 -- says, and its rendering is kept under `docs/readbacks/<Area>/<Result>.md`.
 --
 -- This file lives under `docs/` and is not compiled; it is not part of the lean_lib.
-import Mathlib.Tactic
+module
+
+public import Mathlib.Tactic
 
 /-!
 # <Name of the result>
@@ -57,6 +67,8 @@ informal statement above. <Say here what the read-back surfaced, or that it agre
 rendering is kept verbatim in `docs/readbacks/<Area>/<Result>.md`, with the model that wrote
 it and the date.
 -/
+
+@[expose] public section
 
 namespace MiscMath.<Area>
 

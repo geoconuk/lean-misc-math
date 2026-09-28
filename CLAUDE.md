@@ -45,7 +45,10 @@ Concretely, when generating a result, spend the care on:
    be discharged by `decide` — an unbounded `∀ n : ℕ` is not decidable — so expect to
    prove it. A witness you cannot discharge is telling you something about the
    statement; investigate before working around it.
-4. Add the `import` line to `MiscMath.lean`, alphabetically.
+4. Add a `public import` line to `MiscMath.lean` and an `import all` line to
+   `MiscMath/Audit.lean`, alphabetically in both. Every Lean file here uses the module
+   system, which Palomar requires of every file in a submitted repository; the template
+   shows the header, and `scripts/check-conventions.sh` fails on a file without it.
 5. Run the checks (below). All three must pass.
 6. Get a **read-back** of the advertised statements before they go for their best-effort
    read, following [`docs/READBACK.md`](docs/READBACK.md). Send them — as Lean source with
@@ -87,16 +90,19 @@ docstring, the sanity checks and the statements a reader should meet first, and 
 only module `MiscMath.lean` names. The supporting modules go in
 `MiscMath/<Area>/<Result>/`, and the roof imports them.
 
-The two checks know the difference. `check-imports.sh` asks only that every module be
-*reachable* from `MiscMath.lean`, so the audit still sees everything. `check-conventions.sh`
-applies the four docstring sections and the `example` requirement to result modules — the
-ones `MiscMath.lean` names — and to every module, result or support, the escape-hatch and
-elaboration-option guards. A support module still needs a module docstring saying what it is
-for and which roof it belongs to; it has no informal statement or source of its own to give.
-An advertised statement may live in a support module — the natural-form theorems of
-`PoissonTrialsFixedMean` do — and the roof's `## Provenance` names it wherever it lives. A
-declaration `## Provenance` does not name is proof, in the roof or under it, and the roof's
-docstring should not describe one as though it had been read.
+The two checks know the difference. `check-imports.sh` asks that every module be
+*reachable* from `MiscMath.lean`, and that every module — support modules included — be
+named by an `import all` in `MiscMath/Audit.lean`: the audit sees a module's private
+declarations only through an `import all` naming it, and that does not reach through a roof
+to what it imports. `check-conventions.sh` applies the four docstring sections and the
+`example` requirement to result modules — the ones `MiscMath.lean` names — and to every
+module, result or support, the escape-hatch and elaboration-option guards. A support module
+still needs a module docstring saying what it is for and which roof it belongs to; it has
+no informal statement or source of its own to give. An advertised statement may live in a
+support module — the natural-form theorems of `PoissonTrialsFixedMean` do — and the roof's
+`## Provenance` names it wherever it lives. A declaration `## Provenance` does not name is
+proof, in the roof or under it, and the roof's docstring should not describe one as though
+it had been read.
 
 Split when the file stops being navigable or its rebuild stops being quick, not by line
 count. Do not split a single theorem away from the definitions its statement reads.

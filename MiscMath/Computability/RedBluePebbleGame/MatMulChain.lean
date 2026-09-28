@@ -3,11 +3,13 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import MiscMath.Computability.RedBluePebbleGame.Feasibility
-import MiscMath.Computability.RedBluePebbleGame.MatMul
-import Mathlib.Data.Fintype.Sigma
-import Mathlib.Data.Fintype.Sum
-import Mathlib.Tactic.DeriveFintype
+module
+
+public import MiscMath.Computability.RedBluePebbleGame.Feasibility
+public import MiscMath.Computability.RedBluePebbleGame.MatMul
+public import Mathlib.Data.Fintype.Sigma
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Tactic.DeriveFintype
 
 /-!
 # The red-blue pebble game: the ordinary algorithm for matrix multiplication, as a graph
@@ -27,6 +29,8 @@ complete calculation exactly when `S ≥ 3` (`MatMulChain.complete_iff`): the wi
 have exactly two predecessors and which some rank orders (`hasCompleteCalculation_of_rank`, which
 generalises the FFT graph's `fft_run_union`): load the two predecessors, compute, store, clear.
 -/
+
+@[expose] public section
 
 namespace MiscMath.Computability.RedBluePebbleGame
 

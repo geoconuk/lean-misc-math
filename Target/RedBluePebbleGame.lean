@@ -3,10 +3,12 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import MiscMath.Computability.RedBluePebbleGame.Spec
-import Mathlib.Analysis.Asymptotics.Defs
-import Mathlib.Analysis.SpecialFunctions.Log.Base
-import Mathlib.Data.Fintype.Prod
+module
+
+public import MiscMath.Computability.RedBluePebbleGame.Spec
+public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Analysis.SpecialFunctions.Log.Base
+public import Mathlib.Data.Fintype.Prod
 
 /-!
 # The red-blue pebble game: the frozen target statements
@@ -23,6 +25,8 @@ The module is deliberately outside `MiscMath/`, and its library is not in `defau
 so it reaches neither `lake build`, `MiscMath/Audit.lean`, nor the three checks in `scripts/`,
 all of which are scoped to that directory. Build it with `lake build RedBluePebbleGameTarget`.
 -/
+
+public section
 
 open Filter MiscMath.Computability.RedBluePebbleGame
 

@@ -3,9 +3,10 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
+module
 
-import MiscMath.Probability.PoissonTrialsFixedMean.Model
-import Mathlib.Probability.Distributions.Binomial
+public import MiscMath.Probability.PoissonTrialsFixedMean.Model
+public import Mathlib.Probability.Distributions.Binomial
 
 /-!
 # The model and the comparator, in Mathlib's vocabulary
@@ -16,6 +17,8 @@ library — `bernWt`, `bernExp`, `tailLe`, `binTail` — back to Mathlib's
 `ProbabilityTheory.binomial` and `ProbabilityTheory.bernoulliMeasure`, so that the results
 are not comparisons of one bespoke object against another.
 -/
+
+@[expose] public section
 
 namespace MiscMath.Probability
 

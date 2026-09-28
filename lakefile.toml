@@ -31,9 +31,10 @@ name = "MiscMath"
 # `MiscMath.*` is `MiscMath` itself and every module beneath it (note that Lake's
 # `.+` means submodules *excluding* the root), so a result file is compiled whether
 # or not anything imports it. Being compiled is not enough to be *audited*, though —
-# the axiom audit only sees what `MiscMath/Audit.lean` transitively imports — which is
-# why `scripts/check-imports.sh` separately requires every result module to appear in
-# `MiscMath.lean`.
+# the axiom audit only sees what `MiscMath/Audit.lean` imports, and a module's private
+# declarations only through an `import all` that names it — which is why
+# `scripts/check-imports.sh` separately requires every module to be reachable from
+# `MiscMath.lean` and named by an `import all` in `MiscMath/Audit.lean`.
 globs = ["MiscMath.*"]
 
 # The Palomar submission's Challenge module: the statement surface of

@@ -3,12 +3,14 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import MiscMath.Computability.RedBluePebbleGame.Bounds
-import MiscMath.Computability.RedBluePebbleGame.Feasibility
-import MiscMath.Computability.RedBluePebbleGame.MatMulChain
-import MiscMath.Computability.RedBluePebbleGame.Parts
-import Mathlib.Analysis.Asymptotics.Lemmas
-import Mathlib.Data.Fin.VecNotation
+module
+
+public import MiscMath.Computability.RedBluePebbleGame.Bounds
+public import MiscMath.Computability.RedBluePebbleGame.Feasibility
+public import MiscMath.Computability.RedBluePebbleGame.MatMulChain
+public import MiscMath.Computability.RedBluePebbleGame.Parts
+public import Mathlib.Analysis.Asymptotics.Lemmas
+public import Mathlib.Data.Fin.VecNotation
 
 /-!
 # Hong and Kung's red-blue pebble game: the key lemma, the FFT and matrix multiplication
@@ -428,6 +430,8 @@ statements. Each phase had two rounds:
 The points from Phases 2 and 3 are said above too. The renderings are kept verbatim in
 `docs/readbacks/Computability/RedBluePebbleGame.md`, with the model that wrote them and the date.
 -/
+
+@[expose] public section
 
 open Filter
 

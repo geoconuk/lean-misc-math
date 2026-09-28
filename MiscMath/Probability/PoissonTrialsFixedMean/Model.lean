@@ -3,10 +3,11 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
+module
 
-import MiscMath.Probability.PoissonTrialsFixedMean.BinomialTail
-import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import MiscMath.Probability.PoissonTrialsFixedMean.BinomialTail
+public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
 /-!
 # Independent Bernoulli trials, at the `Finset` level
@@ -17,6 +18,8 @@ are stated and where the reader should start. This file carries the model — `b
 `PoissonTrialsFixedMean.Bridge` identifies the model with a product of Mathlib
 `ProbabilityTheory.bernoulliMeasure`s.
 -/
+
+@[expose] public section
 
 namespace MiscMath.Probability
 

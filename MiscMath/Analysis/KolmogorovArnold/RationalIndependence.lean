@@ -3,10 +3,12 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleNumber
-import Mathlib.RingTheory.Localization.Integral
-import Mathlib.LinearAlgebra.LinearIndependent.Defs
-import Mathlib.Algebra.Polynomial.Coeff
+module
+
+public import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleNumber
+public import Mathlib.RingTheory.Localization.Integral
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
+public import Mathlib.Algebra.Polynomial.Coeff
 
 /-!
 # Positive reals linearly independent over `ℚ`
@@ -53,6 +55,8 @@ says nothing here. `Transcendental.linearIndependent_sub_inv`
 (`RingTheory/Algebraic/LinearIndependent.lean`) is about the family `(x - a)⁻¹`, not powers.
 The power case below appears to be absent.
 -/
+
+@[expose] public section
 
 open Polynomial
 

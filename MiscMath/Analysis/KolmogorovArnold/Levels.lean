@@ -3,10 +3,12 @@ Copyright (c) 2026 George A. Constantinides. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George A. Constantinides (selection, specification), Claude (formalisation, proof)
 -/
-import MiscMath.Analysis.KolmogorovArnold.Cells
-import MiscMath.Analysis.KolmogorovArnold.InnerSpace
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.LinearAlgebra.LinearIndependent.Defs
+module
+
+public import MiscMath.Analysis.KolmogorovArnold.Cells
+public import MiscMath.Analysis.KolmogorovArnold.InnerSpace
+public import Mathlib.Algebra.Order.Floor.Ring
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 
 /-!
 # Rational levels for the staircases
@@ -36,6 +38,8 @@ levels is uniformly close to `φ_q`. Those are `le_level`, `level_lt`, `level_st
 `level_injective`; the cell map's injectivity from `LinearIndependent ℚ lam` is
 `cellMap_injective`, the only place Layer 0 is used.
 -/
+
+@[expose] public section
 
 open unitInterval
 
