@@ -15,10 +15,10 @@ public import Mathlib.Logic.Equiv.Fin.Basic
 Support module of `MiscMath.Computability.RedBluePebbleGame`, where the results are stated and
 where the reader should start. Nothing here is a result on its own.
 
-This is Hong and Kung's Theorem 4.1, with its constant corrected. Each part of an `S`-dominator
-partition of the `2^k`-point FFT graph is dominated by at most `S` vertices, so it has at most
-`S log₂ (2S)` of them (`card_le_bfly_of_dominated`), and the parts add up to all `(k + 1) 2^k`
-vertices (`fft_card_le_mul_bfly`). The single vertices, taken level by level, are an
+This is Hong and Kung's Theorem 4.1, with a sharper constant than their proof gives. Each part of
+an `S`-dominator partition of the `2^k`-point FFT graph is dominated by at most `S` vertices, so it
+has at most `S log₂ (2S)` of them (`card_le_bfly_of_dominated`), and the parts add up to all
+`(k + 1) 2^k` vertices (`fft_card_le_mul_bfly`). The single vertices, taken level by level, are an
 `S`-dominator partition for every `S ≥ 1` (`fft_exists_isDominatorPartition`), so the least number
 of parts is attained there.
 -/
@@ -45,7 +45,7 @@ theorem card_eq_sum_of_existsUnique {V : Type*} [Fintype V] {h : ℕ}
 
 variable {k : ℕ}
 
-/-- **Theorem 4.1, with its constant corrected.** The parts of an `S`-dominator partition of the
+/-- **Theorem 4.1, with a sharper constant.** The parts of an `S`-dominator partition of the
 `2^k`-point FFT graph number at least `(k + 1) 2^k / (S log₂ (2S))`. -/
 theorem fft_card_le_mul_bfly {S h : ℕ} {P : Fin h → Finset (Fin (k + 1) × Fin (2 ^ k))}
     (hP : IsDominatorPartition (fftEdge k) (univ.filter (·.1 = 0)) S P) :

@@ -312,11 +312,16 @@ Prove2Me's Formalpedia (searched 2026-09-25).
     set.
   - Here the split is on a red pebble. Such an input then falls under the paper's Case 2, and the
     conclusion stands.
-* **Corrected: Theorem 4.1's per-set bound.**
-  - The paper bounds a set dominated by `d` vertices by `2d log d`. That is `0` at `d = 1`,
-    although a vertex dominates itself, and its induction uses that case.
-  - Here the bound is `d log₂ (2d)`, which is exact at `d = 1, 2, 4`.
-  - So `fft_parts_lower_bound` carries `S log₂ (2S)`. Theorem 4.1's `Ω` form is unaffected.
+* **Corrected in the proof: Theorem 4.1's induction.**
+  - The paper claims, for `S ≥ 2`, that a set with a dominator of at most `S` vertices has at
+    most `2S log S` vertices, and that holds. But its induction applies the bound to the parts
+    of a dominator, which may have a single vertex, and at `1` it is `0`, although a vertex
+    dominates itself.
+  - Here the bound is `d log₂ (2d)`, for a dominator of `d` vertices. It holds at `d = 1` too,
+    which closes the induction; it is at most `2d log₂ d` for `d ≥ 2`; and it is exact at
+    `d = 1, 2, 4`.
+  - So `fft_parts_lower_bound` carries `S log₂ (2S)`, for every `S ≥ 1`. Theorem 4.1 as the paper
+    states it, for `S ≥ 2`, is unaffected.
 * **Generalised: Corollary 6.2 is proved for a wider class of graphs.** The paper derives it from
   its Theorem 6.1, about independent evaluations. Here the class is cut down to what the proof
   uses; see above.
@@ -332,7 +337,7 @@ Prove2Me's Formalpedia (searched 2026-09-25).
     here.
   - The proof of Corollary 4.1 here does not use them. It cuts the calculation into windows of
     `S` loads and stores directly.
-  - With the corrected Theorem 4.1 applied at `2S`, the paper's route gives the second bound of
+  - With `fft_parts_lower_bound` applied at `2S`, the paper's route gives the second bound of
     `fft_io_bounds`.
 * **A different route to Lemma 6.1.** Both routes bound the products in one set of the partition.
   - The paper splits the rows of `A` at `√S` entries in the set's dominator.

@@ -17,10 +17,11 @@ Support module of `MiscMath.Computability.RedBluePebbleGame`, where the results 
 where the reader should start. Nothing here is a result on its own.
 
 `bfly d = d · log₂ (2d)` bounds the number of vertices of the FFT graph that `d` vertices can
-dominate (`Butterfly.lean`). It is Hong and Kung's `2d log d` corrected: theirs is `0` at `d = 1`,
-where a single vertex dominates itself, and their induction applies it there. This file proves
-the inequalities that induction needs, the step being `bfly_combine`, from `log₂ (1 + t) ≥ t` on
-`[0, 1]`, which is concavity of `log` (the paper's lemma `H(p) ≥ 2p` on `[0, ½]` in another form).
+dominate (`Butterfly.lean`). It sharpens Hong and Kung's `2d log d`, which they claim for `d ≥ 2`
+and which is `0` at `d = 1`, where a single vertex dominates itself, although their induction
+applies it there; `bfly 1 = 1`. This file proves the inequalities that induction needs, the step
+being `bfly_combine`, from `log₂ (1 + t) ≥ t` on `[0, 1]`, which is concavity of `log` (the
+paper's lemma `H(p) ≥ 2p` on `[0, ½]` in another form).
 -/
 
 @[expose] public section

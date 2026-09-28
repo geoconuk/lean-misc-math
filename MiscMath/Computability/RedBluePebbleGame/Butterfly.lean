@@ -16,9 +16,10 @@ Support module of `MiscMath.Computability.RedBluePebbleGame`, where the results 
 where the reader should start. Nothing here is a result on its own.
 
 `card_le_bfly_of_dominated`: in the `2^k`-point FFT graph, a set of vertices dominated by `D` has
-at most `|D| · log₂ (2|D|)` elements. This is the argument of Hong and Kung's Theorem 4.1, with its
-constant corrected: they claim `2d log₂ d`, which is `0` at `d = 1` although a single vertex
-dominates itself, and their induction uses that case.
+at most `|D| · log₂ (2|D|)` elements. This is the argument of Hong and Kung's Theorem 4.1, with a
+sharper bound that repairs its induction: they claim `2d log₂ d` for `d ≥ 2`, which follows, but
+their induction also applies it to parts of a dominator with a single vertex, where it is `0`
+although a single vertex dominates itself.
 
 The induction runs over the sub-butterflies of the fixed graph. The one of height `L` numbered `β`
 (`InBlock L β`) has the levels up to `L` and the lanes whose bits from `L` up spell `β`. It splits
